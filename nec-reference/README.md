@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="../style.css">
+
 # NEC Reference
 
 Quick-access summaries of National Electrical Code articles most relevant to solar PV design and installation.

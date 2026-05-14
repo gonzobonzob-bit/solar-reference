@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="../../style.css">
+
 # NEC Article 690 — Solar Photovoltaic Systems
 
 Quick reference for the sections most frequently needed in the field and during plan review. NEC 2020 unless noted.

@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@300;400&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+:root {
+  --heaven: #4fc3f7;
+  --heaven-deep: #0a3d5c;
+  --hell-warm: #ff7043;
+  --hell-deep: #1a0a00;
+  --purgatory: #ffd54f;
+  --purgatory-glow: #fff8e1;
+  --spark: #e0f7fa;
+  --dark: #090c10;
+  --mid: #141820;
+  --text: #e8eaf0;
+  --text-dim: #8090a0;
+  --border: rgba(79,195,247,0.15);
+  --amber: #b45309;
+  --amber-light: #fef9c3;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--dark);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.75;
+  overflow-x: hidden;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 32px 80px;
+}
+
+/* BANNER */
+.site-banner {
+  background: var(--amber);
+  color: var(--amber-light);
+  text-align: center;
+  padding: 7px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+}
+
+/* HEADER */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+  margin-bottom: 40px;
+}
+
+.site-header a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--heaven);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+
+.site-header a:hover { text-decoration: underline; }
+
+/* FOOTER */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+  margin-top: 60px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* HEADINGS */
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+  color: var(--text);
+}
+
+h1 { font-size: 2.2rem; line-height: 1.15; margin-bottom: 24px; }
+h2 { font-size: 1.4rem; margin-top: 48px; margin-bottom: 16px; color: var(--heaven); }
+h3 { font-size: 1.1rem; margin-top: 32px; margin-bottom: 12px; color: var(--purgatory); font-family: 'IBM Plex Mono', monospace; font-weight: 400; }
+h4 { font-size: 0.95rem; margin-top: 24px; margin-bottom: 8px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; }
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+}
+
+p { margin-bottom: 16px; }
+
+a { color: var(--heaven); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* CODE */
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88em;
+  background: rgba(79,195,247,0.07);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--heaven);
+}
+
+pre {
+  background: var(--mid);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-x: auto;
+  margin: 24px 0;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.88rem;
+}
+
+th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 400;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--heaven);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px;
+  text-align: left;
+}
+
+td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(79,195,247,0.06);
+  color: var(--text-dim);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { color: var(--text); background: rgba(255,255,255,0.02); }
+
+/* BLOCKQUOTE */
+blockquote {
+  border-left: 2px solid var(--purgatory);
+  margin: 24px 0;
+  padding: 4px 20px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: var(--purgatory);
+  line-height: 1.7;
+}
+
+/* LISTS */
+ul, ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+  color: var(--text-dim);
+}
+
+li { margin-bottom: 6px; }
+li strong { color: var(--text); font-weight: 500; }
+
+/* STRONG / EM */
+strong { color: var(--text); font-weight: 500; }
+em { color: var(--purgatory); font-style: italic; }

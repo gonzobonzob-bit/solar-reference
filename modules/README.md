@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="../style.css">
+
 # Modules
 
 PV module specifications, datasheets, and string sizing resources.
