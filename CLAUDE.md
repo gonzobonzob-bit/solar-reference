@@ -30,11 +30,21 @@ Steve the Sprite is the visual narrator of this library. Six stages, all canonic
 
 The Curator is Steve's voice — the AI librarian who speaks when Steve cannot. Steve shows you the world. The Curator explains it. See STEVE.md for the full character bible.
 
+## Content Tagging System
+
+Two tags used throughout the site:
+
+1. **Cited code:** Always reference specifically inline as `[NEC 2023 §690.7]` or similar. Include older code comparison where relevant. No ambiguity. Always verifiable.
+
+2. **Field experience:** Label warmly as "From the Field" — never "Personal Opinion." Subtle, conversational, not disruptive to reading flow.
+
+The global footer disclaimer covers all legal protection. Never over-explain in the content itself. Be specific when citing code, indirect and warm when sharing experience.
+
 ## Disclaimer Requirement
 
-Every page must carry or link to this disclaimer:
+Every page must carry this disclaimer in the footer:
 
-> Content on this site is either cited code references from NEC or official sources, or personal opinion from 13 years solar industry experience. Personal opinion is clearly labeled. Nothing constitutes legal, engineering, or compliance advice. Always verify with your local AHJ.
+> Disclaimer: Content on this site includes cited code references from NEC or official sources, and personal opinion from 13 years of solar industry experience. Personal opinion is clearly labeled as such. Human error is possible — if you spot something incorrect or outdated, we want to know. Nothing on this site constitutes legal, engineering, or compliance advice. Always verify requirements with your local Authority Having Jurisdiction (AHJ).
 
 ## Rules
 - Never build full documents until the idea is fully developed
