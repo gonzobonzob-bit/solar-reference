@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When It Breaks — Solar Reference Library</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 32px 0;
+    }
+
+    .stat-card {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--hell-warm);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: var(--text-dim);
+    }
+
+    .coming-soon-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 32px 0;
+    }
+
+    .coming-soon-card {
+      border: 1px solid rgba(255,213,79,0.22);
+      border-radius: 10px;
+      padding: 26px 22px;
+      background: rgba(255,213,79,0.015);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cs-badge {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--purgatory);
+      border: 1px solid rgba(255,213,79,0.28);
+      border-radius: 3px;
+      padding: 3px 8px;
+      width: fit-content;
+    }
+
+    .cs-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--text);
+      opacity: 0.5;
+      line-height: 1.3;
+    }
+
+    .cs-desc {
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: var(--text-dim);
+      opacity: 0.65;
+    }
+
+    .sources-block {
+      background: var(--mid);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 32px 0 0;
+    }
+
+    .sources-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      opacity: 0.6;
+      margin-bottom: 12px;
+    }
+
+    .sources-block .citation {
+      margin-bottom: 6px;
+      margin-top: 0;
+      display: block;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      opacity: 0.75;
+    }
+
+    .sources-block .citation a { color: var(--text-dim); text-decoration: underline; }
+    .sources-block .citation a:hover { color: var(--heaven); }
+
+    @media (max-width: 640px) {
+      .stat-grid { grid-template-columns: 1fr; }
+      .coming-soon-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="site-banner">🚧 This site is under active construction — some features may not be fully functional yet. Check back soon.</div>
+
+  <header class="site-header">
+    <a href="index.html">← Solar Reference Library</a>
+  </header>
+
+  <main>
+    <h1>When It Breaks<br><em>Diagnose the Problem</em></h1>
+    <p>The system looked fine. Until it didn't. This section is the diagnostic side of solar — the part no one pitches you during the sales call. What fails, why it fails, what it costs, and how to tell the difference between a monitoring glitch and a real problem.</p>
+
+    <hr>
+
+    <h2>By the Numbers</h2>
+
+    <p>Solar underperformance is not rare, and the causes are not random. The data points to consistent failure patterns — and consistent blind spots in how systems are sold and installed.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-number">39%</div>
+        <div class="stat-label">Of power losses in solar arrays are caused by inverter failures — the single largest category ahead of string and combiner issues.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">$10B</div>
+        <div class="stat-label">In global solar underperformance losses in 2024. Per-MW losses grew from $977 in 2020 to $5,720 in 2024 — a nearly 6× increase in four years.</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">60%</div>
+        <div class="stat-label">Maximum power loss documented during extreme weather events. Short-term but increasingly common as grid stress events intensify.</div>
+      </div>
+    </div>
+
+    <h3>Failure Mode Breakdown</h3>
+    <p>Inverters lead at 39%, but the full picture across hardware categories shows no single point is safe from failure:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Failure Category</th>
+          <th>Share of Power Losses</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Inverters</td>
+          <td>39%</td>
+          <td>Communication faults, MPPT drift, thermal shutdown, hardware failure</td>
+        </tr>
+        <tr>
+          <td>Strings</td>
+          <td>22%</td>
+          <td>Open circuits, shade-induced mismatch, bypass diode failure, degraded modules</td>
+        </tr>
+        <tr>
+          <td>Combiners</td>
+          <td>19%</td>
+          <td>Fuse failures, loose terminations, moisture ingress in poorly sealed enclosures</td>
+        </tr>
+        <tr>
+          <td>Other / Environmental</td>
+          <td>20%</td>
+          <td>Soiling, shading, weather events, monitoring gaps</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sources-block">
+      <div class="sources-label">Sources</div>
+      <span class="citation">Source: <a href="https://pv-magazine-usa.com" target="_blank" rel="noopener">PV Magazine USA</a> — March 2025 (inverter, string, and combiner failure breakdown)</span>
+      <span class="citation">Source: <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — March 2025 (global underperformance losses; $977/MW in 2020 to $5,720/MW in 2024)</span>
+      <span class="citation">Source: <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — 2024 (extreme weather power loss up to 60%)</span>
+    </div>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>Stories From the Field</h2>
+
+    <p>Thirteen years of job sites, trouble calls, failed inspections, and systems that surprised everyone — including the people who built them. These are not textbook scenarios. They are the calls that came in at 6am, the roofs that didn't match the drawings, and the moments that changed how the work gets done. Coming soon.</p>
+
+    <div class="coming-soon-grid">
+
+      <div class="coming-soon-card">
+        <span class="cs-badge">Coming Soon</span>
+        <div class="cs-title">The Array That Looked Fine on Paper</div>
+        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+      </div>
+
+      <div class="coming-soon-card">
+        <span class="cs-badge">Coming Soon</span>
+        <div class="cs-title">When the Monitoring Said Zero</div>
+        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+      </div>
+
+      <div class="coming-soon-card">
+        <span class="cs-badge">Coming Soon</span>
+        <div class="cs-title">The Inspection That Changed Everything</div>
+        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site includes cited code references from NEC or official sources, and personal opinion from 13 years of solar industry experience. Personal opinion is clearly labeled as such. Human error is possible — if you spot something incorrect or outdated, we want to know. Nothing on this site constitutes legal, engineering, or compliance advice. Always verify requirements with your local Authority Having Jurisdiction (AHJ).
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>
