@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How To Understand It — Solar Reference Library</title>
+  <title>How To Understand It | Solar Reference</title>
   <link rel="stylesheet" href="style.css">
   <style>
     .coming-soon-grid {
@@ -61,8 +61,11 @@
   <div class="site-banner">🚧 This site is under active construction — some features may not be fully functional yet. Check back soon.</div>
 
   <header class="site-header">
-    <a href="team.html" style="float:right;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-decoration:none;">Meet the Team →</a>
-    <a href="index.html">← Solar Reference Library</a>
+    <button class="nav-toggle" aria-label="Menu" onclick="this.closest('.site-header').classList.toggle('nav-open')"><span></span><span></span><span></span></button>
+    <div class="nav-content">
+      <a href="team.html" style="float:right;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-decoration:none;">Meet the Team →</a>
+      <a href="index.html">← Solar Reference Library</a>
+    </div>
   </header>
 
   <main>

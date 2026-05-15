@@ -181,6 +181,67 @@ li strong { color: var(--text); font-weight: 500; }
 strong { color: var(--text); font-weight: 500; }
 em { color: var(--purgatory); font-style: italic; }
 
+/* HAMBURGER / MOBILE NAV */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 8px;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  float: right;
+  margin-left: 12px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--text-dim);
+  transition: transform 0.2s, opacity 0.2s, background 0.2s;
+}
+
+.nav-toggle:hover span { background: var(--heaven); }
+
+.site-header.nav-open .nav-toggle span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.site-header.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+.site-header.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.nav-content { display: block; }
+.nav-content::after { content: ''; display: table; clear: both; }
+
+@media (max-width: 768px) {
+  .nav-toggle { display: flex; }
+
+  .nav-content {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 14px;
+    margin-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .site-header.nav-open .nav-content { display: flex; }
+
+  .nav-content a {
+    float: none !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 13px !important;
+    letter-spacing: 0.08em;
+    color: var(--text-dim) !important;
+    text-decoration: none;
+    display: block;
+  }
+
+  .nav-content a:hover { color: var(--heaven) !important; text-decoration: none; }
+
+  /* hide breadcrumb separators and current-page label on mobile */
+  .nav-content span { display: none; }
+}
+
 /* FROM THE FIELD TAG */
 .field-tag {
   font-family: 'IBM Plex Mono', monospace;
