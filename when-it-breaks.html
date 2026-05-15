@@ -17,21 +17,21 @@
       background: var(--mid);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 24px 20px;
+      padding: 28px 22px;
     }
 
     .stat-number {
       font-family: 'Playfair Display', serif;
-      font-size: 2.4rem;
+      font-size: 2.6rem;
       font-weight: 400;
       color: var(--hell-warm);
       line-height: 1;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .stat-label {
-      font-size: 0.82rem;
-      line-height: 1.65;
+      font-size: 0.85rem;
+      line-height: 1.7;
       color: var(--text-dim);
     }
 
@@ -69,7 +69,7 @@
       font-family: 'Playfair Display', serif;
       font-size: 1.05rem;
       color: var(--text);
-      opacity: 0.5;
+      opacity: 0.55;
       line-height: 1.3;
     }
 
@@ -85,7 +85,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 20px 24px;
-      margin: 32px 0 0;
+      margin: 28px 0 0;
     }
 
     .sources-label {
@@ -128,69 +128,34 @@
 
   <main>
     <h1>When It Breaks<br><em>Diagnose the Problem</em></h1>
-    <p>The system looked fine. Until it didn't. This section is the diagnostic side of solar — the part no one pitches you during the sales call. What fails, why it fails, what it costs, and how to tell the difference between a monitoring glitch and a real problem.</p>
+    <p>The system looked fine. Until it didn't. This section covers what actually fails in the real world — inverters, strings, combiners, weather, neglect — and what to do when you suspect something is wrong. Not code references. Real failures.</p>
 
     <hr>
 
     <h2>By the Numbers</h2>
 
-    <p>Solar underperformance is not rare, and the causes are not random. The data points to consistent failure patterns — and consistent blind spots in how systems are sold and installed.</p>
+    <p>Solar underperformance is not rare and the causes are not random. Industry data points to consistent failure patterns — and consistent gaps between what systems are expected to produce and what they actually do.</p>
 
     <div class="stat-grid">
       <div class="stat-card">
         <div class="stat-number">39%</div>
-        <div class="stat-label">Of power losses in solar arrays are caused by inverter failures — the single largest category ahead of string and combiner issues.</div>
+        <div class="stat-label">Inverters are the leading equipment cause of solar power losses in the United States — ahead of strings at 22% and combiners at 19%.</div>
       </div>
       <div class="stat-card">
         <div class="stat-number">$10B</div>
-        <div class="stat-label">In global solar underperformance losses in 2024. Per-MW losses grew from $977 in 2020 to $5,720 in 2024 — a nearly 6× increase in four years.</div>
+        <div class="stat-label">In global solar asset underperformance losses in 2024. Per-MW losses climbed from $977 in 2020 to $5,720 in 2024 — a nearly 6× increase in four years.</div>
       </div>
       <div class="stat-card">
         <div class="stat-number">60%</div>
-        <div class="stat-label">Maximum power loss documented during extreme weather events. Short-term but increasingly common as grid stress events intensify.</div>
+        <div class="stat-label">Power losses at individual solar facilities during extreme weather events can reach up to 60% — short-term, but increasingly common.</div>
       </div>
     </div>
 
-    <h3>Failure Mode Breakdown</h3>
-    <p>Inverters lead at 39%, but the full picture across hardware categories shows no single point is safe from failure:</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Failure Category</th>
-          <th>Share of Power Losses</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Inverters</td>
-          <td>39%</td>
-          <td>Communication faults, MPPT drift, thermal shutdown, hardware failure</td>
-        </tr>
-        <tr>
-          <td>Strings</td>
-          <td>22%</td>
-          <td>Open circuits, shade-induced mismatch, bypass diode failure, degraded modules</td>
-        </tr>
-        <tr>
-          <td>Combiners</td>
-          <td>19%</td>
-          <td>Fuse failures, loose terminations, moisture ingress in poorly sealed enclosures</td>
-        </tr>
-        <tr>
-          <td>Other / Environmental</td>
-          <td>20%</td>
-          <td>Soiling, shading, weather events, monitoring gaps</td>
-        </tr>
-      </tbody>
-    </table>
-
     <div class="sources-block">
       <div class="sources-label">Sources</div>
-      <span class="citation">Source: <a href="https://pv-magazine-usa.com" target="_blank" rel="noopener">PV Magazine USA</a> — March 2025 (inverter, string, and combiner failure breakdown)</span>
-      <span class="citation">Source: <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — March 2025 (global underperformance losses; $977/MW in 2020 to $5,720/MW in 2024)</span>
-      <span class="citation">Source: <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — 2024 (extreme weather power loss up to 60%)</span>
+      <span class="citation">Raptor Maps via <a href="https://pv-magazine-usa.com" target="_blank" rel="noopener">PV Magazine USA</a> — March 5, 2025 (inverters 39%, strings 22%, combiners 19% of U.S. power losses)</span>
+      <span class="citation">Raptor Maps via <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — March 6, 2025 (global underperformance losses $10B in 2024; $977/MW in 2020 to $5,720/MW in 2024)</span>
+      <span class="citation">Raptor Maps via <a href="https://pv-magazine.com" target="_blank" rel="noopener">PV Magazine</a> — March 14, 2024 (power losses up to 60% during extreme weather events)</span>
     </div>
 
     <hr>
@@ -198,29 +163,43 @@
     <p class="field-tag">From the Field</p>
     <h2>Stories From the Field</h2>
 
-    <p>Thirteen years of job sites, trouble calls, failed inspections, and systems that surprised everyone — including the people who built them. These are not textbook scenarios. They are the calls that came in at 6am, the roofs that didn't match the drawings, and the moments that changed how the work gets done. Coming soon.</p>
+    <p>Thirteen years of job sites, trouble calls, and systems that surprised everyone — including the people who built them. These are not textbook scenarios. They are the calls that came in before sunrise, the sites where the paperwork said one thing and the roof said another, and the moments that permanently changed how this work gets done. Coming soon.</p>
 
     <div class="coming-soon-grid">
 
       <div class="coming-soon-card">
         <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">The Array That Looked Fine on Paper</div>
-        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+        <div class="cs-title">The Inverter Nobody Checked</div>
+        <p class="cs-desc">A real story from 13 years in the solar industry. Coming soon.</p>
       </div>
 
       <div class="coming-soon-card">
         <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">When the Monitoring Said Zero</div>
-        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+        <div class="cs-title">The Shading Nobody Caught</div>
+        <p class="cs-desc">A real story from 13 years in the solar industry. Coming soon.</p>
       </div>
 
       <div class="coming-soon-card">
         <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">The Inspection That Changed Everything</div>
-        <p class="cs-desc">A real story from field experience. Real names, real consequences, real lessons — documented and coming to this library soon.</p>
+        <div class="cs-title">The RMA That Revealed Everything</div>
+        <p class="cs-desc">A real story from 13 years in the solar industry. Coming soon.</p>
       </div>
 
     </div>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>What To Look For</h2>
+
+    <p>Before you call anyone, run through these. Most solar problems leave evidence — you just have to know where to look. These are the first four questions worth asking yourself whenever something feels off.</p>
+
+    <ul>
+      <li><strong>Is your monitoring showing actual production vs. expected?</strong> Every monitoring platform shows some form of expected vs. actual. If production is consistently below the estimate — not just on cloudy days — that gap is worth investigating.</li>
+      <li><strong>When did you last check your inverter error log?</strong> Inverters log faults, warnings, and communication dropouts. Most homeowners never look at this. It's often the first place a developing problem shows up, sometimes weeks before production drops noticeably.</li>
+      <li><strong>Has anything changed near your array?</strong> New trees, new neighboring structures, a chimney extension, new rooftop equipment — anything that casts a new shadow is worth checking. Shade that wasn't there at installation changes the performance picture significantly.</li>
+      <li><strong>When was your last physical inspection?</strong> Connections loosen. Critters nest. Racking shifts in heavy wind and freeze-thaw cycles. A visual inspection once a year — or after any significant weather event — catches things monitoring cannot.</li>
+    </ul>
 
     <hr>
 
