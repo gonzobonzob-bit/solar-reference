@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Unapproved Files | Solar Reference</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #080d08; }
+
+    main h1 em { color: #4a7c59; font-style: italic; }
+    main h2 { color: #4a7c59; }
+    main h3 { color: #4a7c59; font-family: 'IBM Plex Mono', monospace; }
+    main a:not(.nav-right a) { color: #4a7c59; }
+    main blockquote { border-left-color: #4a7c59; color: #4a7c59; }
+    main hr { border-top-color: rgba(74,124,89,0.2); }
+
+    .field-tag { color: #4a7c59; }
+    .field-tag + h2 { margin-top: 0; }
+
+    /* INVESTIGATOR BADGE */
+    .investigator-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+      padding: 28px 24px;
+      background: rgba(13,26,13,0.7);
+      border: 1px solid rgba(74,124,89,0.3);
+      border-radius: 8px;
+      margin: 32px 0;
+    }
+
+    .investigator-img {
+      width: 110px;
+      height: 130px;
+      object-fit: cover;
+      object-position: center top;
+      border-radius: 4px;
+      border: 2px solid rgba(74,124,89,0.4);
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .investigator-img-placeholder {
+      width: 110px;
+      height: 130px;
+      background: rgba(74,124,89,0.05);
+      border: 1px dashed rgba(74,124,89,0.3);
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: rgba(74,124,89,0.45);
+      text-align: center;
+      text-transform: uppercase;
+      line-height: 1.8;
+    }
+
+    .badge-role {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #4a7c59;
+      margin-bottom: 10px;
+    }
+
+    .badge-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #c8d4c0;
+      margin-bottom: 8px;
+      line-height: 1.15;
+    }
+
+    .badge-clearance {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      line-height: 1.8;
+    }
+
+    .tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: #4a7c59;
+      border-left: 2px solid #4a7c59;
+      padding: 4px 20px;
+      margin: 32px 0;
+      line-height: 1.7;
+    }
+
+    /* STEVE INFORMANT BLOCK */
+    .informant-block {
+      background: rgba(107,26,26,0.07);
+      border: 1px solid rgba(139,32,32,0.22);
+      border-left: 3px solid #8b2020;
+      border-radius: 6px;
+      padding: 22px 26px;
+      margin: 40px 0;
+    }
+
+    .informant-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #8b2020;
+      margin-bottom: 12px;
+    }
+
+    .informant-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: #c8d4c0;
+      margin-bottom: 10px;
+    }
+
+    .informant-quote {
+      font-size: 0.875rem;
+      line-height: 1.78;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .informant-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: rgba(139,32,32,0.55);
+      font-style: italic;
+      letter-spacing: 0.05em;
+    }
+
+    /* CASE FILE CARDS */
+    .casefile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 32px 0;
+    }
+
+    .casefile-card {
+      background: rgba(13,26,13,0.5);
+      border: 1px solid rgba(74,124,89,0.22);
+      border-radius: 8px;
+      padding: 26px 22px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .casefile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #4a7c59, transparent);
+    }
+
+    .casefile-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #4a7c59;
+      margin-bottom: 10px;
+    }
+
+    .casefile-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #c8d4c0;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .casefile-desc {
+      font-size: 0.83rem;
+      line-height: 1.72;
+      color: var(--text-dim);
+      flex: 1;
+      margin-bottom: 16px;
+    }
+
+    .casefile-status {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: 1px solid rgba(74,124,89,0.3);
+      color: #4a7c59;
+      border-radius: 3px;
+      padding: 3px 8px;
+      width: fit-content;
+    }
+
+    @media (max-width: 600px) {
+      .casefile-grid { grid-template-columns: 1fr; }
+      .investigator-section { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="site-banner">🚧 This site is under active construction — some features may not be fully functional yet. Check back soon.</div>
+
+  <header class="site-header">
+    <button class="nav-toggle" aria-label="Menu" onclick="this.closest('.site-header').classList.toggle('nav-open')"><span></span><span></span><span></span></button>
+    <div class="nav-content">
+      <div class="nav-right">
+        <a href="team.html">Meet the Team</a>
+      </div>
+      <a href="index.html">← Solar Reference Library</a>
+    </div>
+  </header>
+
+  <main>
+    <h1>The Unapproved<br><em>Files</em></h1>
+    <p>Thirteen years of job sites leave a record that no permit application captures. This is where it goes — what was observed, what was documented, what should have been flagged, and what nobody asked about on the final inspection form.</p>
+
+    <div class="investigator-section">
+      <div class="investigator-img-placeholder">Photo<br>Coming<br>Soon</div>
+      <div>
+        <div class="badge-role">Special Investigator · Field Operations</div>
+        <div class="badge-name">Gonzo</div>
+        <div class="badge-clearance">
+          13 Years Field Experience · All Access<br>
+          Manufacturing Floor → Final Inspection<br>
+          Site Survey · Service &amp; Repair · RMA
+        </div>
+      </div>
+    </div>
+
+    <p class="tagline">"The truth is out there. So is the inspector."</p>
+
+    <hr>
+
+    <div class="informant-block">
+      <div class="informant-label">⚡ Informant on Record</div>
+      <div class="informant-name">Steve the Sprite</div>
+      <p class="informant-quote">Shows up. Drops knowledge. Disappears before anyone asks where he came from. Known to appear at job sites that are about to fail inspection. Appears to know things that aren't in any manual. Has been spotted on rooftops in three states simultaneously. Entity type: Digital. Authorization level: Unknown.</p>
+      <div class="informant-note">// If you see this, he was here. — Field log notation</div>
+    </div>
+
+    <hr>
+
+    <h2>Active Case Files</h2>
+
+    <p>Four investigation areas. All sourced from the same 13 years. Nothing fabricated, nothing exaggerated — these are the patterns that appear again and again on job sites that should have known better.</p>
+
+    <div class="casefile-grid">
+
+      <div class="casefile-card" id="field-reports">
+        <div class="casefile-tag">Case File 001</div>
+        <div class="casefile-title">Field Reports</div>
+        <p class="casefile-desc">Real incidents, close calls, and findings from 13 years in the field. What the permit photos don't capture. What the system logs recorded at 2am when nobody was watching. What the next crew found when they opened the combiner box.</p>
+        <span class="casefile-status">Active — Coming Soon</span>
+      </div>
+
+      <div class="casefile-card" id="unapproved-observations">
+        <div class="casefile-tag">Case File 002</div>
+        <div class="casefile-title">Unapproved Observations</div>
+        <p class="casefile-desc">Things noticed but never written down in any official report. Patterns that keep appearing across different companies, different regions, different crews. The findings that didn't make the official record because there was no checkbox for them.</p>
+        <span class="casefile-status">Active — Coming Soon</span>
+      </div>
+
+      <div class="casefile-card" id="case-files">
+        <div class="casefile-tag">Case File 003</div>
+        <div class="casefile-title">Case Files</div>
+        <p class="casefile-desc">Specific incidents documented with enough detail to matter. The system that almost got approved. The installation that passed inspection and probably shouldn't have. The AHJ that got it exactly right for reasons that had nothing to do with the code book.</p>
+        <span class="casefile-status">Active — Coming Soon</span>
+      </div>
+
+      <div class="casefile-card" id="ahj-encounters">
+        <div class="casefile-tag">Case File 004</div>
+        <div class="casefile-title">AHJ Encounters</div>
+        <p class="casefile-desc">Thirteen years of inspectors. The ones who knew everything about solar before it was in the code book. The ones who failed a system for a violation that doesn't exist. The ones who made the right call for the wrong reason. And a few who were just trying to do their job well.</p>
+        <span class="casefile-status">Active — Coming Soon</span>
+      </div>
+
+    </div>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>Why This Section Exists</h2>
+
+    <p>Solar installations are documented for permits, not for posterity. The paperwork captures what passed, not what was found. The photos show the finished job, not the condition it was in when the crew arrived. The final inspection record says approved — it doesn't note the three things that were fixed the morning of the inspection.</p>
+
+    <p>This section is the difference between what got approved and what actually happened. It is not a collection of complaints. It is a collection of evidence — from 13 years of being present on job sites where the distance between what was designed and what was built was visible, measurable, and in some cases significant.</p>
+
+    <p>Nothing here is fabricated. The names don't matter. The patterns do.</p>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site includes cited code references from NEC or official sources, and personal opinion from 13 years of solar industry experience. Personal opinion is clearly labeled as such. Human error is possible — if you spot something incorrect or outdated, we want to know. Nothing on this site constitutes legal, engineering, or compliance advice. Always verify requirements with your local Authority Having Jurisdiction (AHJ).
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>

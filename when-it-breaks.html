@@ -6,6 +6,11 @@
   <title>When It Breaks | Solar Reference</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    main h2 { color: var(--hell-warm); }
+    main h3 { color: #e8704a; font-family: 'IBM Plex Mono', monospace; }
+    main blockquote { border-left-color: var(--hell-warm); color: var(--hell-warm); }
+    main hr { border-top-color: rgba(255,112,67,0.18); }
+
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -124,7 +129,10 @@
   <header class="site-header">
     <button class="nav-toggle" aria-label="Menu" onclick="this.closest('.site-header').classList.toggle('nav-open')"><span></span><span></span><span></span></button>
     <div class="nav-content">
-      <a href="team.html" style="float:right;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-decoration:none;">Meet the Team →</a>
+      <div class="nav-right">
+        <a href="the-unapproved-files.html" class="nav-xfiles">Unapproved Files</a>
+        <a href="team.html">Meet the Team</a>
+      </div>
       <a href="index.html">← Solar Reference Library</a>
     </div>
   </header>

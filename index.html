@@ -216,7 +216,7 @@
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     border-top: 1px solid var(--border);
   }
 
@@ -242,6 +242,7 @@
   .world.heaven .world-accent { background: linear-gradient(to right, transparent, var(--heaven), transparent); }
   .world.hell .world-accent { background: linear-gradient(to right, transparent, var(--hell-warm), transparent); }
   .world.purgatory .world-accent { background: linear-gradient(to right, transparent, var(--purgatory), transparent); }
+  .world.xfiles .world-accent { background: linear-gradient(to right, transparent, #4a7c59, transparent); }
 
   .world-tag {
     font-family: 'IBM Plex Mono', monospace;
@@ -254,6 +255,7 @@
   .world.heaven .world-tag { color: var(--heaven); }
   .world.hell .world-tag { color: var(--hell-warm); }
   .world.purgatory .world-tag { color: var(--purgatory); }
+  .world.xfiles .world-tag { color: #4a7c59; }
 
   .world-title {
     font-family: 'Playfair Display', serif;
@@ -335,9 +337,15 @@
     .hero { grid-template-columns: 1fr; }
     .hero-right { height: 60vw; }
     .hero-left { padding: 60px 32px; }
-    .worlds { grid-template-columns: 1fr; }
+    .worlds { grid-template-columns: 1fr 1fr; }
     .world { border-right: none; border-bottom: 1px solid var(--border); }
+    .world:nth-child(odd) { border-right: 1px solid var(--border); }
     .footer { padding: 24px 32px; flex-direction: column; gap: 12px; text-align: center; }
+  }
+
+  @media (max-width: 580px) {
+    .worlds { grid-template-columns: 1fr; }
+    .world:nth-child(odd) { border-right: none; }
   }
 
   /* TEAM BANNER */
@@ -521,9 +529,17 @@
     <p class="world-desc">What your system is actually doing, what those numbers mean, what to ask
     your installer. The knowledge that turns confusion into clarity — for homeowners and pros alike.</p>
   </div>
+
+  <div class="world xfiles" onclick="window.location.href='the-unapproved-files.html'">
+    <div class="world-accent"></div>
+    <div class="world-tag">The Unapproved Files</div>
+    <h2 class="world-title">What the permit didn't capture</h2>
+    <p class="world-desc">Thirteen years of job sites leave a record no permit application captures. Field reports, AHJ encounters, what passed inspection — and what happened the morning before it did.</p>
+  </div>
 </section>
 
-<nav style="position:relative;z-index:1;padding:10px 80px;border-top:1px solid rgba(79,195,247,0.08);display:flex;justify-content:flex-end;">
+<nav style="position:relative;z-index:1;padding:10px 80px;border-top:1px solid rgba(79,195,247,0.08);display:flex;justify-content:flex-end;gap:24px;">
+  <a href="the-unapproved-files.html" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#4a7c59;text-decoration:none;">Unapproved Files →</a>
   <a href="team.html" style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.12em;color:#8090a0;text-decoration:none;">Meet the Team →</a>
 </nav>
 

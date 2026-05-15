@@ -181,6 +181,35 @@ li strong { color: var(--text); font-weight: 500; }
 strong { color: var(--text); font-weight: 500; }
 em { color: var(--purgatory); font-style: italic; }
 
+/* NAV RIGHT — top-right link group in site-header */
+.nav-right {
+  float: right;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-right a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-decoration: none;
+}
+
+.nav-right a:hover { color: var(--heaven); text-decoration: none; }
+
+.nav-right a.nav-xfiles { color: #4a7c59; }
+.nav-right a.nav-xfiles:hover { color: #6aad7e; }
+
+@media (max-width: 768px) {
+  .nav-right {
+    float: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
 /* HAMBURGER / MOBILE NAV */
 .nav-toggle {
   display: none;

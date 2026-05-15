@@ -6,53 +6,167 @@
   <title>How To Understand It | Solar Reference</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .coming-soon-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+    /* CURATOR — AMBER/GOLD PALETTE */
+    main h2 { color: var(--purgatory); }
+    main h3 { color: #c8a84b; }
+    main blockquote { border-left-color: var(--purgatory); color: var(--purgatory); }
+    main a { color: #c8a84b; }
+    main a:hover { color: var(--purgatory); }
+    main hr { border-top-color: rgba(255,213,79,0.18); }
+    .field-tag { color: var(--purgatory); }
+
+    /* CURATOR INTRO */
+    .curator-intro {
+      background: rgba(255,213,79,0.04);
+      border: 1px solid rgba(255,213,79,0.2);
+      border-left: 3px solid var(--purgatory);
+      border-radius: 8px;
+      padding: 28px 28px 24px;
       margin: 32px 0;
     }
 
-    .coming-soon-card {
-      border: 1px solid rgba(255,213,79,0.22);
-      border-radius: 10px;
-      padding: 26px 22px;
-      background: rgba(255,213,79,0.015);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .curator-role {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--purgatory);
+      margin-bottom: 14px;
     }
 
-    .cs-badge {
-      display: inline-block;
+    .curator-voice {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-dim);
+      margin: 0;
+    }
+
+    /* FOUR WORLDS GRID */
+    .worlds-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 32px 0;
+    }
+
+    .world-mini-card {
+      border-radius: 8px;
+      padding: 18px 16px;
+      text-decoration: none;
+      display: block;
+      transition: opacity 0.2s;
+    }
+
+    .world-mini-card:hover { opacity: 0.82; text-decoration: none; }
+
+    .world-mini-card.w-blueprint { background: rgba(74,123,167,0.08); border: 1px solid rgba(74,123,167,0.25); }
+    .world-mini-card.w-hell      { background: rgba(255,112,67,0.06); border: 1px solid rgba(255,112,67,0.2); }
+    .world-mini-card.w-curator   { background: rgba(255,213,79,0.06); border: 1px solid rgba(255,213,79,0.22); }
+    .world-mini-card.w-xfiles    { background: rgba(74,124,89,0.07); border: 1px solid rgba(74,124,89,0.22); }
+
+    .world-mini-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .w-blueprint .world-mini-tag { color: #4a7ba7; }
+    .w-hell      .world-mini-tag { color: var(--hell-warm); }
+    .w-curator   .world-mini-tag { color: var(--purgatory); }
+    .w-xfiles    .world-mini-tag { color: #4a7c59; }
+
+    .world-mini-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    /* REFERENCE STACK */
+    .reference-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 32px 0;
+    }
+
+    .ref-card {
+      background: var(--mid);
+      border: 1px solid rgba(255,213,79,0.15);
+      border-radius: 8px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ref-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--purgatory), transparent);
+    }
+
+    .ref-tag {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 9px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--purgatory);
-      border: 1px solid rgba(255,213,79,0.28);
-      border-radius: 3px;
-      padding: 3px 8px;
-      width: fit-content;
+      margin-bottom: 8px;
     }
 
-    .cs-title {
+    .ref-title {
       font-family: 'Playfair Display', serif;
       font-size: 1.05rem;
       color: var(--text);
-      opacity: 0.55;
+      margin-bottom: 10px;
       line-height: 1.3;
     }
 
-    .cs-desc {
-      font-size: 0.8rem;
-      line-height: 1.65;
+    .ref-desc {
+      font-size: 0.83rem;
+      line-height: 1.72;
       color: var(--text-dim);
-      opacity: 0.65;
+      margin-bottom: 12px;
     }
 
-    @media (max-width: 640px) {
-      .coming-soon-grid { grid-template-columns: 1fr; }
+    .ref-status {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,213,79,0.25);
+      color: #c8a84b;
+      border-radius: 3px;
+      padding: 3px 8px;
+    }
+
+    .ref-status.xfiles-link {
+      border-color: rgba(74,124,89,0.3);
+      color: #4a7c59;
+    }
+
+    .ref-status.xfiles-link a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .ref-status.xfiles-link a:hover { color: #6aad7e; }
+
+    @media (max-width: 700px) {
+      .worlds-mini { grid-template-columns: 1fr 1fr; }
+      .reference-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 400px) {
+      .worlds-mini { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -63,41 +177,110 @@
   <header class="site-header">
     <button class="nav-toggle" aria-label="Menu" onclick="this.closest('.site-header').classList.toggle('nav-open')"><span></span><span></span><span></span></button>
     <div class="nav-content">
-      <a href="team.html" style="float:right;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);text-decoration:none;">Meet the Team →</a>
+      <div class="nav-right">
+        <a href="the-unapproved-files.html" class="nav-xfiles">Unapproved Files</a>
+        <a href="team.html">Meet the Team</a>
+      </div>
       <a href="index.html">← Solar Reference Library</a>
     </div>
   </header>
 
   <main>
     <h1>How To Understand It</h1>
-    <p>What your system is actually doing, what those numbers mean, and what to ask your installer. The knowledge that turns confusion into clarity — for homeowners and pros alike. This section is under active development.</p>
+    <p>The knowledge layer. Not code, not diagnostics — the part that explains what's actually happening and why it matters. This is The Curator's domain. All four worlds connect here.</p>
 
-    <blockquote>"You don't need to be an electrician to understand your own system. You just need someone to explain it without talking down to you. That's what this is for."<br><br><small style="font-size:0.8rem;color:var(--text-dim);font-style:normal;">— Steve the Sprite</small></blockquote>
+    <div class="curator-intro">
+      <div class="curator-role">The Curator — Ringmaster of the Collection</div>
+      <p class="curator-voice">"This library has four worlds. Each world has a different narrator, a different tone, a different entry point into solar. My job is to hold the map. To know where everything lives, how it connects, and which door you should walk through first — based on whatever question you just walked in with. This is that map."</p>
+    </div>
 
     <hr>
 
-    <h2>What's Coming</h2>
+    <h2>The Four Worlds</h2>
 
-    <p>This section covers the concepts every solar owner and installer should be fluent in — not the code, not the math, but the <em>meaning</em> behind the numbers. What is your system actually telling you? What does "clipping" feel like in production data? Why does your system produce less in July than June even though July is hotter and sunnier? These are the questions this section answers.</p>
+    <p>Every question about solar belongs somewhere. This is how the library is organized — four distinct territories, each with its own character and narrator.</p>
 
-    <div class="coming-soon-grid">
+    <div class="worlds-mini">
+      <a href="before-its-built.html" class="world-mini-card w-blueprint">
+        <div class="world-mini-tag">Blueprint</div>
+        <div class="world-mini-title">Before It's Built</div>
+      </a>
+      <a href="when-it-breaks.html" class="world-mini-card w-hell">
+        <div class="world-mini-tag">Diagnostic</div>
+        <div class="world-mini-title">When It Breaks</div>
+      </a>
+      <a href="how-to-understand-it.html" class="world-mini-card w-curator">
+        <div class="world-mini-tag">Knowledge</div>
+        <div class="world-mini-title">How To Understand It</div>
+      </a>
+      <a href="the-unapproved-files.html" class="world-mini-card w-xfiles">
+        <div class="world-mini-tag">Field Intel</div>
+        <div class="world-mini-title">The Unapproved Files</div>
+      </a>
+    </div>
 
-      <div class="coming-soon-card">
-        <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">Reading Your Production Data</div>
-        <p class="cs-desc">What the numbers on your monitoring dashboard actually mean, and how to tell a good day from a bad one.</p>
+    <hr>
+
+    <h2>The Reference Stack</h2>
+
+    <p>Seven categories of source material. This is the foundation everything else in the library is built on — the documents, standards, and publications that define what solar is supposed to be, and how we measure the distance between that and what it actually is.</p>
+
+    <div class="reference-grid">
+
+      <div class="ref-card">
+        <div class="ref-tag">Code Foundation</div>
+        <div class="ref-title">NEC Articles</div>
+        <p class="ref-desc">690 (PV Systems), 705 (Interconnected Power Production Sources), 706 (Energy Storage Systems), 480 (Battery Systems), 250 (Grounding), 300 (Wiring Methods). The baseline. Cross-referenced throughout the library with article and section precision.</p>
+        <span class="ref-status">Building</span>
       </div>
 
-      <div class="coming-soon-card">
-        <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">Why Hot Days Hurt Production</div>
-        <p class="cs-desc">Temperature coefficients, voltage drop, and why your system produces less on the hottest days of the year.</p>
+      <div class="ref-card">
+        <div class="ref-tag">Industry Publications</div>
+        <div class="ref-title">Trade Press &amp; Research</div>
+        <p class="ref-desc">PV Magazine, Solar Power World, Wood Mackenzie Solar, Raptor Maps industry reports. Current data on system performance, failure rates, industry trends, and underperformance economics. Citations linked at source.</p>
+        <span class="ref-status">Building</span>
       </div>
 
-      <div class="coming-soon-card">
-        <span class="cs-badge">Coming Soon</span>
-        <div class="cs-title">What Clipping Looks Like</div>
-        <p class="cs-desc">How to spot inverter clipping in your production data, what it means for your system, and when it's actually intentional.</p>
+      <div class="ref-card">
+        <div class="ref-tag">Authority Having Jurisdiction</div>
+        <div class="ref-title">AHJ References</div>
+        <p class="ref-desc">Every jurisdiction interprets the NEC differently. What to expect from local amendments, how to document pre-inspection conversations, what common local deviations look like in the field. Closely tied to The Unapproved Files.</p>
+        <span class="ref-status xfiles-link"><a href="the-unapproved-files.html#ahj-encounters">→ See: AHJ Encounters</a></span>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-tag">Equipment Standards</div>
+        <div class="ref-title">Manufacturer Standards</div>
+        <p class="ref-desc">UL listings, IEC standards, equipment installation manuals. The documents that live between the NEC and the actual equipment on the roof. Warranty terms, compatibility requirements, torque specs, temperature ratings.</p>
+        <span class="ref-status">Building</span>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-tag">Credential Standard</div>
+        <div class="ref-title">NABCEP</div>
+        <p class="ref-desc">North American Board of Certified Energy Practitioners. The credential benchmark for installation and design professionals. Study resources, exam domains, and what the credential actually represents versus what it's sometimes sold as.</p>
+        <span class="ref-status">Building</span>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-tag">Grid Connection</div>
+        <div class="ref-title">Utility Interconnection</div>
+        <p class="ref-desc">Net metering tariffs, interconnection agreements, application processes, technical screens, and the paperwork that sits between a working solar system and the grid. The part most installers hand off and most homeowners never see.</p>
+        <span class="ref-status">Building</span>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-tag">Structural Code Crossover</div>
+        <div class="ref-title">IBC / IRC Crossover</div>
+        <p class="ref-desc">Where solar intersects with structural code. Wind load calculations, snow load requirements, racking attachment methods, penetration sealing, and the often-overlooked connection between the electrical permit and the building permit.</p>
+        <span class="ref-status">Building</span>
+      </div>
+
+      <div class="ref-card">
+        <div class="ref-tag">Field Intelligence</div>
+        <div class="ref-title">The Unapproved Files</div>
+        <p class="ref-desc">Where the reference stack meets the job site. What the documents say versus what the field finds. AHJ encounters, unapproved observations, and case files from 13 years of being in rooms where solar either went right or very visibly did not.</p>
+        <span class="ref-status xfiles-link"><a href="the-unapproved-files.html">→ Enter The Files</a></span>
       </div>
 
     </div>
@@ -109,7 +292,7 @@
 
     <p>After 13 years across the full solar lifecycle, the same knowledge gaps come up again and again — from homeowners who were sold a system without being taught how to read it, and from installers who were trained on code without being taught how to explain it. This section exists to close those gaps.</p>
 
-    <p>Check back soon. This library is being built in public, one section at a time.</p>
+    <p>The reference stack above is the foundation. The modules being built from it are the explanation layer — what these documents actually mean when they hit the real world, and what the real world reveals about them when they don't. Check back as this section develops.</p>
 
     <hr>
 
