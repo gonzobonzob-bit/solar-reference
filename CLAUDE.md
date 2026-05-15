@@ -46,6 +46,17 @@ Every page must carry this disclaimer in the footer:
 
 > Disclaimer: Content on this site includes cited code references from NEC or official sources, and personal opinion from 13 years of solar industry experience. Personal opinion is clearly labeled as such. Human error is possible — if you spot something incorrect or outdated, we want to know. Nothing on this site constitutes legal, engineering, or compliance advice. Always verify requirements with your local Authority Having Jurisdiction (AHJ).
 
+## Citation Rules
+
+All content on this site that references external sources must include a visible citation. Format:
+
+- **NEC code references:** `[NEC 2023 §690.7]` inline with the content, using the `.nec-ref` CSS class
+- **External articles, studies, or reports:** linked citation at the end of the relevant paragraph formatted as:
+  `Source: [Publication Name](URL) — Date`, using the `.citation` CSS class
+- **Personal field experience:** labeled as "From the Field" using the `.from-the-field` CSS class — no citation needed but must be clearly identified
+- **Never reproduce large portions of external content** — summarize and cite
+- **When in doubt, cite it.** Credit where credit is due.
+
 ## Rules
 - Never build full documents until the idea is fully developed
 - Ask before creating files

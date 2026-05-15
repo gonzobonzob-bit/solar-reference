@@ -193,3 +193,41 @@ em { color: var(--purgatory); font-style: italic; }
 }
 
 .field-tag + h2 { margin-top: 0; }
+
+/* CITATION CLASSES */
+.citation {
+  display: block;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: -8px;
+  margin-bottom: 16px;
+  opacity: 0.75;
+}
+
+.citation a { color: var(--text-dim); text-decoration: underline; }
+.citation a:hover { color: var(--heaven); }
+
+.from-the-field {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purgatory);
+  border: 1px solid rgba(255,213,79,0.3);
+  border-radius: 3px;
+  padding: 2px 7px;
+  margin-bottom: 12px;
+}
+
+.nec-ref {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8em;
+  color: var(--heaven);
+  background: rgba(79,195,247,0.07);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
