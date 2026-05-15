@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Tables — Solar Reference Library</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="../../index.html">← Solar Reference Library</a>
+    <span style="color:var(--text-dim);margin:0 8px;">/</span>
+    <a href="../index.html">NEC Reference</a>
+    <span style="color:var(--text-dim);margin:0 8px;">/</span>
+    <span style="color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;">Code Tables</span>
+  </header>
+
+  <main>
+    <h1>NEC Code Tables</h1>
+    <p>Frequently used NEC tables for conductor sizing, temperature correction, and conduit fill. These are the numbers that go into every string sizing calculation and every home-run conductor selection.</p>
+
+    <hr>
+
+    <h2>Temperature Correction Factors — Table 310.15(B)(1)</h2>
+
+    <p>For ambient temperatures other than 30°C (86°F). Multiply the conductor's base ampacity by this factor. Applies to 60°C, 75°C, and 90°C rated conductors. PV home-run conductors in conduit on a roof see the worst of this — a 60°C correction at 50°C ambient can cut ampacity nearly in half.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ambient Temp (°C)</th>
+          <th>60°C Factor</th>
+          <th>75°C Factor</th>
+          <th>90°C Factor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>10–15</td><td>1.29</td><td>1.20</td><td>1.15</td></tr>
+        <tr><td>16–20</td><td>1.22</td><td>1.15</td><td>1.12</td></tr>
+        <tr><td>21–25</td><td>1.15</td><td>1.09</td><td>1.06</td></tr>
+        <tr><td>26–30 (base)</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+        <tr><td>31–35</td><td>0.91</td><td>0.94</td><td>0.96</td></tr>
+        <tr><td>36–40</td><td>0.82</td><td>0.88</td><td>0.91</td></tr>
+        <tr><td>41–45</td><td>0.71</td><td>0.82</td><td>0.87</td></tr>
+        <tr><td>46–50</td><td>0.58</td><td>0.75</td><td>0.82</td></tr>
+        <tr><td>51–55</td><td>0.41</td><td>0.67</td><td>0.76</td></tr>
+        <tr><td>56–60</td><td>—</td><td>0.58</td><td>0.71</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Conduit Fill — Table 1, Chapter 9</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Conductors in Conduit</th>
+          <th>Max Fill</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1 conductor</td><td>53%</td></tr>
+        <tr><td>2 conductors</td><td>31%</td></tr>
+        <tr><td>3+ conductors</td><td>40%</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Conduit Sizing Quick Reference — THWN-2</h2>
+
+    <p>Common conduit sizes for PV home-run conductors. Verify with Annex C tables for specific conduit type and wire insulation. EMT is the default assumption here.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Wire Size</th>
+          <th>1 conductor</th>
+          <th>2 conductors</th>
+          <th>3 conductors</th>
+          <th>4 conductors</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>#10 AWG</td><td>1/2" EMT</td><td>1/2" EMT</td><td>1/2" EMT</td><td>3/4" EMT</td></tr>
+        <tr><td>#8 AWG</td><td>1/2" EMT</td><td>1/2" EMT</td><td>3/4" EMT</td><td>3/4" EMT</td></tr>
+        <tr><td>#6 AWG</td><td>1/2" EMT</td><td>3/4" EMT</td><td>3/4" EMT</td><td>1" EMT</td></tr>
+        <tr><td>#4 AWG</td><td>3/4" EMT</td><td>1" EMT</td><td>1" EMT</td><td>1-1/4" EMT</td></tr>
+        <tr><td>#2 AWG</td><td>3/4" EMT</td><td>1" EMT</td><td>1-1/4" EMT</td><td>1-1/4" EMT</td></tr>
+        <tr><td>#1/0 AWG</td><td>1" EMT</td><td>1-1/4" EMT</td><td>1-1/2" EMT</td><td>2" EMT</td></tr>
+        <tr><td>#2/0 AWG</td><td>1" EMT</td><td>1-1/4" EMT</td><td>1-1/2" EMT</td><td>2" EMT</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Standard OCPD Sizes — 240.6(A)</h2>
+
+    <p>When sizing an OCPD, round up to the next standard size. For PV circuits, this is the step that follows the 1.5625× calculation from 690.8.</p>
+
+    <pre><code>15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100,
+110, 125, 150, 175, 200, 225, 250, 300, 350, 400A</code></pre>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site is either cited code references from NEC or official sources, or personal opinion from 13 years solar industry experience. Personal opinion is clearly labeled. Nothing constitutes legal, engineering, or compliance advice. Always verify with your local AHJ.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>

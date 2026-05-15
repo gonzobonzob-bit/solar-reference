@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PV Module Specifications — Solar Reference Library</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="../index.html">← Solar Reference Library</a>
+    <span style="color:var(--text-dim);margin:0 8px;">/</span>
+    <span style="color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;">Module Library</span>
+  </header>
+
+  <main>
+    <h1>PV Module Specifications</h1>
+    <p>Datasheets, manufacturer specs, and string sizing resources. All parameters needed to size strings, verify compatibility, and comply with 690.7 and 690.8 before a single panel goes on the roof.</p>
+
+    <h2>What's Here</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Folder</th>
+          <th>Contents</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>datasheets/</code></td>
+          <td>Key parameters extracted from manufacturer datasheets — Voc, Vmp, Isc, Imp, temperature coefficients, dimensions. One file per module model.</td>
+        </tr>
+        <tr>
+          <td><code>specs-by-manufacturer/</code></td>
+          <td>Organized by brand for cross-model comparison.</td>
+        </tr>
+        <tr>
+          <td><code>string-sizing/</code></td>
+          <td>Worked examples and blank worksheets for calculating minimum and maximum string lengths using temperature-corrected Voc and Vmp.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>String Sizing Quick Reference</h2>
+
+    <p>These three calculations gate everything in NEC Article 690. Run them before anything else.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Formula</th>
+          <th>NEC Reference</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Max string Voc</td>
+          <td><code>Voc × (1 + β_Voc × ΔT_cold)</code></td>
+          <td>690.7</td>
+        </tr>
+        <tr>
+          <td>Min string Vmp</td>
+          <td><code>Vmp × (1 + β_Vmp × ΔT_hot)</code></td>
+          <td>Inverter spec</td>
+        </tr>
+        <tr>
+          <td>Max string count</td>
+          <td><code>Inverter max input current / Isc_string</code></td>
+          <td>690.8</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Temperature Deltas</h3>
+    <pre><code>ΔT_cold = lowest expected ambient − 25°C
+          Use ASHRAE 2% extreme low, or −40°F where records unavailable
+
+ΔT_hot  = highest expected cell temp − 25°C
+          Cell temp ≈ ambient + 25°C adder for roof-mounted arrays</code></pre>
+
+    <p>The cold correction drives maximum voltage (690.7 compliance). The hot correction drives minimum Vmp — the array must stay above the inverter's MPPT floor on the hottest day of the year or production tanks and warranty gets complicated.</p>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site is either cited code references from NEC or official sources, or personal opinion from 13 years solar industry experience. Personal opinion is clearly labeled. Nothing constitutes legal, engineering, or compliance advice. Always verify with your local AHJ.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEC Article 690 — Solar Reference Library</title>
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="../../index.html">← Solar Reference Library</a>
+    <span style="color:var(--text-dim);margin:0 8px;">/</span>
+    <a href="../index.html">NEC Reference</a>
+    <span style="color:var(--text-dim);margin:0 8px;">/</span>
+    <span style="color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;">Article 690</span>
+  </header>
+
+  <main>
+    <h1>NEC Article 690<br>Solar Photovoltaic Systems</h1>
+    <p>Field reference for the sections most frequently cited during design, installation, and inspection. NEC 2023 baseline — 2020 comparisons noted where the change matters.</p>
+
+    <hr>
+
+    <h2 id="690-7">690.7 — Maximum Voltage</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>System Type</th>
+          <th>Max Voltage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Residential (one- and two-family dwellings)</td>
+          <td>600V</td>
+        </tr>
+        <tr>
+          <td>All other systems</td>
+          <td>1000V</td>
+        </tr>
+        <tr>
+          <td>Listed equipment rated 1500V</td>
+          <td>1500V (NEC 2020+)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Voc Correction for Cold Temperatures</h3>
+    <pre><code>V_corrected = Voc × [1 + β_Voc × (T_min − 25°C)]</code></pre>
+    <p>Use ASHRAE 99.6% design dry-bulb temperature, or −40°F where records are unavailable. This is the number that goes on the permit — it cannot exceed the system maximum voltage above or the equipment ratings of every component in that string circuit.</p>
+
+    <hr>
+
+    <h2 id="690-8">690.8 — Circuit Sizing and Current</h2>
+
+    <h3>PV Source Circuit Current</h3>
+    <pre><code>I_circuit = Isc × 1.25</code></pre>
+
+    <h3>Conductor and OCPD Ampacity</h3>
+    <pre><code>I_ampacity = Isc × 1.25 × 1.25 = Isc × 1.5625</code></pre>
+
+    <ul>
+      <li>First 125% — continuous operation per 690.8(A)</li>
+      <li>Second 125% — conductor sizing under 310.15 continuous load rule per 690.8(B)</li>
+    </ul>
+
+    <p>OCPD: round up to next standard size per 240.6(A). May be omitted on source circuits when string current does not exceed conductor ampacity — see 690.9(A) exception. This exception gets used constantly on string inverter systems where the inverter itself limits fault current.</p>
+
+    <hr>
+
+    <h2 id="690-12">690.12 — Rapid Shutdown</h2>
+
+    <h3>NEC 2017+ — Rooftop Arrays</h3>
+    <ul>
+      <li>Within the array boundary: conductors must de-energize to ≤30V within 30 seconds of initiating</li>
+      <li>Outside the array (building interior): conductors must de-energize to ≤30V within 30 seconds</li>
+    </ul>
+
+    <h3>Controlled Limits</h3>
+    <ul>
+      <li>1 foot from array edge</li>
+      <li>3 feet from building penetration point</li>
+    </ul>
+
+    <h3>Initiating Device</h3>
+    <p>Listed rapid shutdown initiator (RSI) or inverter with integrated RSI function. The utility meter switch is the most common initiating device — that's what the label on the meter base is for.</p>
+
+    <h3>NEC 2023 Addition</h3>
+    <p>Ground-mounted systems not on buildings do not require rapid shutdown. This distinction matters — if your ground mount has any wiring that enters a building, the building entry section still has to comply.</p>
+
+    <hr>
+
+    <h2 id="690-15">690.15 — Disconnecting Means</h2>
+    <ul>
+      <li>Required for each inverter, charge controller, and power conversion equipment</li>
+      <li>Must be within sight of equipment, or lockable in the open position</li>
+      <li>DC disconnect on roof: must be accessible — ladder-required access is an AHJ call, but many will reject it</li>
+    </ul>
+
+    <hr>
+
+    <h2 id="690-47">690.47 — Grounding</h2>
+    <ul>
+      <li><strong>Equipment grounding:</strong> Required for all metal parts — racking, module frames, enclosures</li>
+      <li><strong>Array grounding:</strong> Ungrounded systems require ground-fault protection per 690.5</li>
+      <li><strong>DC grounding electrode:</strong> Separate electrode required for some configurations — see 690.47(C). This one trips up a lot of inspectors and installers alike; verify the configuration early</li>
+    </ul>
+
+    <hr>
+
+    <h2>Common AHJ Sticking Points</h2>
+
+    <p>These are the items most likely to fail an inspection — not because the code is unclear, but because they're easy to miss or forget during rough-in.</p>
+
+    <ul>
+      <li>Rapid shutdown labeling on the utility meter (required by 690.56)</li>
+      <li>PV system marking at the main service panel (690.54)</li>
+      <li>Dedicated PV circuit directory entry on the panel schedule</li>
+      <li>Roof penetration fire setbacks — check local fire code, not NEC. Some jurisdictions have 3-foot setbacks from ridges and hips that override everything else.</li>
+    </ul>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site is either cited code references from NEC or official sources, or personal opinion from 13 years solar industry experience. Personal opinion is clearly labeled. Nothing constitutes legal, engineering, or compliance advice. Always verify with your local AHJ.
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>
