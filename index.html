@@ -339,6 +339,98 @@
     .world { border-right: none; border-bottom: 1px solid var(--border); }
     .footer { padding: 24px 32px; flex-direction: column; gap: 12px; text-align: center; }
   }
+
+  /* TEAM BANNER */
+  .team-banner {
+    position: relative;
+    z-index: 1;
+    background: #080b10;
+    border-top: 2px solid rgba(79,195,247,0.3);
+    border-bottom: 1px solid rgba(79,195,247,0.12);
+    padding: 52px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+    overflow: hidden;
+  }
+
+  .team-banner::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px; height: 350px;
+    background: radial-gradient(ellipse at center, rgba(79,195,247,0.06) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .team-banner-compass {
+    font-size: 5rem;
+    color: var(--heaven);
+    opacity: 0.18;
+    flex-shrink: 0;
+    animation: compassSpin 40s linear infinite;
+    line-height: 1;
+    user-select: none;
+  }
+
+  @keyframes compassSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .team-banner-content { flex: 1; }
+
+  .team-banner-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--heaven);
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .team-banner-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+
+  .team-banner-sub {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  .team-banner-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--heaven);
+    color: var(--dark);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 16px 36px;
+    border-radius: 6px;
+    text-decoration: none;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+
+  .team-banner-btn:hover { opacity: 0.88; transform: translateX(3px); }
+
+  @media (max-width: 900px) {
+    .team-banner { padding: 40px 32px; flex-direction: column; align-items: flex-start; gap: 28px; }
+    .team-banner-compass { display: none; }
+    .team-banner-btn { width: 100%; justify-content: center; }
+  }
 </style>
 </head>
 <body>
@@ -393,6 +485,16 @@
       <div class="steve-glow"></div>
     </div>
   </div>
+</section>
+
+<section class="team-banner">
+  <div class="team-banner-compass">⊕</div>
+  <div class="team-banner-content">
+    <span class="team-banner-eyebrow">The Minds Behind the Library</span>
+    <p class="team-banner-headline">Steve. The Curator. Gonzo.</p>
+    <p class="team-banner-sub">Meet the minds behind the library.</p>
+  </div>
+  <a href="team.html" class="team-banner-btn">Meet the Team →</a>
 </section>
 
 <section class="worlds">
