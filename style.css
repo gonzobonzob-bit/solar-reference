@@ -180,3 +180,16 @@ li strong { color: var(--text); font-weight: 500; }
 /* STRONG / EM */
 strong { color: var(--text); font-weight: 500; }
 em { color: var(--purgatory); font-style: italic; }
+
+/* FROM THE FIELD TAG */
+.field-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--purgatory);
+  margin-top: 48px;
+  margin-bottom: 8px;
+}
+
+.field-tag + h2 { margin-top: 0; }

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Before It's Built — Solar Reference Library</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="site-banner">🚧 This site is under active construction — some features may not be fully functional yet. Check back soon.</div>
+
+  <header class="site-header">
+    <a href="index.html">← Solar Reference Library</a>
+  </header>
+
+  <main>
+    <h1>Before It's Built</h1>
+    <p>The decisions made before the first panel goes up determine everything that comes after. This page is for anyone still in the planning stage — homeowners researching solar for the first time, and installers who want a resource to hand a client before the site survey.</p>
+
+    <hr>
+
+    <h2>Is Your Roof Ready?</h2>
+
+    <p>Your roof and your solar system will share the same lifespan. If that relationship is mismatched, one of them wins — and it usually isn't you.</p>
+
+    <h3>Age and Remaining Life</h3>
+    <p>Most asphalt shingle roofs are warranted for 20–25 years. Solar panels are designed to produce for 25–30+ years. If your roof is 10 or more years old, get a professional roof inspection before committing to solar. Replacing a roof after panels are installed means paying to remove and reinstall the array — a cost that will offset years of savings.</p>
+    <blockquote>If your roof needs replacement in the next 5–10 years, do it before solar. The math is not close.</blockquote>
+
+    <h3>Structural Load</h3>
+    <p>Residential racking systems add approximately 2–4 lbs per square foot depending on panel weight, racking type, and configuration. Most residential roofs are engineered to handle this without modification — but aging structures, regions with high design snow loads, or unusually large arrays warrant a structural review. Some installers include a stamped engineering letter as standard. Ask if yours does.</p>
+
+    <h3>Setbacks and Usable Area</h3>
+    <p>Fire codes — often referencing NFPA 1, local AHJ amendments, and NEC 690.12 rapid shutdown provisions — require clear pathways on the roof. In most jurisdictions this means 3-foot setbacks from ridge lines, hips, and rakes. Dormers, skylights, and HVAC equipment further reduce usable area. Usable area determines system size. Know your roof geometry before anyone quotes you a system.</p>
+
+    <hr>
+
+    <h2>Know Your Energy Use First</h2>
+
+    <p>Solar is sized to your consumption. If you don't know your consumption, any system size you're quoted is a guess. Get 12 months of utility bills before anyone quotes you a system size.</p>
+
+    <h3>Why 12 Months</h3>
+    <p>Seasonal variation is real. Air conditioning in summer and heating in winter (if electric) create wildly different monthly usage. A quote based on one summer month will oversize your system. A quote based on one winter month will undersize it. Annual kWh consumption is the only number that matters for sizing.</p>
+
+    <h3>Net Metering Affects Strategy</h3>
+    <p>If your utility credits solar exports at the retail rate, sizing slightly above annual consumption can make sense. If your utility has unfavorable export rates or buys back at avoided cost, oversizing beyond your annual usage has rapidly diminishing returns. Know your net metering tariff before you decide on system size — your installer should be able to explain how it affects the proposal.</p>
+
+    <h3>Plan for Future Load</h3>
+    <p>Adding an electric vehicle, a heat pump, or an EV charger after your system is installed can double your electricity draw overnight. If those purchases are on the horizon, size for your future load now. Expanding a system later is possible but more expensive than getting it right initially.</p>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>Shading Is Everything</h2>
+
+    <p>Shading is the most underestimated factor in residential solar. Most homeowners think about it in broad strokes — "my roof gets good sun." The detail is in the shadows.</p>
+
+    <h3>Where Shade Comes From</h3>
+    <ul>
+      <li><strong>Trees</strong> — deciduous trees can look harmless in summer and cast significant shadows in winter when sun angles are lowest and you want production most</li>
+      <li><strong>Chimneys and dormers</strong> — small obstructions that move their shadow across the array throughout the day</li>
+      <li><strong>Neighboring structures</strong> — buildings that are fine today may not be in 5 years</li>
+      <li><strong>Rooftop equipment</strong> — HVAC units, satellite dishes, vent stacks, and plumbing penetrations all cast moving shadows</li>
+    </ul>
+
+    <h3>Time of Day and Season Both Matter</h3>
+    <p>Morning shade from a tree to the east affects early production. Afternoon shade from a chimney to the west takes out your peak hours. Winter shading from a ridge or neighboring roof hits when the sun is at its lowest arc. A proper shading analysis accounts for the full annual sun path, not just a clear summer afternoon.</p>
+
+    <h3>One Cell Affects the Whole String</h3>
+    <p>In a standard string-wired array, bypass diodes limit but don't eliminate the damage from a single shaded cell. A shaded cell that activates its bypass diode effectively removes that cell's module section from the string — reducing string voltage and output. The effect compounds across multiple partially shaded modules. This is not theoretical; it's measurable on any monitoring platform during a shading event.</p>
+
+    <p>Microinverters and DC power optimizers (SolarEdge, Enphase) limit this effect to the shaded panel rather than the whole string — but they don't eliminate the lost production from the shaded cells themselves. They're a mitigation, not a solution. The solution is a site-specific shading analysis before you finalize panel placement.</p>
+
+    <h3>Tools for Shading Analysis</h3>
+    <p>Installers should be using a shading tool during the site survey — SolarPathfinder, Solmetric SunEye, drone-based LIDAR, or equivalent. If the rep didn't go on your roof with a tool, they estimated. Ask to see the shading report before you sign anything.</p>
+
+    <hr>
+
+    <h2>Tools to Start With</h2>
+
+    <p>Two free tools give you a reasonable starting point before you talk to anyone. Use them to orient yourself — not to size your system.</p>
+
+    <h3>PVWatts Calculator</h3>
+    <p><a href="https://pvwatts.nrel.gov" target="_blank" rel="noopener">pvwatts.nrel.gov</a> — Published by the National Renewable Energy Laboratory (NREL). Enter your address, system size, tilt, and azimuth, and it returns estimated annual production in kWh based on historical irradiance data for your location. It's the same dataset most installers use as a starting point.</p>
+    <p>What it doesn't know: your specific panel model, your exact roof geometry, shading obstructions, inverter losses beyond the defaults, or any local factors. Treat the output as a ballpark, not a production guarantee.</p>
+
+    <h3>Google Project Sunroof</h3>
+    <p>Uses Google Maps aerial imagery to estimate solar potential for your specific roof — accounting for size, pitch, and orientation. Useful for a quick sanity check on usable area and rough production potential. Less accurate than a site survey in areas with older imagery or heavy tree canopy.</p>
+
+    <blockquote>Both tools are estimates only. Neither replaces a site-specific assessment with a real shading analysis, utility bill review, and equipment selection matched to your roof.</blockquote>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>Questions to Ask Your Installer</h2>
+
+    <p>Ask these before you sign anything. A good installer will answer all of them without hesitation. Vague or defensive answers are information too.</p>
+
+    <ol>
+      <li><strong>What shading analysis tool did you use on my roof, and can I see the report?</strong><br>
+      A legitimate site survey includes a shading analysis. If one wasn't done, the system size is not based on your roof — it's based on a formula applied to your utility bills.</li>
+
+      <li><strong>What is the estimated annual production in kWh — not just the system size in kW?</strong><br>
+      System size (kW DC) tells you almost nothing without production context. Annual kWh production — matched against your annual consumption — is the number that drives the financial return.</li>
+
+      <li><strong>What is your process if I need roof work done after installation?</strong><br>
+      Panels will need to come off at some point. Does your company handle that? At what cost? What's the lead time? This question separates installers who think long-term from those who just want to close the deal.</li>
+
+      <li><strong>Does your proposal include a production guarantee, and what happens if annual production falls short?</strong><br>
+      Some installers back their production estimates with a written guarantee — often tied to weather-normalized production. Others call them "estimates" and leave you exposed if the system underperforms. Know which one you're signing.</li>
+
+      <li><strong>Who pulls the permit, and who will be present at the inspection?</strong><br>
+      The permit applicant is legally responsible for the installation meeting code. In some markets, sales organizations subcontract installation and the crew that shows up has no relationship to the company you signed with. Know who your installer actually is.</li>
+
+      <li><strong>Why are you recommending this inverter type for my specific roof?</strong><br>
+      String inverters, microinverters, and power optimizers each have legitimate use cases. The answer should reference your roof geometry and shading profile — not just a preferred vendor relationship or margin.</li>
+    </ol>
+
+    <hr>
+
+    <p class="field-tag">From the Field</p>
+    <h2>Red Flags in a Proposal</h2>
+
+    <p>These patterns show up in problematic proposals. None of them are automatic disqualifiers, but each one warrants a direct conversation before you sign.</p>
+
+    <ul>
+      <li><strong>No shading analysis in the site survey</strong> — If the rep quoted you a system without going on your roof with a tool, the system size is not based on your site. It's based on your utility bills and a DC:AC ratio. That may work out. It may not. You deserve to know which one you're buying.</li>
+
+      <li><strong>Oversized system without explaining why</strong> — A system dramatically exceeding your annual consumption is not automatically wrong, but the installer should be able to explain the net metering economics that justify it. "Bigger is better" is not a design rationale.</li>
+
+      <li><strong>No production guarantee or a guarantee buried in conditions</strong> — Warranties on equipment are not production guarantees. A production guarantee says: this system will produce X kWh per year; if it doesn't, here is what we do. Read what you're actually being offered.</li>
+
+      <li><strong>High-pressure close tactics</strong> — Incentive deadlines are real. ITC step-downs, utility program caps, and rate changes happen. But "sign today or this price disappears" as a tactic is separate from a genuine deadline. Ask for the deadline in writing with the underlying reason. A legitimate deadline survives that question.</li>
+
+      <li><strong>Unclear subcontracting arrangements</strong> — Know who will actually be on your roof, who is pulling the permit, and who you call if something goes wrong three years from now. If you can't get a straight answer, that's the answer.</li>
+    </ul>
+
+    <hr>
+
+    <p style="color:var(--text-dim);font-size:0.875rem;margin-top:0;">
+      <strong style="color:var(--text);">Disclaimer:</strong> Content on this site includes cited code references from NEC or official sources, and personal opinion from 13 years of solar industry experience. Personal opinion is clearly labeled as such. Human error is possible — if you spot something incorrect or outdated, we want to know. Nothing on this site constitutes legal, engineering, or compliance advice. Always verify requirements with your local Authority Having Jurisdiction (AHJ).
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    <span>Solar Reference Library · 13 years across the full solar lifecycle</span>
+    <span>NEC 2023 Baseline · gonzobonzob-bit</span>
+  </footer>
+
+</body>
+</html>
