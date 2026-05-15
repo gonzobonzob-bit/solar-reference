@@ -28,7 +28,7 @@ body {
   overflow-x: hidden;
   max-width: 860px;
   margin: 0 auto;
-  padding: 40px 32px 80px;
+  padding: 64px 32px 80px; /* top clears the fixed banner (~34px) + breathing room */
 }
 
 /* BANNER */
@@ -240,6 +240,16 @@ em { color: var(--purgatory); font-style: italic; }
 
   /* hide breadcrumb separators and current-page label on mobile */
   .nav-content span { display: none; }
+
+  /* banner: return to normal flow on mobile so wrapping text can't overlap content */
+  .site-banner {
+    position: static;
+  }
+
+  /* reset top padding — banner is now in-flow, not fixed */
+  body {
+    padding-top: 20px;
+  }
 }
 
 /* FROM THE FIELD TAG */
