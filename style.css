@@ -199,6 +199,11 @@ em { color: var(--purgatory); font-style: italic; }
 
 .nav-right a:hover { color: var(--heaven); text-decoration: none; }
 
+.nav-right a + a {
+  border-left: 1px solid rgba(79, 195, 247, 0.18);
+  padding-left: 20px;
+}
+
 .nav-right a.nav-xfiles { color: #4a7c59; }
 .nav-right a.nav-xfiles:hover { color: #6aad7e; }
 
