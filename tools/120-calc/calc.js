@@ -1,329 +1,329 @@
-const NEC_VERSIONS = {
+/* ─── NEC VERSION DATA ──────────────────────────────────────────── */
+
+const NEC = {
   '2014': {
-    banner: 'NEC 705.12(D) — 120% rule in its modern form. Load-side connection standard established.',
-    citation: 'NEC 2014 §705.12(D)',
-    section: '705.12(D)',
-    pcsAvailable: false,
-    essSupported: false
+    banner:       'NEC 705.12(D) — 120% rule in its modern form. Load-side connection standard established.',
+    citation:     'NEC 2014 §705.12(D)',
+    section:      '705.12(D)',
+    pcs:          false,
+    ess:          false
   },
   '2017': {
-    banner: 'NEC 705.12(D) — Minor clarification language. No change to calculation method.',
-    citation: 'NEC 2017 §705.12(D)',
-    section: '705.12(D)',
-    pcsAvailable: false,
-    essSupported: false
+    banner:       'NEC 705.12(D) — Minor clarification language. No change to calculation method.',
+    citation:     'NEC 2017 §705.12(D)',
+    section:      '705.12(D)',
+    pcs:          false,
+    ess:          false
   },
   '2020': {
-    banner: "NEC 705.12(B) — Renumbered. ESS and bidirectional inverters explicitly added. 'Other sources' language broadened. Supply-side rules clarified.",
-    citation: 'NEC 2020 §705.12(B)',
-    section: '705.12(B)',
-    pcsAvailable: false,
-    essSupported: true
+    banner:       "NEC 705.12(B) — Renumbered. ESS and bidirectional inverters explicitly added. 'Other sources' language broadened. Supply-side rules clarified.",
+    citation:     'NEC 2020 §705.12(B)',
+    section:      '705.12(B)',
+    pcs:          false,
+    ess:          true
   },
   '2023': {
-    banner: 'NEC 705.12(B) — Current code. Microgrid controller language added. ESS multimode inverter clarification. PCS exception pathway added via 705.13.',
-    citation: 'NEC 2023 §705.12(B)',
-    section: '705.12(B)',
-    pcsAvailable: true,
-    essSupported: true
+    banner:       'NEC 705.12(B) — Current code. Microgrid controller language added. ESS multimode inverter clarification. PCS exception pathway added via 705.13.',
+    citation:     'NEC 2023 §705.12(B)',
+    section:      '705.12(B)',
+    pcs:          true,
+    ess:          true
   }
 };
 
-const STANDARD_BREAKERS = [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200];
+/* ─── STANDARD BREAKER SIZES ────────────────────────────────────── */
 
-let currentVersion = '2023';
-let currentConnectionType = 'load';
-let currentMaxBackfeed = 0;
-let currentPass = false;
+const STD_BREAKERS = [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200];
 
-function nextStandardBreaker(amps) {
-  for (const size of STANDARD_BREAKERS) {
-    if (size >= amps) return size;
+function nextStd(amps) {
+  for (const s of STD_BREAKERS) {
+    if (s >= amps) return s;
   }
-  return null;
+  return null; // exceeds 200A
 }
 
-function calculate() {
-  const busVal = document.getElementById('busRating').value.trim();
-  const mainVal = document.getElementById('mainBreaker').value.trim();
+/* ─── STATE ─────────────────────────────────────────────────────── */
 
-  const bus = parseFloat(busVal);
-  const main = parseFloat(mainVal);
-  const valid = busVal !== '' && mainVal !== '' && !isNaN(bus) && !isNaN(main) && bus > 0 && main > 0;
+const state = {
+  version:              '2023',
+  connection:           'load',
+  busRating:            null,
+  mainBreaker:          null,
+  knownInverterCurrent: null,
+  essOutputCurrent:     null
+};
 
-  const resultsZone = document.getElementById('resultsZone');
+/* ─── COMPUTE: pure function, no DOM side-effects ───────────────── */
 
-  if (!valid) {
-    resultsZone.classList.add('hidden');
-    currentPass = false;
-    currentMaxBackfeed = 0;
-    setPanelsEnabled(false);
-    return;
+function compute(s) {
+  const c = { pass: false, valid: false };
+
+  if (s.busRating === null || s.mainBreaker === null) return c;
+
+  const maxBus      = s.busRating * 1.2;
+  const maxBackfeed = maxBus - s.mainBreaker;
+  const pass        = s.mainBreaker < maxBus;
+
+  Object.assign(c, { valid: true, pass, maxBus, maxBackfeed });
+
+  if (!pass) return c;
+
+  c.maxInverterOutput = maxBackfeed / 1.25;
+
+  // Optional: known inverter output current
+  if (s.knownInverterCurrent !== null) {
+    const raw = s.knownInverterCurrent * 1.25;
+    const std = nextStd(raw);
+    c.inv = { raw, std, exceeds: std !== null && std > maxBackfeed };
   }
 
-  const maxBus = bus * 1.2;
-  const maxBackfeed = maxBus - main;
-  const pass = main < maxBus;
+  // Optional: ESS current (only meaningful in 2020/2023)
+  if (NEC[s.version].ess && s.essOutputCurrent !== null) {
+    const raw = s.essOutputCurrent * 1.25;
+    const std = nextStd(raw);
+    c.ess = { raw, std };
 
-  document.getElementById('res120Pct').textContent = maxBus.toFixed(2) + 'A';
-
-  const statusHeader = document.getElementById('resultsStatusHeader');
-  const passIndicator = document.getElementById('passIndicator');
-  const failBanner = document.getElementById('failBanner');
-  const backfeedRow = document.getElementById('backfeedRow');
-  const inverterSection = document.getElementById('inverterSizingSection');
-  const essSection = document.getElementById('essSizingSection');
-
-  if (pass) {
-    currentMaxBackfeed = maxBackfeed;
-    currentPass = true;
-
-    statusHeader.className = 'results-status-header pass';
-    passIndicator.textContent = 'PASS';
-    passIndicator.className = 'pass-badge pass';
-    failBanner.classList.add('hidden');
-    backfeedRow.classList.remove('hidden');
-    document.getElementById('resMaxBackfeed').textContent = maxBackfeed.toFixed(2) + 'A';
-
-    inverterSection.classList.remove('hidden');
-    document.getElementById('resMaxInverterOutputCurrent').textContent = (maxBackfeed / 1.25).toFixed(2) + 'A';
-    calculateInverterOptional();
-
-    if (NEC_VERSIONS[currentVersion].essSupported) {
-      essSection.classList.remove('hidden');
-      calculateEssOptional();
-    } else {
-      essSection.classList.add('hidden');
-    }
-
-  } else {
-    currentMaxBackfeed = 0;
-    currentPass = false;
-
-    statusHeader.className = 'results-status-header fail';
-    passIndicator.textContent = 'FAIL';
-    passIndicator.className = 'pass-badge fail';
-    failBanner.classList.remove('hidden');
-    backfeedRow.classList.add('hidden');
-    inverterSection.classList.add('hidden');
-    essSection.classList.add('hidden');
-  }
-
-  resultsZone.classList.remove('hidden');
-  setPanelsEnabled(valid);
-}
-
-function calculateInverterOptional() {
-  if (!currentPass) return;
-
-  const val = document.getElementById('knownInverterCurrent').value.trim();
-  const knownResultsEl = document.getElementById('inverterKnownResults');
-  const exceedsFlagEl = document.getElementById('inverterExceedsFlag');
-
-  if (!val || isNaN(parseFloat(val)) || parseFloat(val) <= 0) {
-    knownResultsEl.classList.add('hidden');
-    return;
-  }
-
-  const known = parseFloat(val);
-  const rawBreaker = known * 1.25;
-  const stdBreaker = nextStandardBreaker(rawBreaker);
-
-  document.getElementById('resInverterRaw').textContent = rawBreaker.toFixed(2) + 'A';
-
-  if (stdBreaker === null) {
-    document.getElementById('resInverterStd').textContent = 'Exceeds 200A';
-    exceedsFlagEl.className = 'result-warning';
-    exceedsFlagEl.textContent = 'Calculated breaker exceeds 200A standard size. Verify with AHJ and equipment specs.';
-    exceedsFlagEl.classList.remove('hidden');
-  } else {
-    document.getElementById('resInverterStd').textContent = stdBreaker + 'A';
-    if (stdBreaker > currentMaxBackfeed) {
-      exceedsFlagEl.className = 'result-warning';
-      exceedsFlagEl.textContent =
-        'Calculated breaker (' + stdBreaker + 'A) exceeds maximum allowable backfeed (' +
-        currentMaxBackfeed.toFixed(2) + 'A). Reduce inverter output or consider supply-side connection.';
-      exceedsFlagEl.classList.remove('hidden');
-    } else {
-      exceedsFlagEl.classList.add('hidden');
-    }
-  }
-
-  knownResultsEl.classList.remove('hidden');
-
-  if (NEC_VERSIONS[currentVersion].essSupported) {
-    calculateEssOptional();
-  }
-}
-
-function calculateEssOptional() {
-  if (!currentPass || !NEC_VERSIONS[currentVersion].essSupported) return;
-
-  const essVal = document.getElementById('essOutputCurrent').value.trim();
-  const essResultsEl = document.getElementById('essResults');
-  const combinedCheckRow = document.getElementById('combinedCheckRow');
-  const remainingCapacityRow = document.getElementById('remainingCapacityRow');
-  const essStatusMsg = document.getElementById('essStatusMsg');
-
-  if (!essVal || isNaN(parseFloat(essVal)) || parseFloat(essVal) <= 0) {
-    essResultsEl.classList.add('hidden');
-    return;
-  }
-
-  const ess = parseFloat(essVal);
-  const essRaw = ess * 1.25;
-  const essStd = nextStandardBreaker(essRaw);
-
-  if (essStd === null) {
-    document.getElementById('resEssStd').textContent = 'Exceeds 200A';
-    combinedCheckRow.classList.add('hidden');
-    remainingCapacityRow.classList.add('hidden');
-    essStatusMsg.className = 'result-warning';
-    essStatusMsg.textContent = 'Calculated ESS breaker exceeds 200A standard size. Verify with AHJ and equipment specs.';
-    essStatusMsg.classList.remove('hidden');
-    essResultsEl.classList.remove('hidden');
-    return;
-  }
-
-  document.getElementById('resEssStd').textContent = essStd + 'A';
-
-  const pvVal = document.getElementById('knownInverterCurrent').value.trim();
-  const pvKnown = pvVal && !isNaN(parseFloat(pvVal)) && parseFloat(pvVal) > 0;
-
-  if (pvKnown) {
-    const pvStd = nextStandardBreaker(parseFloat(pvVal) * 1.25);
-
-    if (pvStd !== null) {
-      const combined = pvStd + essStd;
-      document.getElementById('resCombinedTotal').textContent = combined + 'A';
-      combinedCheckRow.classList.remove('hidden');
-      remainingCapacityRow.classList.add('hidden');
-
-      if (combined > currentMaxBackfeed) {
-        essStatusMsg.className = 'result-warning';
-        essStatusMsg.textContent =
-          'Combined PV and ESS backfeed (' + combined + 'A) exceeds panel capacity (' +
-          currentMaxBackfeed.toFixed(2) + 'A). Resize or consider supply-side connection.';
+    if (std !== null) {
+      if (c.inv && c.inv.std !== null) {
+        // Both PV and ESS known — combined check
+        const combined = c.inv.std + std;
+        c.ess.combined        = combined;
+        c.ess.combinedExceeds = combined > maxBackfeed;
       } else {
-        essStatusMsg.className = 'result-confirm';
-        essStatusMsg.textContent = 'Combined backfeed within allowable limit.';
+        // ESS only — remaining capacity
+        c.ess.remaining       = maxBackfeed - std;
+        c.ess.exceedsAlone    = std > maxBackfeed;
       }
-      essStatusMsg.classList.remove('hidden');
-    } else {
-      combinedCheckRow.classList.add('hidden');
-      remainingCapacityRow.classList.add('hidden');
-      essStatusMsg.classList.add('hidden');
     }
-  } else {
-    combinedCheckRow.classList.add('hidden');
-    const remaining = currentMaxBackfeed - essStd;
+  }
 
-    if (remaining < 0) {
-      document.getElementById('resRemainingCapacity').textContent = '0.00A';
-      essStatusMsg.className = 'result-warning';
-      essStatusMsg.textContent =
-        'ESS backfeed (' + essStd + 'A) alone exceeds panel capacity (' +
-        currentMaxBackfeed.toFixed(2) + 'A). Consider supply-side connection or panel upgrade.';
-      essStatusMsg.classList.remove('hidden');
+  return c;
+}
+
+/* ─── RENDER: full DOM update from state ────────────────────────── */
+
+function render() {
+  const v   = NEC[state.version];
+  const c   = compute(state);
+  const isLoad = state.connection === 'load';
+
+  // Version toggle
+  document.querySelectorAll('#versionToggle button').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.version === state.version)
+  );
+
+  // Connection toggle
+  document.querySelectorAll('#connToggle button').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.conn === state.connection)
+  );
+
+  // Version banner
+  document.getElementById('versionBanner').textContent = v.banner;
+
+  // Connection-mode show/hide
+  set('supplySideNote', isLoad);    // hide when load-side
+  set('loadSideContent', !isLoad);  // hide when supply-side
+
+  // Results card: only show in load-side mode with valid inputs
+  const showResults = isLoad && c.valid;
+  set('resultsCard', !showResults);
+
+  if (!showResults) {
+    setPanels(c.valid && isLoad);
+    return;
+  }
+
+  // ── Status header ──────────────────────────────────────────────
+  const head  = el('resultsHead');
+  const badge = el('statusBadge');
+  head.className  = c.pass ? 'results-head pass' : 'results-head fail';
+  badge.textContent = c.pass ? 'PASS' : 'FAIL';
+  badge.className = c.pass ? 'status-badge pass' : 'status-badge fail';
+
+  // ── Fail alert ─────────────────────────────────────────────────
+  set('failAlert', c.pass);
+
+  // ── Base calc rows ─────────────────────────────────────────────
+  txt('val120Pct', c.maxBus.toFixed(2) + 'A');
+  set('rowBackfeed', !c.pass);
+  if (c.pass) txt('valBackfeed', c.maxBackfeed.toFixed(2) + 'A');
+
+  // ── Active citation ────────────────────────────────────────────
+  txt('activeCitation', v.citation);
+
+  // ── Inverter section ───────────────────────────────────────────
+  set('inverterSection', !c.pass);
+  if (c.pass) {
+    txt('valMaxInverterOutput', c.maxInverterOutput.toFixed(2) + 'A');
+    renderInverterCalc(c);
+  }
+
+  // ── ESS section (2020 / 2023 only) ────────────────────────────
+  const showEss = c.pass && v.ess;
+  set('essSection', !showEss);
+  if (showEss) renderEssCalc(c);
+
+  // ── PCS expansion panel ────────────────────────────────────────
+  const pcsPanel = el('panelPcs');
+  const pcsBadge = el('pcsBadge');
+  pcsPanel.classList.toggle('ver-off', !v.pcs);
+  if (!v.pcs && pcsPanel.classList.contains('open')) pcsPanel.classList.remove('open');
+  set('pcsBadge', v.pcs);  // hide badge when pcs is available
+
+  setPanels(c.valid);
+}
+
+/* ─── RENDER SUB-FUNCTIONS ──────────────────────────────────────── */
+
+function renderInverterCalc(c) {
+  const hasCalc = !!c.inv;
+  set('inverterCalcBlock', !hasCalc);
+  if (!hasCalc) return;
+
+  txt('valInverterMinBreaker', c.inv.raw.toFixed(2) + 'A');
+
+  const alertEl = el('inverterAlert');
+
+  if (c.inv.std === null) {
+    txt('valInverterStdBreaker', 'Exceeds 200A');
+    alertEl.className   = 'alert alert-warn';
+    alertEl.textContent = 'Calculated breaker exceeds 200A standard size. Verify with AHJ and equipment specs.';
+    alertEl.classList.remove('hidden');
+  } else {
+    txt('valInverterStdBreaker', c.inv.std + 'A');
+    if (c.inv.exceeds) {
+      alertEl.className   = 'alert alert-warn';
+      alertEl.textContent =
+        'Calculated breaker (' + c.inv.std + 'A) exceeds maximum allowable backfeed (' +
+        c.maxBackfeed.toFixed(2) + 'A). Reduce inverter output or consider supply-side connection.';
+      alertEl.classList.remove('hidden');
     } else {
-      document.getElementById('resRemainingCapacity').textContent = remaining.toFixed(2) + 'A';
-      essStatusMsg.classList.add('hidden');
+      alertEl.classList.add('hidden');
     }
-    remainingCapacityRow.classList.remove('hidden');
+  }
+}
+
+function renderEssCalc(c) {
+  const hasCalc = !!c.ess;
+  set('essCalcBlock', !hasCalc);
+  if (!hasCalc) return;
+
+  const alertEl = el('essAlert');
+
+  if (c.ess.std === null) {
+    txt('valEssBreaker', 'Exceeds 200A');
+    set('rowCombined',   true);
+    set('rowEssRemaining', true);
+    alertEl.className   = 'alert alert-warn';
+    alertEl.textContent = 'Calculated ESS breaker exceeds 200A standard size. Verify with AHJ and equipment specs.';
+    alertEl.classList.remove('hidden');
+    return;
   }
 
-  essResultsEl.classList.remove('hidden');
-}
+  txt('valEssBreaker', c.ess.std + 'A');
 
-function setInput(id, value) {
-  document.getElementById(id).value = value;
-  calculate();
-}
+  if (c.ess.combined !== undefined) {
+    // Combined PV + ESS check
+    set('rowCombined', false);
+    set('rowEssRemaining', true);
+    txt('valCombined', c.ess.combined + 'A');
 
-function setVersion(version) {
-  currentVersion = version;
+    if (c.ess.combinedExceeds) {
+      alertEl.className   = 'alert alert-warn';
+      alertEl.textContent =
+        'Combined PV and ESS backfeed (' + c.ess.combined + 'A) exceeds panel capacity (' +
+        c.maxBackfeed.toFixed(2) + 'A). Resize or consider supply-side connection.';
+    } else {
+      alertEl.className   = 'alert alert-ok';
+      alertEl.textContent = 'Combined backfeed within allowable limit.';
+    }
+    alertEl.classList.remove('hidden');
 
-  document.querySelectorAll('.version-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.version === version);
-  });
-
-  const vd = NEC_VERSIONS[version];
-  document.getElementById('versionBanner').textContent = vd.banner;
-  document.getElementById('necCitation').textContent = vd.citation;
-
-  const pcsPanel = document.getElementById('panel-pcs');
-  const pcsBadge = document.getElementById('pcs-version-badge');
-  if (vd.pcsAvailable) {
-    pcsPanel.classList.remove('panel-version-disabled');
-    pcsBadge.classList.add('hidden');
   } else {
-    pcsPanel.classList.add('panel-version-disabled');
-    if (pcsPanel.classList.contains('panel-open')) pcsPanel.classList.remove('panel-open');
-    pcsBadge.classList.remove('hidden');
-  }
+    // ESS only — remaining capacity
+    set('rowCombined', true);
+    set('rowEssRemaining', false);
 
-  calculate();
-}
-
-function setConnectionType(type) {
-  currentConnectionType = type;
-
-  document.querySelectorAll('.conn-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.conn === type);
-  });
-
-  const calcInputs = document.getElementById('calcInputs');
-  const resultsZone = document.getElementById('resultsZone');
-  const supplySideNote = document.getElementById('supplySideNote');
-
-  if (type === 'supply') {
-    calcInputs.classList.add('hidden');
-    resultsZone.classList.add('hidden');
-    supplySideNote.classList.remove('hidden');
-    currentPass = false;
-    currentMaxBackfeed = 0;
-    setPanelsEnabled(false);
-  } else {
-    calcInputs.classList.remove('hidden');
-    supplySideNote.classList.add('hidden');
-    calculate();
+    if (c.ess.exceedsAlone) {
+      txt('valEssRemaining', '0.00A');
+      alertEl.className   = 'alert alert-warn';
+      alertEl.textContent =
+        'ESS backfeed (' + c.ess.std + 'A) alone exceeds panel capacity (' +
+        c.maxBackfeed.toFixed(2) + 'A). Consider supply-side connection or panel upgrade.';
+      alertEl.classList.remove('hidden');
+    } else {
+      txt('valEssRemaining', c.ess.remaining.toFixed(2) + 'A');
+      alertEl.classList.add('hidden');
+    }
   }
 }
 
-function togglePanel(panelId) {
-  const panel = document.getElementById(panelId);
-  if (panel.classList.contains('panel-locked') || panel.classList.contains('panel-version-disabled')) return;
-  panel.classList.toggle('panel-open');
-}
+/* ─── PANEL STATE ───────────────────────────────────────────────── */
 
-function setPanelsEnabled(enabled) {
-  document.querySelectorAll('.expansion-panel').forEach(panel => {
-    if (panel.id === 'panel-pcs') return;
+function setPanels(enabled) {
+  document.querySelectorAll('.panel').forEach(panel => {
+    if (panel.id === 'panelPcs') return;
     if (enabled) {
-      panel.classList.remove('panel-locked');
+      panel.classList.remove('locked');
     } else {
-      panel.classList.add('panel-locked');
-      panel.classList.remove('panel-open');
+      panel.classList.add('locked');
+      panel.classList.remove('open');
     }
   });
 
-  const pcsPanel = document.getElementById('panel-pcs');
-  const vd = NEC_VERSIONS[currentVersion];
-  if (enabled && vd.pcsAvailable) {
-    pcsPanel.classList.remove('panel-locked');
+  const pcs = el('panelPcs');
+  const vd  = NEC[state.version];
+  if (enabled && vd.pcs) {
+    pcs.classList.remove('locked');
   } else if (!enabled) {
-    pcsPanel.classList.add('panel-locked');
-    pcsPanel.classList.remove('panel-open');
+    pcs.classList.add('locked');
+    pcs.classList.remove('open');
   }
 }
+
+/* ─── EVENT HANDLERS ────────────────────────────────────────────── */
+
+function setVersion(v) {
+  state.version = v;
+  render();
+}
+
+function setConnection(conn) {
+  state.connection = conn;
+  render();
+}
+
+function onNumInput(id) {
+  const raw = document.getElementById(id).value.trim();
+  const n   = parseFloat(raw);
+  state[id] = raw !== '' && !isNaN(n) && n > 0 ? n : null;
+  render();
+}
+
+function setChip(id, value) {
+  document.getElementById(id).value = value;
+  state[id] = value;
+  render();
+}
+
+function togglePanel(id) {
+  const p = el(id);
+  if (p.classList.contains('locked') || p.classList.contains('ver-off')) return;
+  p.classList.toggle('open');
+}
+
+/* ─── HELPERS ───────────────────────────────────────────────────── */
+
+function el(id)          { return document.getElementById(id); }
+function txt(id, s)      { el(id).textContent = s; }
+function set(id, hidden) { el(id).classList.toggle('hidden', hidden); }
+
+/* ─── INIT ──────────────────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', () => {
-  setVersion('2023');
-  document.getElementById('busRating').addEventListener('input', calculate);
-  document.getElementById('mainBreaker').addEventListener('input', calculate);
-  document.getElementById('knownInverterCurrent').addEventListener('input', () => {
-    calculateInverterOptional();
-    calculateEssOptional();
+  render();
+
+  ['busRating', 'mainBreaker', 'knownInverterCurrent', 'essOutputCurrent'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => onNumInput(id));
   });
-  document.getElementById('essOutputCurrent').addEventListener('input', calculateEssOptional);
 });

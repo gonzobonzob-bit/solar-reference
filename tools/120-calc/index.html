@@ -8,287 +8,277 @@
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div class="page">
 
-<div class="page-container">
-
-  <!-- PAGE HEADER -->
+  <!-- ── PAGE HEADER ──────────────────────────────────────────── -->
   <header class="page-header">
-    <h1 class="calc-title">120% Rule Calculator</h1>
-    <p class="calc-subtitle">NEC 705.12 &middot; Utility Interconnection &amp; ESS</p>
+    <h1 class="page-title">120% Rule Calculator</h1>
+    <p class="page-sub">NEC 705.12 &middot; Utility Interconnection &amp; ESS</p>
   </header>
 
-  <!-- ZONE 1: BASE CALCULATOR -->
-  <section class="zone-1">
+  <!-- ── ZONE 1: BASE CALCULATOR ──────────────────────────────── -->
+  <section>
 
-    <!-- NEC VERSION TOGGLE -->
-    <div class="control-section">
-      <div class="toggle-row">
-        <span class="toggle-label">NEC Version</span>
-        <div class="toggle-group version-toggle" role="group" aria-label="NEC version selection">
-          <button class="version-btn" data-version="2014" onclick="setVersion('2014')">2014</button>
-          <button class="version-btn" data-version="2017" onclick="setVersion('2017')">2017</button>
-          <button class="version-btn" data-version="2020" onclick="setVersion('2020')">2020</button>
-          <button class="version-btn active" data-version="2023" onclick="setVersion('2023')">2023</button>
+    <!-- Controls row: version + connection side by side -->
+    <div class="controls-row">
+
+      <div class="control-group">
+        <span class="control-label">NEC Version</span>
+        <div class="pill-group" id="versionToggle">
+          <button data-version="2014" onclick="setVersion('2014')">2014</button>
+          <button data-version="2017" onclick="setVersion('2017')">2017</button>
+          <button data-version="2020" onclick="setVersion('2020')">2020</button>
+          <button data-version="2023" onclick="setVersion('2023')">2023</button>
         </div>
       </div>
-      <div class="version-banner" id="versionBanner"></div>
-    </div>
 
-    <!-- CONNECTION TYPE TOGGLE -->
-    <div class="control-section">
-      <div class="toggle-row">
-        <span class="toggle-label">Connection Type</span>
-        <div class="toggle-group conn-toggle" role="group" aria-label="Connection type selection">
-          <button class="conn-btn active" data-conn="load" onclick="setConnectionType('load')">LOAD-SIDE</button>
-          <button class="conn-btn" data-conn="supply" onclick="setConnectionType('supply')">SUPPLY-SIDE</button>
+      <div class="control-group">
+        <span class="control-label">Connection Type</span>
+        <div class="pill-group" id="connToggle">
+          <button data-conn="load"   onclick="setConnection('load')">LOAD-SIDE</button>
+          <button data-conn="supply" onclick="setConnection('supply')">SUPPLY-SIDE</button>
         </div>
       </div>
-      <div class="supply-side-note hidden" id="supplySideNote">
-        <strong>Supply-Side Connection</strong>
-        <p>Supply-side connection bypasses 705.12. Governed by 705.12(A). Size per utility requirements and 230.82(6). No busbar percentage limit applies.</p>
-      </div>
+
     </div>
 
-    <!-- CALC INPUTS -->
-    <div class="calc-inputs" id="calcInputs">
+    <!-- Version note banner -->
+    <div class="version-banner" id="versionBanner"></div>
+
+    <!-- Supply-side note (hidden by default) -->
+    <div class="supply-note hidden" id="supplySideNote">
+      <strong>Supply-Side Connection</strong>
+      <p>Supply-side connection bypasses 705.12. Governed by 705.12(A). Size per utility requirements and 230.82(6). No busbar percentage limit applies.</p>
+    </div>
+
+    <!-- Load-side calculator content -->
+    <div id="loadSideContent">
+
+      <!-- Inputs -->
       <div class="inputs-grid">
 
-        <div class="input-group">
-          <label class="input-label" for="busRating">Bus Rating (amps)</label>
-          <input type="number" class="calc-input" id="busRating"
+        <div class="input-block">
+          <label for="busRating">Bus Rating (amps)</label>
+          <input type="number" class="num-input" id="busRating"
             placeholder="Enter amps" min="1" step="any" autocomplete="off">
-          <div class="quick-select">
-            <span class="qs-label">Common</span>
-            <button class="qs-btn" onclick="setInput('busRating', 100)">100</button>
-            <button class="qs-btn" onclick="setInput('busRating', 125)">125</button>
-            <button class="qs-btn" onclick="setInput('busRating', 150)">150</button>
-            <button class="qs-btn" onclick="setInput('busRating', 200)">200</button>
-            <button class="qs-btn" onclick="setInput('busRating', 225)">225</button>
-            <button class="qs-btn" onclick="setInput('busRating', 320)">320</button>
-            <button class="qs-btn" onclick="setInput('busRating', 400)">400</button>
+          <div class="chips">
+            <button class="chip" onclick="setChip('busRating', 100)">100</button>
+            <button class="chip" onclick="setChip('busRating', 125)">125</button>
+            <button class="chip" onclick="setChip('busRating', 150)">150</button>
+            <button class="chip" onclick="setChip('busRating', 200)">200</button>
+            <button class="chip" onclick="setChip('busRating', 225)">225</button>
+            <button class="chip" onclick="setChip('busRating', 320)">320</button>
+            <button class="chip" onclick="setChip('busRating', 400)">400</button>
           </div>
         </div>
 
-        <div class="input-group">
-          <label class="input-label" for="mainBreaker">Main Breaker Size (amps)</label>
-          <input type="number" class="calc-input" id="mainBreaker"
+        <div class="input-block">
+          <label for="mainBreaker">Main Breaker Size (amps)</label>
+          <input type="number" class="num-input" id="mainBreaker"
             placeholder="Enter amps" min="1" step="any" autocomplete="off">
-          <div class="quick-select">
-            <span class="qs-label">Common</span>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 60)">60</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 100)">100</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 125)">125</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 150)">150</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 175)">175</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 200)">200</button>
-            <button class="qs-btn" onclick="setInput('mainBreaker', 225)">225</button>
+          <div class="chips">
+            <button class="chip" onclick="setChip('mainBreaker', 60)">60</button>
+            <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
+            <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
+            <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
+            <button class="chip" onclick="setChip('mainBreaker', 175)">175</button>
+            <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
+            <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
           </div>
         </div>
 
-      </div>
-    </div>
+      </div><!-- /inputs-grid -->
 
-    <!-- RESULTS ZONE (hidden until valid inputs) -->
-    <div class="results-zone hidden" id="resultsZone">
+      <!-- Results card (hidden until valid inputs) -->
+      <div class="results-card hidden" id="resultsCard">
 
-      <div class="results-status-header" id="resultsStatusHeader">
-        <span class="pass-badge" id="passIndicator"></span>
-      </div>
-
-      <div class="results-body">
-
-        <div class="fail-banner hidden" id="failBanner">
-          This panel does not qualify for a load-side connection at any backfeed size.
-          Consider supply-side connection or panel upgrade.
+        <div class="results-head" id="resultsHead">
+          <span class="status-badge" id="statusBadge"></span>
         </div>
 
-        <div class="result-row">
-          <span class="result-label">120% of Bus Rating</span>
-          <span class="result-value" id="res120Pct">—</span>
-        </div>
+        <div class="results-body">
 
-        <div class="result-row hidden" id="backfeedRow">
-          <span class="result-label">Maximum Allowable Backfeed Breaker</span>
-          <span class="result-value" id="resMaxBackfeed">—</span>
-        </div>
-
-        <div class="placement-note">
-          Backfeed breaker must be installed at the opposite end of the busbar from the
-          main breaker per NEC 705.12(B)(3) [2023] or 705.12(D)(3) [pre-2020]
-        </div>
-
-        <!-- INVERTER OUTPUT BREAKER SIZING -->
-        <div class="results-subsection hidden" id="inverterSizingSection">
-          <div class="subsection-header">Inverter Output Breaker Sizing</div>
-
-          <div class="result-row-sm">
-            <span class="result-label">Maximum Inverter Continuous Output Current</span>
-            <span class="result-value-sm" id="resMaxInverterOutputCurrent">—</span>
+          <!-- FAIL alert -->
+          <div class="alert alert-fail hidden" id="failAlert">
+            This panel does not qualify for a load-side connection at any backfeed size.
+            Consider supply-side connection or panel upgrade.
           </div>
 
-          <div class="sub-note">
-            Inverter AC output breaker = 125% of inverter continuous output current
-            per NEC 705.12(B)(2) [2023] / 705.12(D)(2) [pre-2020]
+          <!-- Base results -->
+          <div class="calc-row">
+            <span class="lbl">120% of Bus Rating</span>
+            <span class="val" id="val120Pct"></span>
           </div>
 
-          <div class="inline-input-group">
-            <label class="input-label" for="knownInverterCurrent">Known Inverter Output Current (A) — optional</label>
-            <input type="number" class="calc-input-sm" id="knownInverterCurrent"
-              placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
+          <div class="calc-row hidden" id="rowBackfeed">
+            <span class="lbl">Maximum Allowable Backfeed Breaker</span>
+            <span class="val" id="valBackfeed"></span>
           </div>
 
-          <div id="inverterKnownResults" class="hidden">
-            <div class="result-row-sm">
-              <span class="result-label">Required Minimum Breaker Size (× 1.25)</span>
-              <span class="result-value-sm" id="resInverterRaw">—</span>
+          <div class="rule-note">
+            Backfeed breaker must be installed at the opposite end of the busbar from the
+            main breaker per NEC 705.12(B)(3)&nbsp;[2023] or 705.12(D)(3)&nbsp;[pre-2020]
+          </div>
+
+          <!-- ─ INVERTER OUTPUT BREAKER SIZING ─────────────────── -->
+          <div id="inverterSection" class="hidden">
+
+            <div class="sub-title">Inverter Output Breaker Sizing</div>
+
+            <div class="calc-row">
+              <span class="lbl">Maximum Inverter Continuous Output Current</span>
+              <span class="val-sm" id="valMaxInverterOutput"></span>
             </div>
-            <div class="result-row-sm">
-              <span class="result-label">Next Standard Breaker Size</span>
-              <span class="result-value-sm" id="resInverterStd">—</span>
+
+            <div class="code-note">
+              Inverter AC output breaker = 125% of inverter continuous output current
+              per NEC 705.12(B)(2)&nbsp;[2023] / 705.12(D)(2)&nbsp;[pre-2020]
             </div>
-            <div id="inverterExceedsFlag" class="hidden"></div>
-          </div>
-        </div>
 
-        <!-- ESS BREAKER SIZING (2020 / 2023 only) -->
-        <div class="results-subsection hidden" id="essSizingSection">
-          <div class="subsection-header">ESS Breaker Sizing</div>
-
-          <div class="inline-input-group">
-            <label class="input-label" for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
-            <input type="number" class="calc-input-sm" id="essOutputCurrent"
-              placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
-          </div>
-
-          <div id="essResults" class="hidden">
-            <div class="result-row-sm">
-              <span class="result-label">ESS Breaker Size (× 1.25, rounded up)</span>
-              <span class="result-value-sm" id="resEssStd">—</span>
+            <div class="opt-row">
+              <label for="knownInverterCurrent">Known Inverter Output Current (A) — optional</label>
+              <input type="number" class="inline-input" id="knownInverterCurrent"
+                placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
             </div>
-            <div class="result-row-sm hidden" id="combinedCheckRow">
-              <span class="result-label">Combined PV + ESS Backfeed</span>
-              <span class="result-value-sm" id="resCombinedTotal">—</span>
+
+            <div id="inverterCalcBlock" class="hidden">
+              <div class="calc-row">
+                <span class="lbl">Required Minimum Breaker Size (&times; 1.25)</span>
+                <span class="val-sm" id="valInverterMinBreaker"></span>
+              </div>
+              <div class="calc-row">
+                <span class="lbl">Next Standard Breaker Size</span>
+                <span class="val-sm" id="valInverterStdBreaker"></span>
+              </div>
+              <div id="inverterAlert" class="hidden"></div>
             </div>
-            <div class="result-row-sm hidden" id="remainingCapacityRow">
-              <span class="result-label">Remaining Backfeed Capacity after ESS</span>
-              <span class="result-value-sm" id="resRemainingCapacity">—</span>
+
+          </div><!-- /inverterSection -->
+
+          <!-- ─ ESS BREAKER SIZING (2020 / 2023 only) ──────────── -->
+          <div id="essSection" class="hidden">
+
+            <div class="sub-title">ESS Breaker Sizing</div>
+
+            <div class="opt-row">
+              <label for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
+              <input type="number" class="inline-input" id="essOutputCurrent"
+                placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
             </div>
-            <div id="essStatusMsg" class="hidden"></div>
+
+            <div id="essCalcBlock" class="hidden">
+              <div class="calc-row">
+                <span class="lbl">ESS Breaker Size (&times; 1.25, rounded up)</span>
+                <span class="val-sm" id="valEssBreaker"></span>
+              </div>
+              <div class="calc-row hidden" id="rowCombined">
+                <span class="lbl">Combined PV + ESS Backfeed</span>
+                <span class="val-sm" id="valCombined"></span>
+              </div>
+              <div class="calc-row hidden" id="rowEssRemaining">
+                <span class="lbl">Remaining Backfeed Capacity after ESS</span>
+                <span class="val-sm" id="valEssRemaining"></span>
+              </div>
+              <div id="essAlert" class="hidden"></div>
+            </div>
+
+            <div class="code-note">
+              Bidirectional inverter/charger breaker sizing per NEC 705.12(B)&nbsp;[2020/2023].
+              Both charge and discharge current must be considered.
+              Confirm with AHJ — interpretation varies.
+            </div>
+
+          </div><!-- /essSection -->
+
+          <!-- Citation bar -->
+          <div class="citation-bar">
+            <span class="citation-lbl">Active citation</span>
+            <span class="citation-val" id="activeCitation"></span>
           </div>
 
-          <div class="sub-note">
-            Bidirectional inverter/charger breaker sizing per NEC 705.12(B) [2020/2023].
-            Both charge and discharge current must be considered.
-            Confirm with AHJ — interpretation varies.
-          </div>
-        </div>
+        </div><!-- /results-body -->
+      </div><!-- /results-card -->
 
-        <div class="citation-bar">
-          <span class="citation-label">Active citation</span>
-          <span class="citation-value" id="necCitation">NEC 2023 §705.12(B)</span>
-        </div>
-
-      </div>
-    </div>
+    </div><!-- /loadSideContent -->
 
   </section>
 
-  <!-- ZONE 2: EXPANSION PANELS -->
+  <!-- ── ZONE 2: EXPANSION PANELS ─────────────────────────────── -->
   <hr class="zone-divider">
-  <p class="zone-2-label">Expansion Modules &mdash; NEC 690 / 705</p>
+  <p class="zone-lbl">Expansion Modules &mdash; NEC 690 / 705</p>
 
-  <section class="zone-2" id="expansionPanels">
+  <section id="zone2">
 
-    <!-- Panel 1: Equipment Selection -->
-    <div class="expansion-panel panel-locked" id="panel-equipment">
-      <div class="panel-header" onclick="togglePanel('panel-equipment')">
-        <div class="panel-title-group">
-          <span class="panel-toggle-icon">+</span>
-          <span class="panel-title">Equipment Selection</span>
-          <span class="panel-subtitle">AC &amp; DC</span>
+    <div class="panel locked" id="panelEquipment">
+      <div class="panel-head" onclick="togglePanel('panelEquipment')">
+        <div class="panel-left">
+          <span class="panel-icon">+</span>
+          <span class="panel-name">Equipment Selection</span>
+          <span class="panel-sub">AC &amp; DC</span>
         </div>
-        <span class="panel-nec-ref">NEC 690 / 705</span>
+        <span class="panel-ref">NEC 690 / 705</span>
       </div>
-      <div class="panel-content">
-        <p class="panel-placeholder">
-          Coming in Phase 2 &mdash; AC/DC equipment selection, inverter specs, module specs,
-          disconnect sizing, and equipment compatibility checks.
-        </p>
+      <div class="panel-body">
+        <p class="panel-placeholder">Coming in Phase 2 — AC/DC equipment selection, inverter specs, module specs, disconnect sizing, and equipment compatibility checks.</p>
       </div>
     </div>
 
-    <!-- Panel 2: DC String Sizing -->
-    <div class="expansion-panel panel-locked" id="panel-dc-string">
-      <div class="panel-header" onclick="togglePanel('panel-dc-string')">
-        <div class="panel-title-group">
-          <span class="panel-toggle-icon">+</span>
-          <span class="panel-title">DC String Sizing</span>
+    <div class="panel locked" id="panelDcString">
+      <div class="panel-head" onclick="togglePanel('panelDcString')">
+        <div class="panel-left">
+          <span class="panel-icon">+</span>
+          <span class="panel-name">DC String Sizing</span>
         </div>
-        <span class="panel-nec-ref">NEC 690</span>
+        <span class="panel-ref">NEC 690</span>
       </div>
-      <div class="panel-content">
-        <p class="panel-placeholder">
-          Coming in Phase 2 &mdash; Temperature-corrected Voc/Vmp, string voltage limits,
-          Isc, string count, and NEC 690.7 compliance checks.
-        </p>
+      <div class="panel-body">
+        <p class="panel-placeholder">Coming in Phase 2 — Temperature-corrected Voc/Vmp, string voltage limits, Isc, string count, and NEC 690.7 compliance checks.</p>
       </div>
     </div>
 
-    <!-- Panel 3: AC Breaker Sizing -->
-    <div class="expansion-panel panel-locked" id="panel-ac-breaker">
-      <div class="panel-header" onclick="togglePanel('panel-ac-breaker')">
-        <div class="panel-title-group">
-          <span class="panel-toggle-icon">+</span>
-          <span class="panel-title">AC Breaker Sizing</span>
+    <div class="panel locked" id="panelAcBreaker">
+      <div class="panel-head" onclick="togglePanel('panelAcBreaker')">
+        <div class="panel-left">
+          <span class="panel-icon">+</span>
+          <span class="panel-name">AC Breaker Sizing</span>
         </div>
-        <span class="panel-nec-ref">NEC 705 / 690 Part VIII</span>
+        <span class="panel-ref">NEC 705 / 690 Part VIII</span>
       </div>
-      <div class="panel-content">
-        <p class="panel-placeholder">
-          Coming in Phase 2 &mdash; Inverter output current, 125% continuous load derate,
-          backfeed breaker sizing per NEC 705.12(B)(2).
-        </p>
+      <div class="panel-body">
+        <p class="panel-placeholder">Coming in Phase 2 — Inverter output current, 125% continuous load derate, backfeed breaker sizing per NEC 705.12(B)(2).</p>
       </div>
     </div>
 
-    <!-- Panel 4: PCS Exception (NEC 705.13 · 2023 only) -->
-    <div class="expansion-panel panel-locked" id="panel-pcs">
-      <div class="panel-header" onclick="togglePanel('panel-pcs')">
-        <div class="panel-title-group">
-          <span class="panel-toggle-icon">+</span>
-          <span class="panel-title">PCS Exception</span>
-          <span class="panel-version-badge hidden" id="pcs-version-badge">Available in 2023 NEC only</span>
+    <div class="panel locked" id="panelPcs">
+      <div class="panel-head" onclick="togglePanel('panelPcs')">
+        <div class="panel-left">
+          <span class="panel-icon">+</span>
+          <span class="panel-name">PCS Exception</span>
+          <span class="panel-badge" id="pcsBadge">Available in 2023 NEC only</span>
         </div>
-        <span class="panel-nec-ref">NEC 705.13</span>
+        <span class="panel-ref">NEC 705.13</span>
       </div>
-      <div class="panel-content">
-        <p class="panel-placeholder">
-          Coming in Phase 2 &mdash; Power Control System exception pathway per NEC 705.13 (2023).
-          Applies to PCS-managed systems that prevent busbar exceedance without the standard 120% calculation.
-        </p>
+      <div class="panel-body">
+        <p class="panel-placeholder">Coming in Phase 2 — Power Control System exception pathway per NEC 705.13 (2023). Applies to PCS-managed systems that prevent busbar exceedance without the standard 120% calculation.</p>
       </div>
     </div>
 
-    <!-- Panel 5: Summary Output -->
-    <div class="expansion-panel panel-locked" id="panel-summary">
-      <div class="panel-header" onclick="togglePanel('panel-summary')">
-        <div class="panel-title-group">
-          <span class="panel-toggle-icon">+</span>
-          <span class="panel-title">Summary Output</span>
+    <div class="panel locked" id="panelSummary">
+      <div class="panel-head" onclick="togglePanel('panelSummary')">
+        <div class="panel-left">
+          <span class="panel-icon">+</span>
+          <span class="panel-name">Summary Output</span>
         </div>
-        <span class="panel-nec-ref">All Articles</span>
+        <span class="panel-ref">All Articles</span>
       </div>
-      <div class="panel-content">
-        <p class="panel-placeholder">
-          Coming in Phase 2 &mdash; Printable and copyable summary of all calculated values,
-          applicable NEC citations, and interconnection parameters.
-        </p>
+      <div class="panel-body">
+        <p class="panel-placeholder">Coming in Phase 2 — Printable and copyable summary of all calculated values, applicable NEC citations, and interconnection parameters.</p>
       </div>
     </div>
 
   </section>
 
-  <!-- FOOTER -->
+  <!-- ── FOOTER ────────────────────────────────────────────────── -->
   <footer class="page-footer">
     <p class="footer-text">
       Personal field reference tool &nbsp;&middot;&nbsp; Not affiliated with any employer
@@ -296,8 +286,7 @@
     </p>
   </footer>
 
-</div>
-
+</div><!-- /page -->
 <script src="calc.js"></script>
 </body>
 </html>
