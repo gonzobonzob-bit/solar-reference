@@ -624,15 +624,357 @@ body {
   line-height: 1.8;
 }
 
+/* ─── SECONDARY CONTROLS ROW ─────────────────────────────────── */
+
+.controls-row-sub {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── SELECT INPUT ───────────────────────────────────────────── */
+
+.select-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 300;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.14s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234fc3f7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.select-input:focus { border-color: var(--gold); }
+
+.select-sub {
+  margin-top: 7px;
+  font-size: 10px;
+  line-height: 1.85;
+  color: var(--text-2);
+  opacity: 0.65;
+}
+
+.select-sub span {
+  color: var(--sky);
+}
+
+/* ─── SUB PANEL ──────────────────────────────────────────────── */
+
+.sub-panel-config-note {
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--text-2);
+  background: rgba(79,195,247,0.04);
+  border-left: 2px solid var(--sky);
+  padding: 9px 14px;
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 18px;
+}
+
+.sub-panel-note {
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--text-2);
+  background: rgba(79,195,247,0.04);
+  border-left: 2px solid var(--sky);
+  padding: 9px 14px;
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 14px;
+}
+
+.sub-panel-note strong {
+  color: var(--sky);
+  font-weight: 400;
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* ─── PANEL TYPE BADGE ───────────────────────────────────────── */
+
+.panel-type-badge {
+  margin-left: 10px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--sky);
+  background: rgba(79,195,247,0.08);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+
+/* ─── SIZE NOTE ──────────────────────────────────────────────── */
+
+.size-note {
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--text-2);
+  padding: 8px 12px;
+  border-left: 2px solid var(--gold-border);
+  background: var(--gold-dim);
+  border-radius: 0 3px 3px 0;
+  margin: 10px 0;
+  opacity: 0.85;
+}
+
+/* ─── SUM OF BREAKERS ────────────────────────────────────────── */
+
+.sob-banner {
+  background: rgba(79,195,247,0.04);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--sky);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+}
+
+.sob-banner-title {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 8px;
+}
+
+.sob-banner p {
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--text-2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  margin-bottom: 10px;
+}
+
+.sob-when-toggle {
+  background: none;
+  border: 1px solid rgba(79,195,247,0.2);
+  border-radius: 3px;
+  color: var(--sky);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 3px 10px;
+  transition: background 0.12s;
+}
+
+.sob-when-toggle:hover { background: rgba(79,195,247,0.07); }
+
+.sob-when-block {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.sob-when-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sob-when-block li {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.7;
+  padding: 4px 0 4px 16px;
+  position: relative;
+}
+
+.sob-when-block li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--sky);
+  opacity: 0.5;
+}
+
+.sob-method-label {
+  margin-left: 10px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sky);
+  opacity: 0.6;
+}
+
+.sob-cmp-pass { font-weight: 400; }
+
+.txt-pass { color: var(--pass); }
+.txt-fail { color: var(--fail); }
+
+/* ─── BACK-FED LABELING CALLOUT ──────────────────────────────── */
+
+.backfeed-callout {
+  background: rgba(245,166,35,0.04);
+  border: 1px solid var(--gold-border);
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 20px 0 10px;
+}
+
+.backfeed-callout-title {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.backfeed-reqs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.backfeed-req {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(245,166,35,0.08);
+}
+
+.backfeed-req:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.req-ref {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gold);
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.req-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.7;
+}
+
+.req-text em {
+  font-style: normal;
+  color: var(--text);
+  font-weight: 400;
+}
+
+.backfeed-field-note {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.8;
+  padding: 10px 12px;
+  background: rgba(245,166,35,0.05);
+  border-left: 2px solid var(--gold-border);
+  border-radius: 0 3px 3px 0;
+  opacity: 0.85;
+}
+
+/* ─── UTILITY vs NEC CONFLICT BANNER ────────────────────────── */
+
+.utility-conflict-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid rgba(251,191,36,0.5);
+  border-radius: 0 6px 6px 0;
+  padding: 20px 24px;
+  margin: 40px 0 0;
+}
+
+.ucb-title {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--warn);
+  margin-bottom: 10px;
+}
+
+.ucb-body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--text-2);
+  margin-bottom: 14px;
+}
+
+.ucb-list-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+.ucb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+}
+
+.ucb-list li {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.7;
+  padding: 3px 0 3px 16px;
+  position: relative;
+}
+
+.ucb-list li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  color: var(--warn);
+  opacity: 0.6;
+}
+
+.ucb-note {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--text-2);
+  padding: 8px 12px;
+  border-left: 2px solid rgba(251,191,36,0.3);
+  background: var(--warn-dim);
+  border-radius: 0 3px 3px 0;
+  opacity: 0.85;
+}
+
 /* ─── RESPONSIVE ─────────────────────────────────────────────── */
 
 @media (max-width: 620px) {
-  .page            { padding: 28px 18px 60px; }
-  .page-title      { font-size: 1.3rem; }
-  .controls-row    { gap: 20px; }
-  .inputs-grid     { grid-template-columns: 1fr; }
-  .val             { font-size: 1.15rem; }
-  .val-sm          { font-size: 1rem; }
-  .inline-input    { width: 100%; }
-  .panel-name      { font-size: 11px; }
+  .page                  { padding: 28px 18px 60px; }
+  .page-title            { font-size: 1.3rem; }
+  .controls-row          { gap: 20px; }
+  .inputs-grid           { grid-template-columns: 1fr; }
+  .val                   { font-size: 1.15rem; }
+  .val-sm                { font-size: 1rem; }
+  .inline-input          { width: 100%; }
+  .panel-name            { font-size: 11px; }
+  .backfeed-req          { grid-template-columns: 1fr; gap: 4px; }
+  .req-ref               { white-space: normal; }
+  .utility-conflict-banner { padding: 16px 16px; }
 }

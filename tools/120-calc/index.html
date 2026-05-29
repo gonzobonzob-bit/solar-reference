@@ -19,9 +19,8 @@
   <!-- ── ZONE 1: BASE CALCULATOR ──────────────────────────────── -->
   <section>
 
-    <!-- Controls row: version + connection side by side -->
+    <!-- Controls row: version + connection -->
     <div class="controls-row">
-
       <div class="control-group">
         <span class="control-label">NEC Version</span>
         <div class="pill-group" id="versionToggle">
@@ -31,7 +30,6 @@
           <button data-version="2023" onclick="setVersion('2023')">2023</button>
         </div>
       </div>
-
       <div class="control-group">
         <span class="control-label">Connection Type</span>
         <div class="pill-group" id="connToggle">
@@ -39,61 +37,245 @@
           <button data-conn="supply" onclick="setConnection('supply')">SUPPLY-SIDE</button>
         </div>
       </div>
-
     </div>
 
     <!-- Version note banner -->
     <div class="version-banner" id="versionBanner"></div>
 
-    <!-- Supply-side note (hidden by default) -->
+    <!-- Supply-side note (shown when supply-side selected) -->
     <div class="supply-note hidden" id="supplySideNote">
       <strong>Supply-Side Connection</strong>
       <p>Supply-side connection bypasses 705.12. Governed by 705.12(A). Size per utility requirements and 230.82(6). No busbar percentage limit applies.</p>
     </div>
 
-    <!-- Load-side calculator content -->
+    <!-- Load-side content -->
     <div id="loadSideContent">
 
-      <!-- Inputs -->
-      <div class="inputs-grid">
+      <!-- Controls row: panel type + calc method -->
+      <div class="controls-row controls-row-sub">
+        <div class="control-group">
+          <span class="control-label">Panel Type</span>
+          <div class="pill-group" id="panelTypeToggle">
+            <button data-panel="main" onclick="setPanelType('main')">MAIN PANEL</button>
+            <button data-panel="sub"  onclick="setPanelType('sub')">SUB PANEL</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Calculation Method</span>
+          <div class="pill-group" id="calcMethodToggle">
+            <button data-method="120pct"      onclick="setCalcMethod('120pct')">120% METHOD</button>
+            <button data-method="sumbreakers" onclick="setCalcMethod('sumbreakers')">SUM OF BREAKERS</button>
+          </div>
+        </div>
+      </div>
 
-        <div class="input-block">
-          <label for="busRating">Bus Rating (amps)</label>
-          <input type="number" class="num-input" id="busRating"
-            placeholder="Enter amps" min="1" step="any" autocomplete="off">
-          <div class="chips">
-            <button class="chip" onclick="setChip('busRating', 100)">100</button>
-            <button class="chip" onclick="setChip('busRating', 125)">125</button>
-            <button class="chip" onclick="setChip('busRating', 150)">150</button>
-            <button class="chip" onclick="setChip('busRating', 200)">200</button>
-            <button class="chip" onclick="setChip('busRating', 225)">225</button>
-            <button class="chip" onclick="setChip('busRating', 320)">320</button>
-            <button class="chip" onclick="setChip('busRating', 400)">400</button>
+      <!-- ── MAIN PANEL INPUTS ─────────────────────────────────── -->
+      <div id="mainPanelInputs">
+        <div class="inputs-grid">
+          <div class="input-block">
+            <label for="busRating">Bus Rating (amps)</label>
+            <input type="number" class="num-input" id="busRating"
+              placeholder="Enter amps" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('busRating', 100)">100</button>
+              <button class="chip" onclick="setChip('busRating', 125)">125</button>
+              <button class="chip" onclick="setChip('busRating', 150)">150</button>
+              <button class="chip" onclick="setChip('busRating', 200)">200</button>
+              <button class="chip" onclick="setChip('busRating', 225)">225</button>
+              <button class="chip" onclick="setChip('busRating', 320)">320</button>
+              <button class="chip" onclick="setChip('busRating', 400)">400</button>
+            </div>
+          </div>
+          <div class="input-block">
+            <label for="mainBreaker">Main Breaker Size (amps)</label>
+            <input type="number" class="num-input" id="mainBreaker"
+              placeholder="Enter amps" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('mainBreaker', 60)">60</button>
+              <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
+              <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
+              <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
+              <button class="chip" onclick="setChip('mainBreaker', 175)">175</button>
+              <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
+              <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /mainPanelInputs -->
+
+      <!-- ── SUB PANEL INPUTS ──────────────────────────────────── -->
+      <div id="subPanelInputs" class="hidden">
+        <div class="sub-panel-config-note">
+          Sub panel interconnection uses the same 120% formula. Configuration determines the reference OCPD.
+          Main panel interconnection must be evaluated independently.
+        </div>
+        <div class="inputs-grid">
+          <div class="input-block">
+            <label for="subBusRating">Sub Panel Bus Rating (amps)</label>
+            <input type="number" class="num-input" id="subBusRating"
+              placeholder="Enter amps" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('subBusRating', 100)">100</button>
+              <button class="chip" onclick="setChip('subBusRating', 125)">125</button>
+              <button class="chip" onclick="setChip('subBusRating', 150)">150</button>
+              <button class="chip" onclick="setChip('subBusRating', 200)">200</button>
+            </div>
+          </div>
+          <div class="input-block">
+            <label>Configuration</label>
+            <select class="select-input" id="subConfigSelect">
+              <option value="main_breaker">With Main Breaker</option>
+              <option value="through_lug">Through-Lug</option>
+            </select>
+            <div class="select-sub">
+              <span>With Main Breaker</span> — uses sub panel main breaker as reference OCPD<br>
+              <span>Through-Lug</span> — uses feeder OCPD; NEC 408.36 Exception
+            </div>
+          </div>
+        </div>
+        <div class="inputs-grid" style="margin-top: 16px;">
+          <div class="input-block">
+            <label for="subOCPD" id="subOCPDLabel">Sub Panel Main Breaker (amps)</label>
+            <input type="number" class="num-input" id="subOCPD"
+              placeholder="Enter amps" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('subOCPD', 60)">60</button>
+              <button class="chip" onclick="setChip('subOCPD', 100)">100</button>
+              <button class="chip" onclick="setChip('subOCPD', 125)">125</button>
+              <button class="chip" onclick="setChip('subOCPD', 150)">150</button>
+              <button class="chip" onclick="setChip('subOCPD', 200)">200</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- /subPanelInputs -->
+
+      <!-- ── SUM OF BREAKERS CONTENT ───────────────────────────── -->
+      <div id="sumBreakersContent" class="hidden">
+
+        <div class="sob-banner">
+          <div class="sob-banner-title">Sum of All Breakers Method</div>
+          <p>
+            NEC 705.12(B)(2)(3)(b) — An alternative to the 120% rule. The total of all OCPD ratings
+            on the busbar, including the proposed backfeed breaker, must not exceed the busbar rating.
+            No 120% multiplier applies.
+          </p>
+          <button class="sob-when-toggle" onclick="toggleSobWhen()">When to use ▾</button>
+          <div class="sob-when-block hidden" id="sobWhenBlock">
+            <ul>
+              <li>Panel fails the 120% rule but total load OCPD is low — the sum method may pass without a panel upgrade.</li>
+              <li>AHJ prefers total load enumeration over the percentage-based method.</li>
+              <li>Multiple interactive sources (PV + ESS + generator) where aggregate OCPD is easier to document.</li>
+              <li>Confirming a passing 120% result via an alternate method for stronger permit documentation.</li>
+            </ul>
+            <div class="code-note" style="margin-top: 8px;">
+              Interpretation varies by AHJ. Confirm acceptance before designing to this method.
+              Some utilities apply more restrictive rules than the NEC minimum.
+            </div>
           </div>
         </div>
 
-        <div class="input-block">
-          <label for="mainBreaker">Main Breaker Size (amps)</label>
-          <input type="number" class="num-input" id="mainBreaker"
-            placeholder="Enter amps" min="1" step="any" autocomplete="off">
-          <div class="chips">
-            <button class="chip" onclick="setChip('mainBreaker', 60)">60</button>
-            <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
-            <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
-            <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
-            <button class="chip" onclick="setChip('mainBreaker', 175)">175</button>
-            <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
-            <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
+        <div class="inputs-grid">
+          <div class="input-block">
+            <label for="sobBusRating">Bus Rating (amps)</label>
+            <input type="number" class="num-input" id="sobBusRating"
+              placeholder="Enter amps" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('sobBusRating', 100)">100</button>
+              <button class="chip" onclick="setChip('sobBusRating', 125)">125</button>
+              <button class="chip" onclick="setChip('sobBusRating', 150)">150</button>
+              <button class="chip" onclick="setChip('sobBusRating', 200)">200</button>
+              <button class="chip" onclick="setChip('sobBusRating', 225)">225</button>
+            </div>
           </div>
-        </div>
+          <div class="input-block">
+            <label for="sobTotalOCPD">Total Existing OCPD on Bus (amps)</label>
+            <input type="number" class="num-input" id="sobTotalOCPD"
+              placeholder="Sum of all breakers incl. main" min="1" step="any" autocomplete="off">
+          </div>
+          <div class="input-block">
+            <label for="sobProposedBackfeed">Proposed Backfeed Breaker (amps)</label>
+            <input type="number" class="num-input" id="sobProposedBackfeed"
+              placeholder="e.g. 40" min="1" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setChip('sobProposedBackfeed', 15)">15</button>
+              <button class="chip" onclick="setChip('sobProposedBackfeed', 20)">20</button>
+              <button class="chip" onclick="setChip('sobProposedBackfeed', 30)">30</button>
+              <button class="chip" onclick="setChip('sobProposedBackfeed', 40)">40</button>
+              <button class="chip" onclick="setChip('sobProposedBackfeed', 50)">50</button>
+            </div>
+          </div>
+        </div><!-- /sob inputs-grid -->
 
-      </div><!-- /inputs-grid -->
+        <!-- SOB Results card -->
+        <div class="results-card hidden" id="sobResultsCard">
+          <div class="results-head" id="sobResultsHead">
+            <span class="status-badge" id="sobStatusBadge"></span>
+            <span class="sob-method-label">Sum of Breakers</span>
+          </div>
+          <div class="results-body">
 
-      <!-- Results card (hidden until valid inputs) -->
+            <div class="alert alert-fail hidden" id="sobFailAlert">
+              Total OCPD exceeds bus rating. Panel cannot accommodate this backfeed at current bus loading.
+              Reduce existing OCPD, upgrade the bus, or reduce proposed backfeed size.
+            </div>
+
+            <div class="calc-row">
+              <span class="lbl">Bus Rating</span>
+              <span class="val" id="sobValBusRating"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Total Existing OCPD on Bus</span>
+              <span class="val-sm" id="sobValTotalOCPD"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">+ Proposed Backfeed Breaker</span>
+              <span class="val-sm" id="sobValProposedBF"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Total OCPD on Bus</span>
+              <span class="val" id="sobValTotal"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Remaining Headroom</span>
+              <span class="val-sm" id="sobValHeadroom"></span>
+            </div>
+
+            <div class="rule-note">
+              Pass condition: Total OCPD &le; Bus Rating. Main breaker must be included in total existing OCPD.
+              Citation: NEC 705.12(B)(2)(3)(b)&nbsp;[2023] / 705.12(D)(2)(3)(b)&nbsp;[pre-2020].
+            </div>
+
+            <!-- Comparison with 120% method -->
+            <div id="sobCmpBlock" class="hidden">
+              <div class="sub-title">Comparison: 120% Method</div>
+              <div class="calc-row">
+                <span class="lbl">Max Allowable Backfeed (120% method)</span>
+                <span class="val-sm" id="sobCmpMaxBF"></span>
+              </div>
+              <div class="calc-row">
+                <span class="lbl">Max Standard Breaker (120% method)</span>
+                <span class="val-sm" id="sobCmpMaxBrk"></span>
+              </div>
+              <div class="calc-row">
+                <span class="lbl">120% Method Result</span>
+                <span class="val-sm sob-cmp-pass"></span>
+              </div>
+            </div>
+            <div class="code-note">
+              Comparison requires Main Panel Bus Rating and Main Breaker entered in the 120% Method view.
+            </div>
+
+          </div>
+        </div><!-- /sobResultsCard -->
+
+      </div><!-- /sumBreakersContent -->
+
+      <!-- ── 120% RESULTS CARD ──────────────────────────────────── -->
       <div class="results-card hidden" id="resultsCard">
 
         <div class="results-head" id="resultsHead">
           <span class="status-badge" id="statusBadge"></span>
+          <span class="panel-type-badge hidden" id="panelTypeBadge">SUB PANEL</span>
         </div>
 
         <div class="results-body">
@@ -104,46 +286,68 @@
             Consider supply-side connection or panel upgrade.
           </div>
 
+          <!-- Sub panel config note -->
+          <div class="sub-panel-note hidden" id="subPanelNote"></div>
+
           <!-- Base results -->
           <div class="calc-row">
             <span class="lbl">120% of Bus Rating</span>
             <span class="val" id="val120Pct"></span>
           </div>
-
           <div class="calc-row hidden" id="rowBackfeed">
-            <span class="lbl">Maximum Allowable Backfeed Breaker</span>
+            <span class="lbl">Maximum Allowable Backfeed</span>
             <span class="val" id="valBackfeed"></span>
           </div>
-
           <div class="rule-note">
             Backfeed breaker must be installed at the opposite end of the busbar from the
-            main breaker per NEC 705.12(B)(3)&nbsp;[2023] or 705.12(D)(3)&nbsp;[pre-2020]
+            main breaker per NEC 705.12(B)(3)&nbsp;[2023] or 705.12(D)(3)&nbsp;[pre-2020].
+          </div>
+
+          <!-- ─ DEFAULT BREAKER OUTPUTS ──────────────────────────── -->
+          <div id="defaultBreakersSection" class="hidden">
+            <div class="sub-title">Maximum Allowable Breaker Sizes</div>
+            <div class="calc-row">
+              <span class="lbl">Max Allowable PV Backfeed Breaker</span>
+              <span class="val-sm" id="valMaxPVBreaker"></span>
+            </div>
+            <div class="calc-row hidden" id="rowMaxESSBreaker">
+              <span class="lbl">Max Allowable ESS Backfeed Breaker</span>
+              <span class="val-sm" id="valMaxESSBreaker"></span>
+            </div>
+            <div class="hidden" id="rowMaxCombinedNote">
+              <div class="code-note">
+                Combined PV + ESS backfeed cannot exceed <span id="valMaxBackfeedRef"></span>A.
+                Use optional fields below to check specific equipment.
+              </div>
+            </div>
+            <div class="size-note">
+              Largest standard breaker size that fits within the allowable backfeed — rounded down.
+              Actual breaker = inverter output current &times; 1.25, rounded up to next standard size.
+              These are the maximums permitted, not a sizing recommendation.
+            </div>
           </div>
 
           <!-- ─ INVERTER OUTPUT BREAKER SIZING ─────────────────── -->
           <div id="inverterSection" class="hidden">
 
-            <div class="sub-title">Inverter Output Breaker Sizing</div>
+            <div class="sub-title">Inverter Output Breaker — Verify Equipment</div>
 
             <div class="calc-row">
               <span class="lbl">Maximum Inverter Continuous Output Current</span>
               <span class="val-sm" id="valMaxInverterOutput"></span>
             </div>
-
             <div class="code-note">
               Inverter AC output breaker = 125% of inverter continuous output current
-              per NEC 705.12(B)(2)&nbsp;[2023] / 705.12(D)(2)&nbsp;[pre-2020]
+              per NEC 705.12(B)(2)&nbsp;[2023] / 705.12(D)(2)&nbsp;[pre-2020].
             </div>
-
             <div class="opt-row">
               <label for="knownInverterCurrent">Known Inverter Output Current (A) — optional</label>
               <input type="number" class="inline-input" id="knownInverterCurrent"
                 placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
             </div>
-
             <div id="inverterCalcBlock" class="hidden">
               <div class="calc-row">
-                <span class="lbl">Required Minimum Breaker Size (&times; 1.25)</span>
+                <span class="lbl">Required Minimum Breaker (&times; 1.25)</span>
                 <span class="val-sm" id="valInverterMinBreaker"></span>
               </div>
               <div class="calc-row">
@@ -158,14 +362,13 @@
           <!-- ─ ESS BREAKER SIZING (2020 / 2023 only) ──────────── -->
           <div id="essSection" class="hidden">
 
-            <div class="sub-title">ESS Breaker Sizing</div>
+            <div class="sub-title">ESS Breaker — Verify Equipment</div>
 
             <div class="opt-row">
               <label for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
               <input type="number" class="inline-input" id="essOutputCurrent"
                 placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
             </div>
-
             <div id="essCalcBlock" class="hidden">
               <div class="calc-row">
                 <span class="lbl">ESS Breaker Size (&times; 1.25, rounded up)</span>
@@ -181,7 +384,6 @@
               </div>
               <div id="essAlert" class="hidden"></div>
             </div>
-
             <div class="code-note">
               Bidirectional inverter/charger breaker sizing per NEC 705.12(B)&nbsp;[2020/2023].
               Both charge and discharge current must be considered.
@@ -190,6 +392,31 @@
 
           </div><!-- /essSection -->
 
+          <!-- ─ BACK-FED BREAKER LABELING ───────────────────────── -->
+          <div class="backfeed-callout hidden" id="backfeedLabelingCallout">
+            <div class="backfeed-callout-title">Back-Fed Breaker &amp; Labeling Requirements</div>
+            <div class="backfeed-reqs">
+              <div class="backfeed-req">
+                <span class="req-ref">NEC 705.12(B)(3)</span>
+                <span class="req-text">Backfeed breaker must be secured in position with a listed handle lock or breaker lock. Identified as an interactive system supply connection.</span>
+              </div>
+              <div class="backfeed-req">
+                <span class="req-ref">NEC 690.54</span>
+                <span class="req-text">Point of interconnection must be labeled with the maximum permitted backfeed current and system voltage. Label must be permanent, weatherproof if outdoors.</span>
+              </div>
+              <div class="backfeed-req">
+                <span class="req-ref">NEC 690.31(G)(3)</span>
+                <span class="req-text">All PV system wiring — junction boxes, conduit, raceways, combiners — must be labeled: <em>WARNING: PHOTOVOLTAIC POWER SOURCE</em> at accessible points.</span>
+              </div>
+            </div>
+            <div class="backfeed-field-note">
+              From the Field — Labeling is the most common reason solar inspections fail on the electrical side.
+              Breaker lock, label size, placement, and exact wording are each individually checked.
+              If multiple inverters are installed, each point of connection requires its own independent label set.
+              Confirm local AHJ label format and size requirements before scheduling final inspection.
+            </div>
+          </div>
+
           <!-- Citation bar -->
           <div class="citation-bar">
             <span class="citation-lbl">Active citation</span>
@@ -197,11 +424,34 @@
           </div>
 
         </div><!-- /results-body -->
-      </div><!-- /results-card -->
+      </div><!-- /resultsCard -->
 
     </div><!-- /loadSideContent -->
 
   </section>
+
+  <!-- ── UTILITY vs NEC CONFLICT BANNER ───────────────────────── -->
+  <div class="utility-conflict-banner">
+    <div class="ucb-title">Utility Interconnection Agreement May Override NEC</div>
+    <p class="ucb-body">
+      NEC 705.12 sets the minimum code standard for load-side interconnection.
+      Utility Interconnection Agreements (IA) and tariff schedules are contractual and often impose
+      stricter limits — they take precedence in practice regardless of NEC compliance.
+    </p>
+    <div class="ucb-list-label">Common utility restrictions that override NEC minimums:</div>
+    <ul class="ucb-list">
+      <li>Export capacity cap lower than NEC maximum (e.g., utility limits export to 15A regardless of panel capacity)</li>
+      <li>Anti-islanding delay requirements beyond IEEE 1547 minimums</li>
+      <li>Prohibition on specific inverter types, firmware versions, or rapid shutdown configurations</li>
+      <li>Metering requirements that restrict installation location or service entrance disconnect position</li>
+      <li>NEM/NEM3 queue restrictions that affect when a system can be energized</li>
+      <li>Minimum interconnection study thresholds that trigger additional engineering review</li>
+    </ul>
+    <div class="ucb-note">
+      Always obtain and review the utility IA before submitting permit documents.
+      AHJ approval does not substitute for utility approval — both are required.
+    </div>
+  </div>
 
   <!-- ── ZONE 2: EXPANSION PANELS ─────────────────────────────── -->
   <hr class="zone-divider">
