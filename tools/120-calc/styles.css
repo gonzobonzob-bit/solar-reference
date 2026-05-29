@@ -606,4 +606,122 @@ body {
   .panel-title {
     font-size: 11px;
   }
+
+  .calc-input-sm {
+    width: 100%;
+  }
+}
+
+/* ─── RESULTS SUBSECTIONS ─────────────────────────────────────── */
+
+.subsection-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.subsection-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gold-border);
+}
+
+.result-row-sm {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(79,195,247,0.05);
+  gap: 16px;
+}
+
+.result-value-sm {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.15rem;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sub-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  line-height: 1.75;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+  margin: 12px 0 4px;
+  padding: 8px 12px;
+  border-left: 2px solid rgba(79,195,247,0.18);
+  opacity: 0.8;
+}
+
+/* ─── INLINE OPTIONAL INPUTS ─────────────────────────────────── */
+
+.inline-input-group {
+  margin: 14px 0 10px;
+}
+
+.calc-input-sm {
+  display: block;
+  width: 220px;
+  background: var(--dark);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1rem;
+  outline: none;
+  margin-top: 6px;
+  transition: border-color 0.15s;
+  -moz-appearance: textfield;
+}
+
+.calc-input-sm::-webkit-outer-spin-button,
+.calc-input-sm::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.calc-input-sm:focus {
+  border-color: var(--gold);
+}
+
+.calc-input-sm::placeholder {
+  color: rgba(128,144,160,0.4);
+  font-size: 0.9rem;
+}
+
+/* ─── WARNING & CONFIRM MESSAGES ─────────────────────────────── */
+
+.result-warning {
+  background: var(--fail-dim);
+  border: 1px solid var(--fail-border);
+  border-left: 3px solid var(--fail);
+  border-radius: 0 4px 4px 0;
+  padding: 10px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--fail);
+  line-height: 1.65;
+  margin: 10px 0;
+}
+
+.result-confirm {
+  background: var(--pass-dim);
+  border: 1px solid var(--pass-border);
+  border-left: 3px solid var(--pass);
+  border-radius: 0 4px 4px 0;
+  padding: 10px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--pass);
+  line-height: 1.65;
+  margin: 10px 0;
 }

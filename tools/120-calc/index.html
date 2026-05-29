@@ -117,10 +117,70 @@
           main breaker per NEC 705.12(B)(3) [2023] or 705.12(D)(3) [pre-2020]
         </div>
 
-        <div class="inverter-note hidden" id="inverterCurrentNote">
-          Inverter output breaker sized at 125% of inverter continuous output current per
-          NEC 705.12(B)(2) [2023]. Max inverter continuous output current at this panel:
-          <span class="result-value-inline" id="resMaxInverterCurrent">—</span>
+        <!-- INVERTER OUTPUT BREAKER SIZING -->
+        <div class="results-subsection hidden" id="inverterSizingSection">
+          <div class="subsection-header">Inverter Output Breaker Sizing</div>
+
+          <div class="result-row-sm">
+            <span class="result-label">Maximum Inverter Continuous Output Current</span>
+            <span class="result-value-sm" id="resMaxInverterOutputCurrent">—</span>
+          </div>
+
+          <div class="sub-note">
+            Inverter AC output breaker = 125% of inverter continuous output current
+            per NEC 705.12(B)(2) [2023] / 705.12(D)(2) [pre-2020]
+          </div>
+
+          <div class="inline-input-group">
+            <label class="input-label" for="knownInverterCurrent">Known Inverter Output Current (A) — optional</label>
+            <input type="number" class="calc-input-sm" id="knownInverterCurrent"
+              placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
+          </div>
+
+          <div id="inverterKnownResults" class="hidden">
+            <div class="result-row-sm">
+              <span class="result-label">Required Minimum Breaker Size (× 1.25)</span>
+              <span class="result-value-sm" id="resInverterRaw">—</span>
+            </div>
+            <div class="result-row-sm">
+              <span class="result-label">Next Standard Breaker Size</span>
+              <span class="result-value-sm" id="resInverterStd">—</span>
+            </div>
+            <div id="inverterExceedsFlag" class="hidden"></div>
+          </div>
+        </div>
+
+        <!-- ESS BREAKER SIZING (2020 / 2023 only) -->
+        <div class="results-subsection hidden" id="essSizingSection">
+          <div class="subsection-header">ESS Breaker Sizing</div>
+
+          <div class="inline-input-group">
+            <label class="input-label" for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
+            <input type="number" class="calc-input-sm" id="essOutputCurrent"
+              placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
+          </div>
+
+          <div id="essResults" class="hidden">
+            <div class="result-row-sm">
+              <span class="result-label">ESS Breaker Size (× 1.25, rounded up)</span>
+              <span class="result-value-sm" id="resEssStd">—</span>
+            </div>
+            <div class="result-row-sm hidden" id="combinedCheckRow">
+              <span class="result-label">Combined PV + ESS Backfeed</span>
+              <span class="result-value-sm" id="resCombinedTotal">—</span>
+            </div>
+            <div class="result-row-sm hidden" id="remainingCapacityRow">
+              <span class="result-label">Remaining Backfeed Capacity after ESS</span>
+              <span class="result-value-sm" id="resRemainingCapacity">—</span>
+            </div>
+            <div id="essStatusMsg" class="hidden"></div>
+          </div>
+
+          <div class="sub-note">
+            Bidirectional inverter/charger breaker sizing per NEC 705.12(B) [2020/2023].
+            Both charge and discharge current must be considered.
+            Confirm with AHJ — interpretation varies.
+          </div>
         </div>
 
         <div class="citation-bar">
