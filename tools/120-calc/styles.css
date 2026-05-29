@@ -963,6 +963,222 @@ body {
   opacity: 0.85;
 }
 
+/* ─── SUPPLY-SIDE EXPANDED CONTENT ──────────────────────────── */
+
+.supply-note p {
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--text-2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+}
+
+.supply-section {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(79,195,247,0.1);
+}
+
+.supply-section-title {
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--sky);
+  margin-bottom: 6px;
+}
+
+.supply-section p {
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--text-2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+}
+
+.supply-field-note {
+  margin-top: 14px;
+  padding: 8px 12px;
+  border-left: 2px solid rgba(79,195,247,0.3);
+  font-size: 11px;
+  line-height: 1.75;
+  color: var(--text-2);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+  background: rgba(79,195,247,0.03);
+  opacity: 0.85;
+}
+
+.supply-refs {
+  margin-top: 12px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--sky);
+  opacity: 0.55;
+}
+
+/* ─── MAIN BREAKER VALIDATION ────────────────────────────────── */
+
+.mb-warning {
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  line-height: 1.7;
+  border-radius: 0 4px 4px 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 300;
+}
+
+.mb-warning-amber {
+  background: var(--warn-dim);
+  border: 1px solid var(--warn-border);
+  border-left: 3px solid var(--warn);
+  color: var(--warn);
+}
+
+.mb-warning-red {
+  background: var(--fail-dim);
+  border: 1px solid var(--fail-border);
+  border-left: 3px solid var(--fail);
+  color: var(--fail);
+}
+
+/* ─── FAIL GUIDANCE PANEL ────────────────────────────────────── */
+
+.fail-guidance {
+  background: var(--warn-dim);
+  border: 1px solid var(--warn-border);
+  border-left: 3px solid var(--warn);
+  border-radius: 0 6px 6px 0;
+  margin: 10px 0 14px;
+  overflow: hidden;
+}
+
+.fail-guidance-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 11px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--warn);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.fail-guidance-toggle:hover { background: rgba(251,191,36,0.05); }
+
+#failGuidanceBody {
+  padding: 4px 16px 16px;
+  border-top: 1px solid var(--warn-border);
+}
+
+.fg-option {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(251,191,36,0.1);
+}
+
+.fg-option:last-of-type { border-bottom: none; }
+
+.fg-opt-title {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warn);
+  margin-bottom: 6px;
+  margin-top: 10px;
+}
+
+.fg-option p, .fg-mpu p {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--text-2);
+}
+
+.fg-mpu {
+  background: rgba(251,191,36,0.04);
+  border: 1px solid rgba(251,191,36,0.12);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin: 6px 0 14px;
+}
+
+.fg-mpu-title {
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warn);
+  margin-bottom: 8px;
+}
+
+.fg-mpu ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.fg-mpu li {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.75;
+  padding: 3px 0 3px 16px;
+  position: relative;
+}
+
+.fg-mpu li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--warn);
+  opacity: 0.5;
+}
+
+.fg-mpu li strong { color: var(--text); font-weight: 400; }
+
+.fg-field-note {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--text-2);
+  line-height: 1.75;
+  padding: 8px 10px;
+  border-left: 2px solid rgba(251,191,36,0.25);
+  background: rgba(251,191,36,0.03);
+  border-radius: 0 3px 3px 0;
+  margin-bottom: 10px;
+  opacity: 0.85;
+}
+
+.fg-flag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--fail);
+  background: var(--fail-dim);
+  border: 1px solid var(--fail-border);
+  border-left: 3px solid var(--fail);
+  border-radius: 0 4px 4px 0;
+  padding: 8px 12px;
+  line-height: 1.7;
+  margin-top: 6px;
+}
+
+/* ─── COMBINED CONFIG FAIL ───────────────────────────────────── */
+
+.combined-fail { font-size: 12px; }
+.combined-fail strong { font-weight: 500; }
+
 /* ─── RESPONSIVE ─────────────────────────────────────────────── */
 
 @media (max-width: 620px) {

@@ -106,23 +106,19 @@ function compute120(s) {
   if (s.knownInverterCurrent !== null) {
     const raw = s.knownInverterCurrent * 1.25;
     const std = nextStd(raw);
-    c.inv = { raw, std, exceeds: std !== null ? std > maxBackfeed : true };
+    c.inv = { raw, std, passPanel: std !== null && std <= maxBackfeed };
   }
 
   if (v.ess && s.essOutputCurrent !== null) {
     const raw = s.essOutputCurrent * 1.25;
     const std = nextStd(raw);
-    c.ess = { raw, std };
-    if (std !== null) {
-      if (c.inv && c.inv.std !== null) {
-        const combined        = c.inv.std + std;
-        c.ess.combined        = combined;
-        c.ess.combinedExceeds = combined > maxBackfeed;
-      } else {
-        c.ess.remaining    = maxBackfeed - std;
-        c.ess.exceedsAlone = std > maxBackfeed;
-      }
-    }
+    c.ess = { raw, std, passPanel: std !== null && std <= maxBackfeed };
+  }
+
+  // Combined config check — independent of panel 120% result
+  if (c.inv && c.ess && c.inv.std !== null && c.ess.std !== null) {
+    const combined = c.inv.std + c.ess.std;
+    c.combined = { pvStd: c.inv.std, essStd: c.ess.std, total: combined, pass: combined <= maxBackfeed };
   }
 
   return c;
@@ -176,6 +172,8 @@ function render() {
   if (!v.pcs && el('panelPcs').classList.contains('open')) el('panelPcs').classList.remove('open');
   set('pcsBadge', v.pcs);
 
+  renderMainBreakerValidation();
+
   set('supplySideNote',  isLoad);
   set('loadSideContent', !isLoad);
 
@@ -215,7 +213,9 @@ function render120Results(c, v) {
 
   el('panelTypeBadge').classList.toggle('hidden', !c.isSub);
 
-  set('failAlert', c.pass);
+  set('failAlert',        c.pass);
+  set('failGuidancePanel', c.pass);
+  if (!c.pass) el('failGuidanceBody').classList.remove('hidden');
 
   set('subPanelNote', !c.isSub);
   if (c.isSub) {
@@ -238,6 +238,11 @@ function render120Results(c, v) {
   set('essSection', !showEss);
   if (showEss) renderEssCalc(c);
 
+  // Combined config check — independent of panel pass/fail
+  const showCombined = c.pass && !!c.combined;
+  set('combinedConfigSection', !showCombined);
+  if (showCombined) renderCombinedConfigCheck(c);
+
   set('backfeedLabelingCallout', !c.pass);
 
   txt('activeCitation', v.citation);
@@ -247,13 +252,11 @@ function renderDefaultBreakers(c, v) {
   txt('valMaxPVBreaker', c.maxPVBreaker !== null ? c.maxPVBreaker + 'A' : '> 200A — verify with AHJ');
 
   const hasEss = !!v.ess;
-  set('rowMaxESSBreaker', !hasEss);
+  set('rowMaxESSBreaker',     !hasEss);
+  set('rowMaxCombinedDisplay', !hasEss);
   if (hasEss) {
-    txt('valMaxESSBreaker', c.maxESSBreaker !== null ? c.maxESSBreaker + 'A' : '> 200A — verify with AHJ');
-    set('rowMaxCombinedNote', false);
-    txt('valMaxBackfeedRef', c.maxBackfeed.toFixed(2));
-  } else {
-    set('rowMaxCombinedNote', true);
+    txt('valMaxESSBreaker',     c.maxESSBreaker !== null ? c.maxESSBreaker + 'A' : '> 200A — verify with AHJ');
+    txt('valMaxCombinedDisplay', c.maxBackfeed.toFixed(2) + 'A total');
   }
 }
 
@@ -274,14 +277,15 @@ function renderInverterCalc(c) {
     alertEl.classList.remove('hidden');
   } else {
     txt('valInverterStdBreaker', c.inv.std + 'A');
-    if (c.inv.exceeds) {
-      alertEl.className   = 'alert alert-warn';
-      alertEl.textContent =
-        'Calculated breaker (' + c.inv.std + 'A) exceeds maximum allowable backfeed (' +
-        c.maxBackfeed.toFixed(2) + 'A). Reduce inverter output or consider supply-side connection.';
+    if (!c.inv.passPanel) {
+      alertEl.className   = 'alert alert-fail';
+      alertEl.textContent = 'FAIL — Required PV breaker (' + c.inv.std + 'A) exceeds panel capacity (' +
+        c.maxBackfeed.toFixed(2) + 'A). Resize system or consider supply-side connection.';
       alertEl.classList.remove('hidden');
     } else {
-      alertEl.classList.add('hidden');
+      alertEl.className   = 'alert alert-ok';
+      alertEl.textContent = 'PASS — PV breaker ' + c.inv.std + 'A is within the allowable limit.';
+      alertEl.classList.remove('hidden');
     }
   }
 }
@@ -295,8 +299,6 @@ function renderEssCalc(c) {
 
   if (c.ess.std === null) {
     txt('valEssBreaker', 'Exceeds 200A');
-    set('rowCombined',     true);
-    set('rowEssRemaining', true);
     alertEl.className   = 'alert alert-warn';
     alertEl.textContent = 'Calculated ESS breaker exceeds 200A standard size. Verify with AHJ and equipment specs.';
     alertEl.classList.remove('hidden');
@@ -305,34 +307,15 @@ function renderEssCalc(c) {
 
   txt('valEssBreaker', c.ess.std + 'A');
 
-  if (c.ess.combined !== undefined) {
-    set('rowCombined',     false);
-    set('rowEssRemaining', true);
-    txt('valCombined', c.ess.combined + 'A');
-    if (c.ess.combinedExceeds) {
-      alertEl.className   = 'alert alert-warn';
-      alertEl.textContent =
-        'Combined PV and ESS backfeed (' + c.ess.combined + 'A) exceeds panel capacity (' +
-        c.maxBackfeed.toFixed(2) + 'A). Resize or consider supply-side connection.';
-    } else {
-      alertEl.className   = 'alert alert-ok';
-      alertEl.textContent = 'Combined backfeed within allowable limit.';
-    }
+  if (!c.ess.passPanel) {
+    alertEl.className   = 'alert alert-fail';
+    alertEl.textContent = 'FAIL — Required ESS breaker (' + c.ess.std + 'A) exceeds panel capacity (' +
+      c.maxBackfeed.toFixed(2) + 'A). Reduce system size or consider supply-side connection.';
     alertEl.classList.remove('hidden');
   } else {
-    set('rowCombined',     true);
-    set('rowEssRemaining', false);
-    if (c.ess.exceedsAlone) {
-      txt('valEssRemaining', '0.00A');
-      alertEl.className   = 'alert alert-warn';
-      alertEl.textContent =
-        'ESS backfeed (' + c.ess.std + 'A) alone exceeds panel capacity (' +
-        c.maxBackfeed.toFixed(2) + 'A). Consider supply-side connection or panel upgrade.';
-      alertEl.classList.remove('hidden');
-    } else {
-      txt('valEssRemaining', c.ess.remaining.toFixed(2) + 'A');
-      alertEl.classList.add('hidden');
-    }
+    alertEl.className   = 'alert alert-ok';
+    alertEl.textContent = 'PASS — ESS breaker ' + c.ess.std + 'A is within the allowable limit.';
+    alertEl.classList.remove('hidden');
   }
 }
 
@@ -415,6 +398,66 @@ function togglePanel(id) {
   const p = el(id);
   if (p.classList.contains('locked') || p.classList.contains('ver-off')) return;
   p.classList.toggle('open');
+}
+
+function renderCombinedConfigCheck(c) {
+  txt('valCombinedPV',    c.combined.pvStd  + 'A');
+  txt('valCombinedESS',   c.combined.essStd + 'A');
+  txt('valCombinedTotal', c.combined.total  + 'A');
+
+  const alertEl = el('combinedConfigAlert');
+  if (!c.combined.pass) {
+    alertEl.className = 'alert alert-fail combined-fail';
+    alertEl.innerHTML =
+      '<strong>CONFIGURATION FAIL</strong> — Combined PV and ESS backfeed of ' + c.combined.total + 'A ' +
+      'exceeds maximum allowable backfeed of ' + c.maxBackfeed.toFixed(2) + 'A. ' +
+      'Panel passes 120% calc but proposed equipment combination exceeds available capacity. ' +
+      'Options: reduce system size, split across multiple panels, or consider supply-side connection.';
+    alertEl.classList.remove('hidden');
+  } else {
+    alertEl.className   = 'alert alert-ok';
+    alertEl.textContent = 'Configuration within allowable limit. Combined backfeed ' +
+      c.combined.total + 'A of ' + c.maxBackfeed.toFixed(2) + 'A maximum.';
+    alertEl.classList.remove('hidden');
+  }
+}
+
+function renderMainBreakerValidation() {
+  const warningEl = el('mainBreakerWarning');
+  if (!warningEl) return;
+  const val = state.mainBreaker;
+
+  if (val === null) {
+    warningEl.classList.add('hidden');
+    return;
+  }
+
+  if (val <= 60) {
+    warningEl.className   = 'mb-warning mb-warning-red';
+    warningEl.textContent = '60A service detected. This service predates the 1978 NEC 100A minimum for single family ' +
+      'dwellings. Solar addition to a 60A service will almost certainly require a Main Panel Upgrade. ' +
+      'Available backfeed at this service size is insufficient for most modern inverter outputs. ' +
+      'Recommend MPU discussion with customer before finalizing system design.';
+    warningEl.classList.remove('hidden');
+  } else if (val < 100) {
+    warningEl.className   = 'mb-warning mb-warning-amber';
+    warningEl.textContent = 'Services below 100A do not meet NEC 230.79(C) minimum for single family dwellings ' +
+      'established in the 1978 NEC. 60A services are grandfathered where originally compliant but solar ' +
+      'addition will likely require a Main Panel Upgrade. Verify scope with AHJ before quoting customer.';
+    warningEl.classList.remove('hidden');
+  } else {
+    warningEl.classList.add('hidden');
+  }
+}
+
+function toggleFailGuidance() {
+  const body  = el('failGuidanceBody');
+  const isOpen = !body.classList.contains('hidden');
+  body.classList.toggle('hidden', isOpen);
+  const btn = document.querySelector('.fail-guidance-toggle');
+  if (btn) btn.textContent = isOpen
+    ? 'When The Panel Fails — Options & Considerations ▾'
+    : 'When The Panel Fails — Options & Considerations ▴';
 }
 
 function toggleSobWhen() {

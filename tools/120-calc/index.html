@@ -45,7 +45,29 @@
     <!-- Supply-side note (shown when supply-side selected) -->
     <div class="supply-note hidden" id="supplySideNote">
       <strong>Supply-Side Connection</strong>
-      <p>Supply-side connection bypasses 705.12. Governed by 705.12(A). Size per utility requirements and 230.82(6). No busbar percentage limit applies.</p>
+      <p>Supply-side connection bypasses NEC 705.12. No busbar percentage limit applies. Governed by NEC 705.12(A) and 230.82(6).</p>
+      <p style="margin-top: 8px;">Supply-side connections are still subject to the following hard limits:</p>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Conductors</div>
+        <p>Tap conductors must be sized to carry full inverter output current without exceeding ampacity per NEC 310.12. Conductor ampacity must meet or exceed inverter maximum output current &times; 125% continuous load factor per NEC 705.12(A). Conductor length and conduit fill still apply per NEC 310 and Chapter 9.</p>
+      </div>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Disconnect &amp; Overcurrent Protection</div>
+        <p>A supply-side disconnect is required per NEC 230.82(6). OCPD must be sized to protect the conductors — not just the inverter output. Service equipment ratings cannot be exceeded. The supply-side connection point must be rated for the combined current.</p>
+      </div>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Service Entrance Equipment</div>
+        <p>Meter base, service entrance conductors, and all equipment between the utility connection and tap point must be rated for the combined load. Many utilities require written approval and may specify their own sizing requirements independent of NEC. Some utilities prohibit supply-side connections entirely — confirm with AHJ and utility interconnection agreement before designing.</p>
+      </div>
+
+      <div class="supply-field-note">
+        From the Field — Supply-side connections are often chosen when a panel fails the 120% calc. They are not a free pass — they shift sizing constraints from the busbar to the service entrance equipment and conductors. Confirm all component ratings before finalizing design.
+      </div>
+
+      <div class="supply-refs">NEC References: 705.12(A), 230.82(6), 310.12, Chapter 9</div>
     </div>
 
     <!-- Load-side content -->
@@ -99,6 +121,7 @@
               <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
               <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
             </div>
+            <div id="mainBreakerWarning" class="hidden"></div>
           </div>
         </div>
       </div><!-- /mainPanelInputs -->
@@ -286,6 +309,68 @@
             Consider supply-side connection or panel upgrade.
           </div>
 
+          <!-- Fail guidance panel -->
+          <div id="failGuidancePanel" class="fail-guidance hidden">
+            <button class="fail-guidance-toggle" onclick="toggleFailGuidance()">When The Panel Fails — Options &amp; Considerations ▴</button>
+            <div id="failGuidanceBody">
+
+              <div class="fg-option">
+                <div class="fg-opt-title">Option 1 — Verify Backfeed Breaker Position</div>
+                <p>Before assuming a full fail, confirm breaker placement. Back-fed breaker must be at the opposite end of the busbar from the main breaker per NEC 705.12(B)(3) [2023] / 705.12(D)(3) [pre-2020]. If placement is the only issue, this is an install correction — not a panel failure.</p>
+              </div>
+
+              <div class="fg-option">
+                <div class="fg-opt-title">Option 2 — Reduce System Size</div>
+                <p>If available backfeed is positive but insufficient for the proposed inverter output, reducing system size may resolve without panel work. Recalculate with a smaller inverter output current.</p>
+              </div>
+
+              <div class="fg-option">
+                <div class="fg-opt-title">Option 3 — Supply-Side Connection</div>
+                <p>Bypasses NEC 705.12 busbar calculation entirely. Governed by NEC 705.12(A) and 230.82(6). Requires utility written approval — not permitted by all utilities. Shifts sizing requirements to service entrance equipment and conductors. Switch to Supply-Side mode above for full requirements.</p>
+              </div>
+
+              <div class="fg-option">
+                <div class="fg-opt-title">Option 4 — Main Breaker Reduction</div>
+                <p>If the main breaker is oversized relative to actual service capacity, reducing main breaker size increases available backfeed headroom.<br>
+                Example: 200A bus / 200A main = 0A available.<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200A bus / 175A main = 65A available.<br>
+                Requires utility approval. Do not downsize without written utility authorization.</p>
+              </div>
+
+              <div class="fg-option">
+                <div class="fg-opt-title">Option 5 — Main Panel Upgrade (MPU)</div>
+                <p>Full panel replacement with higher rated busbar. Most common solution when service is undersized for both home load and solar addition.</p>
+              </div>
+
+              <div class="fg-mpu">
+                <div class="fg-mpu-title">MPU Triggers Bring-to-Code Requirements</div>
+                <p>Most jurisdictions require electrical work associated with an MPU to bring affected circuits to current code. Common requirements triggered by MPU permit:</p>
+                <ul>
+                  <li><strong>NEC 210.12 [2023]</strong> — AFCI protection on bedroom, living room, kitchen, hallway, and dining room circuits.</li>
+                  <li><strong>NEC 210.8 [2023]</strong> — GFCI updates in all required locations — kitchen, bath, garage, outdoor, basement, crawl space, boathouse, accessory dwelling.</li>
+                  <li><strong>NEC 250.50 [2023]</strong> — Grounding electrode system — all electrodes present at structure must be bonded.</li>
+                  <li><strong>NEC 250.53 [2023]</strong> — Two ground rods required unless single rod meets 25 ohm resistance.</li>
+                  <li>Service entrance conductor sizing per NEC 230.31.</li>
+                  <li>Meter base upgrade if existing is not rated for new service size.</li>
+                  <li>Smoke and CO detector requirements may be triggered by local amendment — confirm with AHJ.</li>
+                </ul>
+              </div>
+
+              <div class="fg-field-note">
+                From the Field — AHJ interpretation varies significantly. Some inspectors treat any panel upgrade as a full service upgrade triggering all of the above. Others scope requirements to affected circuits only. Confirm scope with AHJ before quoting the customer — an MPU can range from a straightforward panel swap to a significant whole-home electrical update depending on jurisdiction.
+              </div>
+
+              <div class="fg-field-note">
+                NEC 230.79(C) requires 100A minimum service for single family dwellings. Services below 100A predate the 1978 NEC minimum. Any MPU must bring service to 100A minimum. Many AHJs and utilities require 200A minimum for new construction and solar installations.
+              </div>
+
+              <div class="fg-flag">
+                60A Service Flag — 60A services are common in pre-1978 construction. Solar addition to a 60A service almost always requires an MPU. A 60A bus with 60A main: 60 &times; 1.2 = 72A, minus 60A main = only 12A available backfeed. Insufficient for virtually any modern inverter output.
+              </div>
+
+            </div>
+          </div>
+
           <!-- Sub panel config note -->
           <div class="sub-panel-note hidden" id="subPanelNote"></div>
 
@@ -314,11 +399,9 @@
               <span class="lbl">Max Allowable ESS Backfeed Breaker</span>
               <span class="val-sm" id="valMaxESSBreaker"></span>
             </div>
-            <div class="hidden" id="rowMaxCombinedNote">
-              <div class="code-note">
-                Combined PV + ESS backfeed cannot exceed <span id="valMaxBackfeedRef"></span>A.
-                Use optional fields below to check specific equipment.
-              </div>
+            <div class="calc-row hidden" id="rowMaxCombinedDisplay">
+              <span class="lbl">Maximum Combined PV + ESS Backfeed</span>
+              <span class="val-sm" id="valMaxCombinedDisplay"></span>
             </div>
             <div class="size-note">
               Largest standard breaker size that fits within the allowable backfeed — rounded down.
@@ -341,7 +424,7 @@
               per NEC 705.12(B)(2)&nbsp;[2023] / 705.12(D)(2)&nbsp;[pre-2020].
             </div>
             <div class="opt-row">
-              <label for="knownInverterCurrent">Known Inverter Output Current (A) — optional</label>
+              <label for="knownInverterCurrent">Known PV Inverter Output Current (A) — optional</label>
               <input type="number" class="inline-input" id="knownInverterCurrent"
                 placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
             </div>
@@ -374,14 +457,6 @@
                 <span class="lbl">ESS Breaker Size (&times; 1.25, rounded up)</span>
                 <span class="val-sm" id="valEssBreaker"></span>
               </div>
-              <div class="calc-row hidden" id="rowCombined">
-                <span class="lbl">Combined PV + ESS Backfeed</span>
-                <span class="val-sm" id="valCombined"></span>
-              </div>
-              <div class="calc-row hidden" id="rowEssRemaining">
-                <span class="lbl">Remaining Backfeed Capacity after ESS</span>
-                <span class="val-sm" id="valEssRemaining"></span>
-              </div>
               <div id="essAlert" class="hidden"></div>
             </div>
             <div class="code-note">
@@ -391,6 +466,24 @@
             </div>
 
           </div><!-- /essSection -->
+
+          <!-- ─ COMBINED PV + ESS CONFIG CHECK ────────────────────── -->
+          <div id="combinedConfigSection" class="hidden">
+            <div class="sub-title">PV + ESS Configuration Check</div>
+            <div class="calc-row">
+              <span class="lbl">PV Backfeed Breaker</span>
+              <span class="val-sm" id="valCombinedPV"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">+ ESS Backfeed Breaker</span>
+              <span class="val-sm" id="valCombinedESS"></span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Combined Total</span>
+              <span class="val-sm" id="valCombinedTotal"></span>
+            </div>
+            <div id="combinedConfigAlert" class="hidden"></div>
+          </div>
 
           <!-- ─ BACK-FED BREAKER LABELING ───────────────────────── -->
           <div class="backfeed-callout hidden" id="backfeedLabelingCallout">
