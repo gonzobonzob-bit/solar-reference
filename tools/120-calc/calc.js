@@ -31,6 +31,67 @@ const NEC = {
   }
 };
 
+/* ─── PHASE 2 DATA ──────────────────────────────────────────────── */
+
+const CLIMATE_ZONES = {
+  miami:       { label: 'Miami, FL',          tC:   7 },
+  houston:     { label: 'Houston, TX',         tC:  -2 },
+  la:          { label: 'Los Angeles, CA',     tC:   3 },
+  phoenix:     { label: 'Phoenix, AZ',         tC:   2 },
+  lasvegas:    { label: 'Las Vegas, NV',       tC:  -3 },
+  atlanta:     { label: 'Atlanta, GA',         tC:  -8 },
+  charlotte:   { label: 'Charlotte, NC',       tC: -10 },
+  dc:          { label: 'Washington DC',       tC: -14 },
+  seattle:     { label: 'Seattle, WA',         tC:  -5 },
+  denver:      { label: 'Denver, CO',          tC: -18 },
+  chicago:     { label: 'Chicago, IL',         tC: -22 },
+  detroit:     { label: 'Detroit, MI',         tC: -18 },
+  nyc:         { label: 'New York, NY',        tC: -14 },
+  boston:      { label: 'Boston, MA',          tC: -18 },
+  minneapolis: { label: 'Minneapolis, MN',     tC: -28 },
+  fargo:       { label: 'Fargo, ND',           tC: -34 },
+  billings:    { label: 'Billings, MT',        tC: -25 },
+  anchorage:   { label: 'Anchorage, AK',       tC: -32 },
+  fairbanks:   { label: 'Fairbanks, AK',       tC: -47 },
+};
+
+const ENPHASE_MODELS = {
+  iq7:   { label: 'IQ7',   iout: 1.21 },
+  iq7p:  { label: 'IQ7+',  iout: 1.21 },
+  iq7a:  { label: 'IQ7A',  iout: 1.21 },
+  iq7x:  { label: 'IQ7X',  iout: 1.21 },
+  iq8:   { label: 'IQ8',   iout: 1.21 },
+  iq8p:  { label: 'IQ8+',  iout: 1.21 },
+  iq8a:  { label: 'IQ8A',  iout: 1.58 },
+  iq8h:  { label: 'IQ8H',  iout: 2.01 },
+  iq8hc: { label: 'IQ8HC', iout: 2.01 },
+};
+
+const EQUIPMENT = {
+  tesla: {
+    label: 'Tesla',
+    models: {
+      pw3: { label: 'Powerwall 3',    kwh: 13.5,  kw: 11.5, amps: 47.9, note: 'Includes integrated solar inverter. Grid: 11.5kW on-grid / 7.6kW backup output.' },
+      pw2: { label: 'Powerwall 2',    kwh: 13.5,  kw:  5.0, amps: 20.8, note: 'AC-coupled ESS. Requires a separate solar inverter.' },
+    }
+  },
+  enphase: {
+    label: 'Enphase',
+    models: {
+      iqb3t:  { label: 'IQ Battery 3T',  kwh:  3.36, kw:  1.28, amps:  5.3, note: 'AC-coupled. Entry-level. Compatible with any grid-tied inverter.' },
+      iqb5p:  { label: 'IQ Battery 5P',  kwh:  5.0,  kw:  3.84, amps: 16.0, note: 'AC-coupled. Compatible with IQ microinverters or string inverters.' },
+      iqb10t: { label: 'IQ Battery 10T', kwh: 10.08, kw:  7.68, amps: 32.0, note: 'Two IQ Battery 5P stacked. Total 10kWh capacity.' },
+    }
+  },
+  qcells: {
+    label: 'Q CELLS',
+    models: {
+      qhome5:  { label: 'Q.HOME CORE 5',  kwh:  5.0, kw:  5.0, amps: 20.8, note: 'Modular Q CELLS ESS platform. Expandable.' },
+      qhome10: { label: 'Q.HOME CORE 10', kwh: 10.0, kw:  7.6, amps: 31.7, note: 'Q CELLS Q.HOME CORE — 10kWh configuration.' },
+    }
+  }
+};
+
 /* ─── STANDARD BREAKER SIZES ────────────────────────────────────── */
 
 const STD_BREAKERS = [15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200];
@@ -71,7 +132,28 @@ const state = {
   // Sum of breakers method
   sobBusRating:         null,
   sobTotalOCPD:         null,
-  sobProposedBackfeed:  null
+  sobProposedBackfeed:  null,
+  // DC String Sizing (Panel 1)
+  dcMethod:        'table',     // 'table' | 'coefficient'
+  dcTempMode:      'zone',      // 'zone' | 'manual'
+  dcZone:          'chicago',
+  dcManualTempC:   null,
+  dcVocStc:        null,
+  dcVmpStc:        null,
+  dcIscStc:        null,
+  dcVocCoeff:      null,
+  dcCoeffUnit:     'pct',       // 'pct' (%/°C) | 'v' (V/°C)
+  dcInverterMaxV:  null,
+  dcMpptMin:       null,
+  dcMpptMax:       null,
+  dcStringCount:   null,
+  // Enphase AC Breaker (Panel 2)
+  acModel:         'iq7',
+  acCount:         null,
+  acBrk:           20,
+  // Equipment Selection (Panel 3)
+  eqMfg:           'tesla',
+  eqModel:         'pw3'
 };
 
 /* ─── COMPUTE ───────────────────────────────────────────────────── */
@@ -162,6 +244,104 @@ function computeQuickCalc(s) {
   };
 }
 
+/* ─── PHASE 2 COMPUTE ───────────────────────────────────────────── */
+
+function getVocFactor(tC) {
+  if (tC >  24) return 1.00;
+  if (tC >= 20) return 1.02;
+  if (tC >= 15) return 1.04;
+  if (tC >= 10) return 1.06;
+  if (tC >=  5) return 1.08;
+  if (tC >=  0) return 1.10;
+  if (tC >= -5) return 1.12;
+  if (tC >= -10) return 1.14;
+  if (tC >= -15) return 1.16;
+  if (tC >= -20) return 1.18;
+  if (tC >= -25) return 1.20;
+  if (tC >= -30) return 1.21;
+  if (tC >= -35) return 1.23;
+  return 1.25;
+}
+
+function computeDcString(s) {
+  const r = { valid: false };
+
+  let tC;
+  if (s.dcTempMode === 'zone') {
+    const z = CLIMATE_ZONES[s.dcZone];
+    if (!z) return r;
+    tC = z.tC;
+  } else {
+    if (s.dcManualTempC === null) return r;
+    tC = s.dcManualTempC;
+  }
+
+  if (s.dcVocStc === null) return r;
+
+  r.tC = tC;
+  r.tF = tC * 9/5 + 32;
+
+  let factor;
+  if (s.dcMethod === 'table') {
+    factor = getVocFactor(tC);
+    r.methodLabel = 'NEC Table 690.7(A)';
+  } else {
+    if (s.dcVocCoeff === null) return r;
+    const dPerC = s.dcCoeffUnit === 'pct' ? s.dcVocCoeff / 100 : s.dcVocCoeff / s.dcVocStc;
+    factor = 1 + dPerC * (tC - 25);
+    r.methodLabel = 'Manufacturer Coefficient';
+  }
+
+  r.factor   = factor;
+  r.vocCorr  = s.dcVocStc * factor;
+  r.valid    = true;
+
+  if (s.dcInverterMaxV !== null) {
+    r.maxModules = Math.floor(s.dcInverterMaxV / r.vocCorr);
+  }
+
+  if (s.dcStringCount !== null) {
+    r.stringVocMax = r.vocCorr * s.dcStringCount;
+    if (s.dcInverterMaxV !== null) r.vocPass = r.stringVocMax <= s.dcInverterMaxV;
+
+    if (s.dcVmpStc !== null) {
+      const vmpHot    = s.dcVmpStc * (1 - 0.0035 * (70 - 25));
+      r.stringVmpHot  = vmpHot * s.dcStringCount;
+      if (s.dcMpptMin !== null) r.mpptMinPass = r.stringVmpHot >= s.dcMpptMin;
+      if (s.dcMpptMax !== null) r.mpptMaxPass = (s.dcVmpStc * factor * s.dcStringCount) <= s.dcMpptMax;
+    }
+  }
+
+  if (s.dcMpptMin !== null && s.dcVmpStc !== null) {
+    const vmpHot     = s.dcVmpStc * (1 - 0.0035 * (70 - 25));
+    r.minModules     = Math.ceil(s.dcMpptMin / vmpHot);
+  }
+
+  if (s.dcIscStc !== null) {
+    r.isc     = s.dcIscStc;
+    r.wireMin = s.dcIscStc * 1.25;
+  }
+
+  return r;
+}
+
+function computeEnphase(s) {
+  const m = ENPHASE_MODELS[s.acModel];
+  if (!m) return { valid: false };
+  const maxPer = Math.floor(s.acBrk / (m.iout * 1.25));
+  const r = { valid: true, model: m, iout: m.iout, brk: s.acBrk, maxPerBranch: maxPer };
+  if (s.acCount !== null) {
+    r.count       = s.acCount;
+    r.totalI      = s.acCount * m.iout;
+    r.requiredBrk = r.totalI * 1.25;
+    r.nextBrk     = nextStd(r.requiredBrk);
+    r.passCount   = s.acCount <= maxPer;
+    r.passBrk     = r.requiredBrk <= s.acBrk;
+    r.pass        = r.passCount && r.passBrk;
+  }
+  return r;
+}
+
 /* ─── RENDER ────────────────────────────────────────────────────── */
 
 function render() {
@@ -216,6 +396,7 @@ function render() {
   if (!isSob && c.valid) render120Results(c, v);
 
   setPanels(!isSob && c.valid);
+  renderSummary();
 }
 
 /* ─── RENDER: 120% RESULTS ──────────────────────────────────────── */
@@ -439,6 +620,10 @@ function togglePanel(id) {
   const p = el(id);
   if (p.classList.contains('locked') || p.classList.contains('ver-off')) return;
   p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    if (id === 'panelSummary')   renderSummary();
+    if (id === 'panelEquipment') renderEquipment();
+  }
 }
 
 function renderCombinedConfigCheck(c) {
@@ -509,6 +694,266 @@ function toggleSobWhen() {
     : 'When to use ▴';
 }
 
+/* ─── PHASE 2 RENDER ────────────────────────────────────────────── */
+
+function renderDcString() {
+  const s  = state;
+  const dc = computeDcString(s);
+
+  document.querySelectorAll('#dcMethodToggle button').forEach(b =>
+    b.classList.toggle('active', b.dataset.method === s.dcMethod));
+  document.querySelectorAll('#dcTempModeToggle button').forEach(b =>
+    b.classList.toggle('active', b.dataset.mode === s.dcTempMode));
+
+  set('dcZoneRow',   s.dcTempMode !== 'zone');
+  set('dcManualRow', s.dcTempMode !== 'manual');
+  set('dcCoeffBlock', s.dcMethod !== 'coefficient');
+
+  set('dcResultsCard', !dc.valid);
+  if (!dc.valid) return;
+
+  const hasStringCheck = dc.vocPass !== undefined;
+  const pass = hasStringCheck ? dc.vocPass : null;
+  const head = el('dcResultsHead');
+  const badge = el('dcStatusBadge');
+
+  head.className    = pass === true ? 'results-head pass' : pass === false ? 'results-head fail' : 'results-head';
+  badge.textContent = pass === true ? 'PASS' : pass === false ? 'FAIL' : 'RESULT';
+  badge.className   = pass === true ? 'status-badge pass' : pass === false ? 'status-badge fail' : 'status-badge';
+
+  txt('dcValTemp',   dc.tC + '°C (' + dc.tF.toFixed(1) + '°F)');
+  txt('dcValFactor', dc.factor.toFixed(4) + ' (' + dc.methodLabel + ')');
+  txt('dcValVocCorr', dc.vocCorr.toFixed(2) + 'V');
+
+  const showStr = dc.stringVocMax !== undefined;
+  set('dcStringBlock', !showStr);
+  if (showStr) {
+    txt('dcValStringVoc', dc.stringVocMax.toFixed(2) + 'V');
+    set('dcRowVocPass', dc.vocPass === undefined);
+    if (dc.vocPass !== undefined) {
+      const e2 = el('dcValVocPass');
+      e2.textContent = dc.vocPass
+        ? '✓ Within ' + s.dcInverterMaxV + 'V limit'
+        : '✗ Exceeds ' + s.dcInverterMaxV + 'V limit';
+      e2.className = 'val-sm ' + (dc.vocPass ? 'txt-pass' : 'txt-fail');
+    }
+    set('dcRowVmpHot', dc.stringVmpHot === undefined);
+    if (dc.stringVmpHot !== undefined) {
+      txt('dcValVmpHot', dc.stringVmpHot.toFixed(1) + 'V');
+    }
+    set('dcRowMpptMin', dc.mpptMinPass === undefined);
+    if (dc.mpptMinPass !== undefined) {
+      const mp = el('dcValMpptMin');
+      mp.textContent = dc.mpptMinPass
+        ? '✓ Above MPPT min (' + s.dcMpptMin + 'V)'
+        : '✗ Below MPPT min (' + s.dcMpptMin + 'V) — reduce string';
+      mp.className = 'val-sm ' + (dc.mpptMinPass ? 'txt-pass' : 'txt-fail');
+    }
+  }
+
+  const showRec = dc.maxModules !== undefined || dc.minModules !== undefined;
+  set('dcStringRecBlock', !showRec);
+  if (showRec) {
+    set('dcRowMaxStr', dc.maxModules === undefined);
+    if (dc.maxModules !== undefined) txt('dcValMaxStr', dc.maxModules + ' max (Voc ≤ ' + s.dcInverterMaxV + 'V)');
+    set('dcRowMinStr', dc.minModules === undefined);
+    if (dc.minModules !== undefined) txt('dcValMinStr', dc.minModules + ' min (Vmp at 70°C ≥ ' + s.dcMpptMin + 'V)');
+  }
+
+  set('dcWireBlock', dc.wireMin === undefined);
+  if (dc.wireMin !== undefined) {
+    txt('dcValIsc',     dc.isc + 'A');
+    txt('dcValWireMin', dc.wireMin.toFixed(2) + 'A minimum');
+  }
+}
+
+function renderEnphase() {
+  const s  = state;
+  const ac = computeEnphase(s);
+
+  document.querySelectorAll('#acBranchBreakerToggle button').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.brk) === s.acBrk));
+
+  set('acEnphaseResultsCard', !ac.valid);
+  if (!ac.valid) return;
+
+  txt('acValMaxPer', ac.maxPerBranch + ' max per ' + ac.brk + 'A branch');
+
+  const head  = el('acResultsHead');
+  const badge = el('acStatusBadge');
+  const alertEl = el('acCountAlert');
+
+  if (ac.count !== undefined) {
+    head.className    = ac.pass ? 'results-head pass' : 'results-head fail';
+    badge.textContent = ac.pass ? 'PASS' : 'FAIL';
+    badge.className   = ac.pass ? 'status-badge pass' : 'status-badge fail';
+    txt('acValTotalI',      ac.totalI.toFixed(2) + 'A');
+    txt('acValRequiredBrk', ac.requiredBrk.toFixed(2) + 'A → ' + (ac.nextBrk !== null ? ac.nextBrk + 'A std' : '>200A'));
+    if (!ac.pass) {
+      alertEl.className   = 'alert alert-fail';
+      alertEl.textContent = !ac.passCount
+        ? 'FAIL — ' + ac.count + ' units exceeds max ' + ac.maxPerBranch + ' per ' + ac.brk + 'A branch. Split across additional branches.'
+        : 'FAIL — Required OCPD ' + ac.requiredBrk.toFixed(2) + 'A exceeds ' + ac.brk + 'A branch.';
+      alertEl.classList.remove('hidden');
+    } else {
+      alertEl.className   = 'alert alert-ok';
+      alertEl.textContent = 'PASS — ' + ac.count + ' × ' + ac.model.label + ' on ' + ac.brk + 'A branch. Required OCPD: ' + ac.requiredBrk.toFixed(2) + 'A.';
+      alertEl.classList.remove('hidden');
+    }
+  } else {
+    head.className      = 'results-head';
+    badge.textContent   = '';
+    badge.className     = 'status-badge';
+    alertEl.classList.add('hidden');
+  }
+}
+
+function renderEquipment() {
+  const mfg = EQUIPMENT[state.eqMfg];
+  if (!mfg) return;
+
+  const modelSel = el('eqModelSelect');
+  const prevModel = state.eqModel;
+  modelSel.innerHTML = '';
+  let hasModel = false;
+  Object.entries(mfg.models).forEach(([k, m]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = m.label;
+    if (k === prevModel) hasModel = true;
+    modelSel.appendChild(opt);
+  });
+  if (!hasModel) state.eqModel = Object.keys(mfg.models)[0];
+  modelSel.value = state.eqModel;
+
+  const m = mfg.models[state.eqModel];
+  if (!m) return;
+  txt('eqValCapacity', m.kwh + ' kWh');
+  txt('eqValOutput',   m.kw + ' kW / ' + m.amps.toFixed(1) + 'A (240V AC)');
+  txt('eqValNote',     m.note);
+
+  const sendBtn = el('eqSendBtn');
+  sendBtn.textContent = 'Send ' + m.amps.toFixed(1) + 'A to Zone 1 (ESS current)';
+  sendBtn.onclick     = () => sendEssToZone1(m.amps);
+}
+
+function renderSummary() {
+  if (!el('panelSummary').classList.contains('open')) return;
+  const c = compute(state);
+  const v = NEC[state.version];
+
+  txt('sumBusRating',   state.busRating   !== null ? state.busRating   + 'A' : '—');
+  txt('sumMainBreaker', state.mainBreaker !== null ? state.mainBreaker + 'A' : '—');
+  txt('sumVersion',     v.citation);
+  txt('sumConnType',    state.connection === 'load'        ? 'Load-Side'      : 'Supply-Side');
+  txt('sumPanelType',   state.panelType  === 'sub'         ? 'Sub Panel'      : 'Main Panel');
+  txt('sumCalcMethod',  state.calcMethod === 'sumbreakers' ? 'Sum of Breakers': '120% Method');
+
+  const resultEl = el('sumResult');
+  if (!c.valid) {
+    resultEl.textContent = '—'; resultEl.className = 'sum-val';
+    txt('sumMaxBackfeed', '—'); txt('sumMaxPV', '—'); set('sumRowESS', true); return;
+  }
+
+  resultEl.textContent = c.pass ? 'PASS' : 'FAIL';
+  resultEl.className   = 'sum-val ' + (c.pass ? 'txt-pass' : 'txt-fail');
+
+  if (c.method === '120pct') {
+    txt('sumCitation', v.citation);
+    if (c.pass) {
+      txt('sumMaxBackfeed', c.maxBackfeed.toFixed(2) + 'A');
+      txt('sumMaxPV', c.maxPVBreaker !== null ? c.maxPVBreaker + 'A' : '>200A');
+      set('sumRowESS', !v.ess);
+      if (v.ess) txt('sumMaxESS', c.maxESSBreaker !== null ? c.maxESSBreaker + 'A' : '>200A');
+    } else {
+      txt('sumMaxBackfeed', 'N/A'); txt('sumMaxPV', 'N/A'); set('sumRowESS', true);
+    }
+  } else {
+    txt('sumCitation', 'NEC 705.12(B)(2)(3)(b)');
+    txt('sumMaxBackfeed', c.headroom.toFixed(2) + 'A headroom');
+    txt('sumMaxPV', 'See Sum of Breakers results');
+    set('sumRowESS', true);
+  }
+}
+
+function sendEssToZone1(amps) {
+  state.essOutputCurrent = parseFloat(amps.toFixed(1));
+  el('essOutputCurrent').value = state.essOutputCurrent;
+  render();
+  el('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function printSummary() { window.print(); }
+
+function copySummary() {
+  const c = compute(state);
+  const v = NEC[state.version];
+  let t  = '=== NEC 705.12 Interconnection Calc ===\n';
+  t += 'Bus Rating: '  + (state.busRating   ? state.busRating   + 'A' : '—') + '\n';
+  t += 'Main Breaker: ' + (state.mainBreaker ? state.mainBreaker + 'A' : '—') + '\n';
+  t += 'NEC Version: '  + v.citation + '\n';
+  t += 'Connection: '   + (state.connection === 'load' ? 'Load-Side' : 'Supply-Side') + '\n';
+  t += 'Method: '       + (state.calcMethod === 'sumbreakers' ? 'Sum of Breakers' : '120% Method') + '\n';
+  if (c.valid && c.method === '120pct') {
+    t += 'Result: ' + (c.pass ? 'PASS' : 'FAIL') + '\n';
+    if (c.pass) t += 'Max Backfeed: ' + c.maxBackfeed.toFixed(2) + 'A\n' +
+                     'Max PV Breaker: ' + (c.maxPVBreaker ? c.maxPVBreaker + 'A' : '>200A') + '\n';
+  }
+  navigator.clipboard.writeText(t).then(() => {
+    const btn = el('sumCopyBtn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+  }).catch(() => {});
+}
+
+/* ─── PHASE 2 EVENT HANDLERS ────────────────────────────────────── */
+
+function setDcMethod(m)    { state.dcMethod   = m; renderDcString(); }
+function setDcTempMode(m)  { state.dcTempMode = m; renderDcString(); }
+function setDcZone(z)      { state.dcZone     = z; renderDcString(); }
+function setDcCoeffUnit(u) { state.dcCoeffUnit = u; renderDcString(); }
+
+function onDcTempF() {
+  const v = parseFloat(el('dcManualTempF').value);
+  if (!isNaN(v)) {
+    const c = (v - 32) * 5/9;
+    el('dcManualTempC').value = c.toFixed(1);
+    state.dcManualTempC = c;
+  } else { state.dcManualTempC = null; }
+  renderDcString();
+}
+
+function onDcTempC() {
+  const v = parseFloat(el('dcManualTempC').value);
+  if (!isNaN(v)) {
+    el('dcManualTempF').value = (v * 9/5 + 32).toFixed(1);
+    state.dcManualTempC = v;
+  } else { state.dcManualTempC = null; }
+  renderDcString();
+}
+
+function onDcInput(id) {
+  const raw = el(id).value.trim();
+  const n   = parseFloat(raw);
+  state[id] = raw !== '' && !isNaN(n) ? n : null;
+  renderDcString();
+}
+
+function setDcChip(id, val) {
+  el(id).value = val;
+  state[id]    = val;
+  renderDcString();
+}
+
+function setAcBranchBreaker(v) { state.acBrk   = parseInt(v); renderEnphase(); }
+function setAcModel(v)          { state.acModel  = v;          renderEnphase(); }
+
+function setEqMfg(v) {
+  state.eqMfg   = v;
+  state.eqModel = Object.keys(EQUIPMENT[v].models)[0];
+  renderEquipment();
+}
+function setEqModel(v) { state.eqModel = v; renderEquipment(); }
+
 /* ─── HELPERS ───────────────────────────────────────────────────── */
 
 function el(id)          { return document.getElementById(id); }
@@ -530,4 +975,40 @@ document.addEventListener('DOMContentLoaded', () => {
     state.subConfig = e.target.value;
     render();
   });
+
+  // Phase 2 — DC String Sizing inputs
+  ['dcVocStc', 'dcVmpStc', 'dcIscStc', 'dcVocCoeff',
+   'dcInverterMaxV', 'dcMpptMin', 'dcMpptMax', 'dcStringCount'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (inp) inp.addEventListener('input', () => onDcInput(id));
+  });
+  const dcTempF = document.getElementById('dcManualTempF');
+  const dcTempC = document.getElementById('dcManualTempC');
+  if (dcTempF) dcTempF.addEventListener('input', onDcTempF);
+  if (dcTempC) dcTempC.addEventListener('input', onDcTempC);
+
+  // Populate climate zone dropdown
+  const zoneSel = document.getElementById('dcClimateZoneSelect');
+  if (zoneSel) {
+    Object.entries(CLIMATE_ZONES).forEach(([k, z]) => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = z.label + ' (' + z.tC + '°C)';
+      if (k === state.dcZone) opt.selected = true;
+      zoneSel.appendChild(opt);
+    });
+  }
+
+  // Phase 2 — Enphase AC Breaker
+  const acCount = document.getElementById('acEnphaseCount');
+  if (acCount) acCount.addEventListener('input', () => {
+    const n = parseInt(el('acEnphaseCount').value);
+    state.acCount = !isNaN(n) && n > 0 ? n : null;
+    renderEnphase();
+  });
+
+  // Phase 2 — init panel renders
+  renderDcString();
+  renderEnphase();
+  renderEquipment();
 });
