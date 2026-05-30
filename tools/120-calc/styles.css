@@ -1179,15 +1179,115 @@ body {
 .combined-fail { font-size: 12px; }
 .combined-fail strong { font-weight: 500; }
 
+/* ─── QUICK CALC BLOCK ───────────────────────────────────────── */
+
+.quick-calc-block {
+  margin-bottom: 0;
+}
+
+.qc-output {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px 18px;
+  margin-top: 16px;
+}
+
+.qc-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.qc-primary {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0 12px;
+  border-bottom: 1px solid rgba(79,195,247,0.06);
+  gap: 16px;
+}
+
+.qc-label {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 300;
+}
+
+.qc-val {
+  font-size: 2rem;
+  color: var(--gold);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.qc-derived {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+}
+
+.qc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.qc-item-lbl {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  opacity: 0.6;
+}
+
+.qc-item-val {
+  font-size: 1.2rem;
+  color: var(--gold);
+  letter-spacing: -0.01em;
+}
+
+/* ─── SETTINGS ROW ───────────────────────────────────────────── */
+
+.settings-row {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.sr-label {
+  font-size: 9px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  opacity: 0.4;
+  margin-bottom: 14px;
+}
+
+.sr-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 36px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
 /* ─── RESPONSIVE ─────────────────────────────────────────────── */
 
 @media (max-width: 620px) {
   .page                  { padding: 28px 18px 60px; }
   .page-title            { font-size: 1.3rem; }
   .controls-row          { gap: 20px; }
+  .sr-toggles            { gap: 16px; }
   .inputs-grid           { grid-template-columns: 1fr; }
   .val                   { font-size: 1.15rem; }
   .val-sm                { font-size: 1rem; }
+  .qc-val                { font-size: 1.5rem; }
+  .qc-derived            { gap: 18px; }
   .inline-input          { width: 100%; }
   .panel-name            { font-size: 11px; }
   .backfeed-req          { grid-template-columns: 1fr; gap: 4px; }

@@ -147,6 +147,21 @@ function computeSumBreakers(s) {
   return c;
 }
 
+function computeQuickCalc(s) {
+  if (s.busRating === null || s.mainBreaker === null) return { valid: false };
+  const v           = NEC[s.version];
+  const maxBus      = s.busRating * 1.2;
+  const maxBackfeed = maxBus - s.mainBreaker;
+  const pass        = s.mainBreaker < maxBus;
+  if (!pass) return { valid: true, pass: false, maxBus, maxBackfeed };
+  return {
+    valid: true, pass: true, maxBus, maxBackfeed,
+    maxPVBreaker:  prevStd(maxBackfeed),
+    maxESSBreaker: v.ess ? prevStd(maxBackfeed) : null,
+    hasESS:        v.ess
+  };
+}
+
 /* ─── RENDER ────────────────────────────────────────────────────── */
 
 function render() {
@@ -174,13 +189,15 @@ function render() {
 
   renderMainBreakerValidation();
 
+  const qc = isLoad ? computeQuickCalc(state) : { valid: false };
+  renderQuickOutput(qc, v);
+
   set('supplySideNote',  isLoad);
   set('loadSideContent', !isLoad);
 
   if (!isLoad) { setPanels(false); return; }
 
-  // Input section visibility
-  set('mainPanelInputs',    isSub || isSob);
+  // Input section visibility — mainPanelInputs always visible above fold
   set('subPanelInputs',    !isSub || isSob);
   set('sumBreakersContent', !isSob);
 
@@ -316,6 +333,30 @@ function renderEssCalc(c) {
     alertEl.className   = 'alert alert-ok';
     alertEl.textContent = 'PASS — ESS breaker ' + c.ess.std + 'A is within the allowable limit.';
     alertEl.classList.remove('hidden');
+  }
+}
+
+function renderQuickOutput(qc, v) {
+  set('quickCalcOutput', !qc.valid);
+  if (!qc.valid) return;
+
+  const statusEl    = el('qcStatus');
+  statusEl.textContent = qc.pass ? 'PASS' : 'FAIL';
+  statusEl.className   = qc.pass ? 'status-badge pass' : 'status-badge fail';
+
+  txt('qcCitation', NEC[state.version].citation);
+
+  set('qcDerived', !qc.pass);
+
+  if (qc.pass) {
+    txt('qcMaxBackfeed', qc.maxBackfeed.toFixed(2) + 'A');
+    txt('qcMaxPV', qc.maxPVBreaker !== null ? qc.maxPVBreaker + 'A' : '>200A');
+    set('qcRowESS', !qc.hasESS);
+    if (qc.hasESS) txt('qcMaxESS', qc.maxESSBreaker !== null ? qc.maxESSBreaker + 'A' : '>200A');
+    set('qcRowCombined', !qc.hasESS);
+    if (qc.hasESS) txt('qcMaxCombined', qc.maxBackfeed.toFixed(2) + 'A total');
+  } else {
+    txt('qcMaxBackfeed', '—');
   }
 }
 

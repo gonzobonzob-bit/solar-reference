@@ -19,79 +19,9 @@
   <!-- ── ZONE 1: BASE CALCULATOR ──────────────────────────────── -->
   <section>
 
-    <!-- Controls row: version + connection -->
-    <div class="controls-row">
-      <div class="control-group">
-        <span class="control-label">NEC Version</span>
-        <div class="pill-group" id="versionToggle">
-          <button data-version="2014" onclick="setVersion('2014')">2014</button>
-          <button data-version="2017" onclick="setVersion('2017')">2017</button>
-          <button data-version="2020" onclick="setVersion('2020')">2020</button>
-          <button data-version="2023" onclick="setVersion('2023')">2023</button>
-        </div>
-      </div>
-      <div class="control-group">
-        <span class="control-label">Connection Type</span>
-        <div class="pill-group" id="connToggle">
-          <button data-conn="load"   onclick="setConnection('load')">LOAD-SIDE</button>
-          <button data-conn="supply" onclick="setConnection('supply')">SUPPLY-SIDE</button>
-        </div>
-      </div>
-    </div>
+    <!-- 1. QUICK CALC BLOCK — primary inputs always visible above fold -->
+    <div class="quick-calc-block">
 
-    <!-- Version note banner -->
-    <div class="version-banner" id="versionBanner"></div>
-
-    <!-- Supply-side note (shown when supply-side selected) -->
-    <div class="supply-note hidden" id="supplySideNote">
-      <strong>Supply-Side Connection</strong>
-      <p>Supply-side connection bypasses NEC 705.12. No busbar percentage limit applies. Governed by NEC 705.12(A) and 230.82(6).</p>
-      <p style="margin-top: 8px;">Supply-side connections are still subject to the following hard limits:</p>
-
-      <div class="supply-section">
-        <div class="supply-section-title">Conductors</div>
-        <p>Tap conductors must be sized to carry full inverter output current without exceeding ampacity per NEC 310.12. Conductor ampacity must meet or exceed inverter maximum output current &times; 125% continuous load factor per NEC 705.12(A). Conductor length and conduit fill still apply per NEC 310 and Chapter 9.</p>
-      </div>
-
-      <div class="supply-section">
-        <div class="supply-section-title">Disconnect &amp; Overcurrent Protection</div>
-        <p>A supply-side disconnect is required per NEC 230.82(6). OCPD must be sized to protect the conductors — not just the inverter output. Service equipment ratings cannot be exceeded. The supply-side connection point must be rated for the combined current.</p>
-      </div>
-
-      <div class="supply-section">
-        <div class="supply-section-title">Service Entrance Equipment</div>
-        <p>Meter base, service entrance conductors, and all equipment between the utility connection and tap point must be rated for the combined load. Many utilities require written approval and may specify their own sizing requirements independent of NEC. Some utilities prohibit supply-side connections entirely — confirm with AHJ and utility interconnection agreement before designing.</p>
-      </div>
-
-      <div class="supply-field-note">
-        From the Field — Supply-side connections are often chosen when a panel fails the 120% calc. They are not a free pass — they shift sizing constraints from the busbar to the service entrance equipment and conductors. Confirm all component ratings before finalizing design.
-      </div>
-
-      <div class="supply-refs">NEC References: 705.12(A), 230.82(6), 310.12, Chapter 9</div>
-    </div>
-
-    <!-- Load-side content -->
-    <div id="loadSideContent">
-
-      <!-- Controls row: panel type + calc method -->
-      <div class="controls-row controls-row-sub">
-        <div class="control-group">
-          <span class="control-label">Panel Type</span>
-          <div class="pill-group" id="panelTypeToggle">
-            <button data-panel="main" onclick="setPanelType('main')">MAIN PANEL</button>
-            <button data-panel="sub"  onclick="setPanelType('sub')">SUB PANEL</button>
-          </div>
-        </div>
-        <div class="control-group">
-          <span class="control-label">Calculation Method</span>
-          <div class="pill-group" id="calcMethodToggle">
-            <button data-method="120pct"      onclick="setCalcMethod('120pct')">120% METHOD</button>
-            <button data-method="sumbreakers" onclick="setCalcMethod('sumbreakers')">SUM OF BREAKERS</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── MAIN PANEL INPUTS ─────────────────────────────────── -->
       <div id="mainPanelInputs">
         <div class="inputs-grid">
           <div class="input-block">
@@ -125,6 +55,103 @@
           </div>
         </div>
       </div><!-- /mainPanelInputs -->
+
+      <!-- Quick output — appears instantly when both inputs are filled -->
+      <div id="quickCalcOutput" class="qc-output hidden">
+        <div class="qc-head">
+          <span class="status-badge" id="qcStatus"></span>
+          <span class="citation-val" id="qcCitation"></span>
+        </div>
+        <div class="qc-primary">
+          <span class="qc-label">Maximum Allowable Backfeed</span>
+          <span class="qc-val" id="qcMaxBackfeed">—</span>
+        </div>
+        <div class="qc-derived" id="qcDerived">
+          <div class="qc-item">
+            <span class="qc-item-lbl">Max PV Breaker</span>
+            <span class="qc-item-val" id="qcMaxPV">—</span>
+          </div>
+          <div class="qc-item hidden" id="qcRowESS">
+            <span class="qc-item-lbl">Max ESS Breaker</span>
+            <span class="qc-item-val" id="qcMaxESS">—</span>
+          </div>
+          <div class="qc-item hidden" id="qcRowCombined">
+            <span class="qc-item-lbl">Max Combined</span>
+            <span class="qc-item-val" id="qcMaxCombined">—</span>
+          </div>
+        </div>
+      </div><!-- /quickCalcOutput -->
+
+    </div><!-- /quick-calc-block -->
+
+    <!-- 2. SETTINGS ROW — all toggles + version note -->
+    <div class="settings-row">
+      <div class="sr-label">Settings &amp; Options</div>
+      <div class="sr-toggles">
+        <div class="control-group">
+          <span class="control-label">NEC Version</span>
+          <div class="pill-group" id="versionToggle">
+            <button data-version="2014" onclick="setVersion('2014')">2014</button>
+            <button data-version="2017" onclick="setVersion('2017')">2017</button>
+            <button data-version="2020" onclick="setVersion('2020')">2020</button>
+            <button data-version="2023" onclick="setVersion('2023')">2023</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Connection Type</span>
+          <div class="pill-group" id="connToggle">
+            <button data-conn="load"   onclick="setConnection('load')">LOAD-SIDE</button>
+            <button data-conn="supply" onclick="setConnection('supply')">SUPPLY-SIDE</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Panel Type</span>
+          <div class="pill-group" id="panelTypeToggle">
+            <button data-panel="main" onclick="setPanelType('main')">MAIN PANEL</button>
+            <button data-panel="sub"  onclick="setPanelType('sub')">SUB PANEL</button>
+          </div>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Calculation Method</span>
+          <div class="pill-group" id="calcMethodToggle">
+            <button data-method="120pct"      onclick="setCalcMethod('120pct')">120% METHOD</button>
+            <button data-method="sumbreakers" onclick="setCalcMethod('sumbreakers')">SUM OF BREAKERS</button>
+          </div>
+        </div>
+      </div><!-- /sr-toggles -->
+      <div class="version-banner" id="versionBanner"></div>
+    </div><!-- /settings-row -->
+
+    <!-- Supply-side note (shown when supply-side selected) -->
+    <div class="supply-note hidden" id="supplySideNote">
+      <strong>Supply-Side Connection</strong>
+      <p>Supply-side connection bypasses NEC 705.12. No busbar percentage limit applies. Governed by NEC 705.12(A) and 230.82(6).</p>
+      <p style="margin-top: 8px;">Supply-side connections are still subject to the following hard limits:</p>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Conductors</div>
+        <p>Tap conductors must be sized to carry full inverter output current without exceeding ampacity per NEC 310.12. Conductor ampacity must meet or exceed inverter maximum output current &times; 125% continuous load factor per NEC 705.12(A). Conductor length and conduit fill still apply per NEC 310 and Chapter 9.</p>
+      </div>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Disconnect &amp; Overcurrent Protection</div>
+        <p>A supply-side disconnect is required per NEC 230.82(6). OCPD must be sized to protect the conductors — not just the inverter output. Service equipment ratings cannot be exceeded. The supply-side connection point must be rated for the combined current.</p>
+      </div>
+
+      <div class="supply-section">
+        <div class="supply-section-title">Service Entrance Equipment</div>
+        <p>Meter base, service entrance conductors, and all equipment between the utility connection and tap point must be rated for the combined load. Many utilities require written approval and may specify their own sizing requirements independent of NEC. Some utilities prohibit supply-side connections entirely — confirm with AHJ and utility interconnection agreement before designing.</p>
+      </div>
+
+      <div class="supply-field-note">
+        From the Field — Supply-side connections are often chosen when a panel fails the 120% calc. They are not a free pass — they shift sizing constraints from the busbar to the service entrance equipment and conductors. Confirm all component ratings before finalizing design.
+      </div>
+
+      <div class="supply-refs">NEC References: 705.12(A), 230.82(6), 310.12, Chapter 9</div>
+    </div>
+
+    <!-- 4. LOAD-SIDE CONTENT — detailed inputs and results -->
+    <div id="loadSideContent">
 
       <!-- ── SUB PANEL INPUTS ──────────────────────────────────── -->
       <div id="subPanelInputs" class="hidden">
@@ -285,7 +312,7 @@
               </div>
             </div>
             <div class="code-note">
-              Comparison requires Main Panel Bus Rating and Main Breaker entered in the 120% Method view.
+              Comparison requires Main Panel Bus Rating and Main Breaker entered above.
             </div>
 
           </div>
