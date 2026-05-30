@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>PV System Sizing Tool · Solar Reference</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+  <!-- ─── Page Header ─────────────────────────────────────────────────────── -->
+  <header class="page-header">
+    <h1 class="page-title">PV System Sizing Tool</h1>
+    <p class="page-sub">General System Design Reference &middot; Field &amp; Sales Use</p>
+  </header>
+
+  <!-- ─── Disclaimer Banner ───────────────────────────────────────────────── -->
+  <div class="disclaimer-banner alert-info">
+    This tool provides general system size estimates under optimal unshaded conditions. Assumes south-facing array at optimal tilt with standard 0.80 system derate factor. No shade analysis performed. Actual production varies based on orientation, shading, weather, and system losses. A full site assessment is required for final system design.
+  </div>
+
+  <!-- ─── Zone 1 — System Inputs ──────────────────────────────────────────── -->
+  <section id="zone1">
+
+    <!-- Section A — Site Information -->
+    <div class="sec-title">Site Information</div>
+    <div class="inputs-grid">
+      <div class="input-block">
+        <label for="zipInput">Zip Code</label>
+        <input type="text" class="num-input" id="zipInput" placeholder="e.g. 60601" maxlength="5" inputmode="numeric" autocomplete="off">
+        <div id="zipAutoNote" class="code-note hidden"></div>
+        <div id="zipNotFoundNote" class="alert-warn hidden" style="margin-top:6px;font-size:11px;padding:7px 10px;">Zip code not found in reference table. Defaulted to Mixed climate zone. Select manually if incorrect.</div>
+      </div>
+      <div class="input-block">
+        <label for="climateZoneSelect">Climate Zone</label>
+        <select class="select-input" id="climateZoneSelect" onchange="onClimateZoneChange()">
+          <option value="hot_warm">Hot/Warm — 5.5 hrs/day</option>
+          <option value="mixed" selected>Mixed — 4.5 hrs/day</option>
+          <option value="cold">Cold — 4.0 hrs/day</option>
+          <option value="very_cold">Very Cold — 3.5 hrs/day</option>
+          <option value="severe_cold">Severe Cold — 2.5 hrs/day</option>
+        </select>
+        <div class="code-note" style="margin-top:6px;">Peak sun hours are general regional averages for optimal south-facing unshaded arrays. Verify with local solar resource data for final system design.</div>
+      </div>
+    </div>
+
+    <!-- Section B — Service Information -->
+    <div class="sec-title">Service Information</div>
+    <div class="inputs-grid">
+      <div class="input-block">
+        <label for="busRating">Bus Rating (A)</label>
+        <input type="number" class="num-input" id="busRating" placeholder="Enter amps" min="1" step="any" autocomplete="off">
+        <div class="chips">
+          <button class="chip" onclick="setChip('busRating',100)">100</button>
+          <button class="chip" onclick="setChip('busRating',125)">125</button>
+          <button class="chip" onclick="setChip('busRating',150)">150</button>
+          <button class="chip" onclick="setChip('busRating',200)">200</button>
+          <button class="chip" onclick="setChip('busRating',225)">225</button>
+          <button class="chip" onclick="setChip('busRating',320)">320</button>
+          <button class="chip" onclick="setChip('busRating',400)">400</button>
+        </div>
+        <div class="code-note" style="margin-top:6px;">Used to pre-populate the interconnection calculator. 400A services — see 400A service note if displayed.</div>
+      </div>
+      <div class="input-block">
+        <label for="mainBreaker">Main Breaker Size (A)</label>
+        <input type="number" class="num-input" id="mainBreaker" placeholder="Enter amps" min="1" step="any" autocomplete="off">
+        <div class="chips">
+          <button class="chip" onclick="setChip('mainBreaker',60)">60</button>
+          <button class="chip" onclick="setChip('mainBreaker',100)">100</button>
+          <button class="chip" onclick="setChip('mainBreaker',125)">125</button>
+          <button class="chip" onclick="setChip('mainBreaker',150)">150</button>
+          <button class="chip" onclick="setChip('mainBreaker',175)">175</button>
+          <button class="chip" onclick="setChip('mainBreaker',200)">200</button>
+          <button class="chip" onclick="setChip('mainBreaker',225)">225</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 400A Service Warning -->
+    <div class="warn-panel hidden" id="panel400Warning">
+      <div class="warn-panel-title">400A Service — Important Limitations</div>
+      <p>A 400A residential service is almost always two independent 200A panels — not a single 400A bus. This is a manufacturer equipment limitation, not a NEC requirement. NEC evaluates each panel independently. The 120% calc runs against each 200A panel separately.</p>
+      <div class="sub-title" style="margin:14px 0 8px;">Manufacturer Equipment Limits</div>
+      <ul>
+        <li>Tesla Gateway: rated for 200A service maximum. One gateway per panel required.</li>
+        <li>Enphase IQ System Controller: one per panel.</li>
+        <li>QCells Q.HOME CORE: designed for single 200A interconnection point.</li>
+      </ul>
+      <div class="sub-title" style="margin:14px 0 8px;">Whole Home Backup Reality</div>
+      <p>True whole-home backup on a 400A split service requires ESS equipment on both panels — two complete independent systems. Most installers back up one panel and place critical loads there.</p>
+      <div class="sub-title" style="margin:14px 0 8px;">Communication &amp; Isolation Warning</div>
+      <p>During a grid outage each panel's ESS operates independently. The systems do not communicate with each other natively. If one system depletes before the other, that half of the home loses power while the other continues running. Homeowners and sales representatives frequently overlook this limitation when discussing whole-home backup on 400A services. A full outage scenario discussion with the customer is required before system design.</p>
+      <div class="field-note">Run two separate calculations — one per 200A panel. Use the interconnection calculator for each panel independently.</div>
+    </div>
+
+    <!-- Section C — Energy Consumption -->
+    <div class="sec-title">Energy Consumption</div>
+
+    <div class="pill-group" style="margin-bottom:16px;" id="consumptionModeToggle">
+      <button data-mode="annual" onclick="setConsumptionMode('annual')">Annual Total</button>
+      <button data-mode="monthly" onclick="setConsumptionMode('monthly')">Monthly Detail</button>
+    </div>
+
+    <div id="annualSection">
+      <div class="input-block" style="max-width:320px;">
+        <label for="annualKwh">Annual Consumption (kWh/year)</label>
+        <input type="number" class="num-input" id="annualKwh" placeholder="e.g. 11000" min="0" step="any" autocomplete="off">
+        <div class="code-note" style="margin-top:6px;">Found on utility bill. Typical US home: 10,000–12,000 kWh/year.</div>
+      </div>
+    </div>
+
+    <div id="monthlySection" class="hidden">
+      <div class="monthly-grid" id="monthlyGrid">
+        <div class="input-block"><label for="monthJan">January (kWh)</label><input type="number" class="num-input" id="monthJan" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthFeb">February (kWh)</label><input type="number" class="num-input" id="monthFeb" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthMar">March (kWh)</label><input type="number" class="num-input" id="monthMar" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthApr">April (kWh)</label><input type="number" class="num-input" id="monthApr" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthMay">May (kWh)</label><input type="number" class="num-input" id="monthMay" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthJun">June (kWh)</label><input type="number" class="num-input" id="monthJun" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthJul">July (kWh)</label><input type="number" class="num-input" id="monthJul" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthAug">August (kWh)</label><input type="number" class="num-input" id="monthAug" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthSep">September (kWh)</label><input type="number" class="num-input" id="monthSep" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthOct">October (kWh)</label><input type="number" class="num-input" id="monthOct" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthNov">November (kWh)</label><input type="number" class="num-input" id="monthNov" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+        <div class="input-block"><label for="monthDec">December (kWh)</label><input type="number" class="num-input" id="monthDec" placeholder="kWh" min="0" step="any" autocomplete="off"></div>
+      </div>
+      <div class="monthly-total-bar">
+        <span style="font-family:'IBM Plex Sans',sans-serif;color:var(--text-2);font-size:13px;">Annual Total</span>
+        <span id="monthlyRunningTotal" style="color:var(--gold);font-size:1.2rem;">0 kWh</span>
+      </div>
+      <div id="monthlyIncompleteNote" class="alert-warn hidden" style="font-size:11px;padding:7px 10px;margin-top:6px;">Enter all 12 months for accurate annual total.</div>
+    </div>
+
+    <!-- Section D — System Preferences -->
+    <div class="sec-title">System Preferences</div>
+    <div class="inputs-grid">
+      <div class="input-block">
+        <label for="offsetGoalInput">Offset Goal (%)</label>
+        <input type="number" class="num-input" id="offsetGoalInput" value="100" min="50" max="150" step="5" autocomplete="off">
+        <div class="chips">
+          <button class="chip" onclick="setChip('offsetGoalInput',50)">50%</button>
+          <button class="chip" onclick="setChip('offsetGoalInput',75)">75%</button>
+          <button class="chip" onclick="setChip('offsetGoalInput',100)">100%</button>
+          <button class="chip" onclick="setChip('offsetGoalInput',110)">110%</button>
+          <button class="chip" onclick="setChip('offsetGoalInput',125)">125%</button>
+        </div>
+        <div class="code-note" style="margin-top:6px;">100% = fully offset annual consumption. Above 100% accounts for future load growth or EV addition. Confirm utility export policy before designing above 100%.</div>
+      </div>
+      <div class="input-block">
+        <label>Backup Goal</label>
+        <div class="pill-group" id="backupGoalGroup">
+          <button data-backup="none"    onclick="setBackupGoal('none')">No Backup</button>
+          <button data-backup="partial" onclick="setBackupGoal('partial')">Partial</button>
+          <button data-backup="whole"   onclick="setBackupGoal('whole')">Whole Home</button>
+        </div>
+      </div>
+    </div>
+    <div class="input-block" style="margin-top:16px;max-width:280px;">
+      <label for="moduleWattageSelect">Module Wattage (W)</label>
+      <select class="select-input" id="moduleWattageSelect" onchange="onModuleWattageChange()">
+        <option value="250">250W</option>
+        <option value="275">275W</option>
+        <option value="300">300W</option>
+        <option value="325">325W</option>
+        <option value="350">350W</option>
+        <option value="375">375W</option>
+        <option value="400" selected>400W</option>
+        <option value="425">425W</option>
+        <option value="450">450W</option>
+        <option value="475">475W</option>
+        <option value="500">500W</option>
+      </select>
+      <div class="code-note" style="margin-top:6px;">Modern residential modules typically 380–430W.</div>
+    </div>
+
+    <!-- Section E — Equipment Selection -->
+    <div class="sec-title">Equipment Selection</div>
+    <div class="inputs-grid">
+      <div class="input-block">
+        <label for="eqMfgSelect">Manufacturer</label>
+        <select class="select-input" id="eqMfgSelect" onchange="onMfgChange()">
+          <option value="">Select Manufacturer</option>
+          <option value="tesla">Tesla</option>
+          <option value="enphase">Enphase</option>
+          <option value="qcells">QCells</option>
+        </select>
+      </div>
+      <div class="input-block">
+        <label for="eqModelSelect">Model</label>
+        <select class="select-input" id="eqModelSelect" onchange="onModelChange()" disabled>
+          <option value="">Select Model</option>
+        </select>
+      </div>
+    </div>
+    <div id="eqNonStandardNote" class="alert-warn hidden" style="font-size:11px;padding:8px 12px;margin-top:6px;">Non-standard US residential product. Confirm compatibility with AHJ before designing.</div>
+    <div id="eqSpecsBlock" class="code-note hidden" style="margin-top:8px;"></div>
+
+  </section>
+
+  <!-- ─── Zone 2 — System Size Output ─────────────────────────────────────── -->
+  <hr class="zone-divider">
+  <div class="zone-title">System Size Output</div>
+  <div id="outputZone" class="hidden">
+    <div class="output-block">
+      <div class="output-primary">
+        <div class="size-label">Suggested System Size</div>
+        <div class="size-value" id="resultSystemSize">—</div>
+        <div class="size-label" style="margin-top:4px;">kW DC</div>
+      </div>
+      <div class="output-grid">
+        <div class="output-cell">
+          <div class="oc-lbl">Annual Production Target</div>
+          <div class="oc-val" id="resultAnnualProduction">—</div>
+          <div style="font-size:10px;color:var(--text-2);margin-top:2px;">kWh/year</div>
+        </div>
+        <div class="output-cell">
+          <div class="oc-lbl">Daily Average Target</div>
+          <div class="oc-val" id="resultDailyTarget">—</div>
+          <div style="font-size:10px;color:var(--text-2);margin-top:2px;">kWh/day</div>
+        </div>
+        <div class="output-cell">
+          <div class="oc-lbl">Peak Sun Hours</div>
+          <div class="oc-val" id="resultPeakSunHours">—</div>
+          <div style="font-size:10px;color:var(--text-2);margin-top:2px;">hrs/day</div>
+        </div>
+      </div>
+      <div class="output-body">
+        <div class="calc-row"><span class="lbl">Climate Zone</span><span class="val-sm" id="resultClimateName">—</span></div>
+        <div class="calc-row"><span class="lbl">System Derate Factor</span><span class="val-sm">0.80 (standard)</span></div>
+        <div class="calc-row"><span class="lbl">Offset Goal</span><span class="val-sm" id="resultOffsetGoal">—</span></div>
+
+        <div class="sub-title">Module Count</div>
+        <div class="calc-row"><span class="lbl">Estimated Module Count</span><span class="val" id="resultModuleCount">—</span></div>
+        <div class="calc-row"><span class="lbl">Module Wattage</span><span class="val-sm" id="resultModuleWattage">—</span></div>
+        <div class="calc-row"><span class="lbl">Total DC Capacity</span><span class="val-sm" id="resultTotalDC">—</span></div>
+
+        <div id="inverterBlock" class="hidden">
+          <div class="sub-title">Inverter / ESS</div>
+          <div id="inverterOutput"></div>
+          <div id="dcacRatioFlag" class="alert-warn hidden" style="margin-top:8px;font-size:11px;padding:8px 12px;"></div>
+        </div>
+
+        <div id="serviceBlock" class="hidden">
+          <div class="sub-title">Preliminary Service Check</div>
+          <div class="calc-row"><span class="lbl">Bus Rating</span><span class="val-sm" id="svcBusRating">—</span></div>
+          <div class="calc-row"><span class="lbl">Main Breaker</span><span class="val-sm" id="svcMainBreaker">—</span></div>
+          <div class="calc-row"><span class="lbl">Max Allowable Backfeed (120%)</span><span class="val-sm" id="svcMaxBackfeed">—</span></div>
+          <div class="calc-row"><span class="lbl">Estimated AC Output</span><span class="val-sm" id="svcACOutput">—</span></div>
+          <div class="calc-row"><span class="lbl">Preliminary Result</span><span class="val-sm" id="svcPrelimResult">—</span></div>
+          <div id="svcPrelimAlert" class="hidden" style="margin-top:6px;font-size:11px;padding:8px 12px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Zone 3 — System Narrative ───────────────────────────────────────── -->
+  <hr class="zone-divider">
+  <div class="zone-title">System Narrative</div>
+  <div id="narrativeZone" class="hidden">
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabHomeowner" onclick="setNarrativeTab('homeowner')">For the Homeowner</button>
+      <button class="tab-btn" id="tabInstaller" onclick="setNarrativeTab('installer')">For the Installer</button>
+    </div>
+    <div id="narrativeHomeowner" class="narrative-block"></div>
+    <div id="narrativeInstaller" class="installer-block hidden"></div>
+
+    <div class="sub-title" style="margin-top:24px;">Flags &amp; Considerations</div>
+    <div id="flagClipping" class="flag-card hidden">
+      <div class="flag-title gold">Oversizing &amp; Clipping</div>
+      <div class="flag-body" id="flagClippingBody"></div>
+    </div>
+    <div id="flagEss" class="flag-card hidden">
+      <div class="flag-title sky">Energy Storage Consideration</div>
+      <div class="flag-body" id="flagEssBody"></div>
+    </div>
+    <div id="flagExport" class="flag-card hidden">
+      <div class="flag-title sky">Export &amp; Net Metering</div>
+      <div class="flag-body" id="flagExportBody"></div>
+    </div>
+    <div id="flagService" class="flag-card hidden">
+      <div class="flag-title warn">Interconnection Review Required</div>
+      <div class="flag-body" id="flagServiceBody"></div>
+    </div>
+    <div id="flag400a" class="flag-card hidden">
+      <div class="flag-title warn">400A Service — Dual System Required</div>
+      <div class="flag-body" id="flag400aBody"></div>
+    </div>
+    <div id="flagEv" class="flag-card hidden">
+      <div class="flag-title sky">Future Load Growth</div>
+      <div class="flag-body" id="flagEvBody"></div>
+    </div>
+  </div>
+
+  <!-- ─── Zone 4 — Handoff ─────────────────────────────────────────────────── -->
+  <div id="handoffZone" class="hidden">
+    <div class="handoff-card">
+      <div class="handoff-title">Ready for Interconnection Analysis</div>
+      <div class="handoff-row"><span class="handoff-lbl">System Size</span><span class="handoff-val" id="handoffSysSize">—</span></div>
+      <div class="handoff-row"><span class="handoff-lbl">Module Count</span><span class="handoff-val" id="handoffModuleCount">—</span></div>
+      <div class="handoff-row"><span class="handoff-lbl">Inverter / ESS</span><span class="handoff-val" id="handoffEquipment">—</span></div>
+      <div class="handoff-row"><span class="handoff-lbl">Estimated AC Output</span><span class="handoff-val" id="handoffACOutput">—</span></div>
+      <div class="handoff-row"><span class="handoff-lbl">Bus Rating</span><span class="handoff-val" id="handoffBus">—</span></div>
+      <div class="handoff-row"><span class="handoff-lbl">Main Breaker</span><span class="handoff-val" id="handoffMain">—</span></div>
+      <div class="handoff-row" style="border-bottom:none;"><span class="handoff-lbl">Preliminary 120% Result</span><span class="handoff-val" id="handoffPrelim">—</span></div>
+      <button class="handoff-btn" id="handoffBtn" onclick="openInterconnectionCalc()">Open Interconnection Calculator &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ─── Footer ───────────────────────────────────────────────────────────── -->
+  <footer class="page-footer">
+    <p>Personal field reference tool &nbsp;&middot;&nbsp; Not affiliated with any employer &nbsp;&middot;&nbsp; General reference only &nbsp;&middot;&nbsp; Always verify with a licensed professional</p>
+  </footer>
+
+</div><!-- /.page -->
+
+<script src="equipment-data.js"></script>
+<script src="calc.js"></script>
+</body>
+</html>
