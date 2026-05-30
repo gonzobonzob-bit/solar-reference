@@ -113,6 +113,7 @@ body {
   font-weight: 300;
   letter-spacing: 0.05em;
   cursor: pointer;
+  pointer-events: auto;
   transition: background 0.12s, color 0.12s;
   line-height: 1;
 }
@@ -236,6 +237,7 @@ body {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   cursor: pointer;
+  pointer-events: auto;
   transition: color 0.12s, border-color 0.12s, background 0.12s;
   line-height: 1.5;
 }
@@ -655,6 +657,20 @@ body {
 }
 
 .select-input:focus { border-color: var(--gold); }
+
+/* option elements need explicit colors — CSS vars don't reliably apply inside native dropdown */
+select option,
+.select-input option,
+.p2-select option {
+  background-color: #111620;
+  color: #e8eaf0;
+}
+
+/* optgroup labels */
+select optgroup {
+  background-color: #111620;
+  color: #7a8fa0;
+}
 
 .select-sub {
   margin-top: 7px;
@@ -1489,6 +1505,7 @@ body {
   font-weight: 400;
   letter-spacing: 0.04em;
   cursor: pointer;
+  pointer-events: auto;
   transition: opacity 0.14s;
 }
 
