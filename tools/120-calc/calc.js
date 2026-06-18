@@ -422,6 +422,11 @@ function render120Results(c, v) {
   set('rowBackfeed', !c.pass);
   if (c.pass) txt('valBackfeed', c.maxBackfeed.toFixed(2) + 'A');
 
+  set('backfeedGuidanceNote', !c.pass);
+  if (c.pass) el('backfeedGuidanceNote').innerHTML =
+    'If proposed backfeed exceeds ' + c.maxBackfeed.toFixed(2) + 'A, MPU avoidance options: ' +
+    'PCS/EMS [NEC 2023 §705.13] · Sum of All Breakers [NEC 2023 §705.12(B)(2)(3)(b)] · Main Panel Upgrade.';
+
   set('defaultBreakersSection', !c.pass);
   if (c.pass) renderDefaultBreakers(c, v);
 

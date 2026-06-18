@@ -56,7 +56,6 @@
             <input type="number" class="num-input" id="mainBreaker"
               placeholder="Enter amps" min="1" step="any" autocomplete="off">
             <div class="chips">
-              <button class="chip" onclick="setChip('mainBreaker', 60)">60</button>
               <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
               <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
               <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
@@ -353,6 +352,7 @@
           <div class="sub-panel-note hidden" id="subPanelNote"></div>
           <div class="calc-row"><span class="lbl">120% of Bus Rating</span><span class="val" id="val120Pct"></span></div>
           <div class="calc-row hidden" id="rowBackfeed"><span class="lbl">Maximum Allowable Backfeed</span><span class="val" id="valBackfeed"></span></div>
+          <div class="code-note hidden" id="backfeedGuidanceNote"></div>
           <div class="rule-note">Backfeed breaker must be installed at the opposite end of the busbar from the main breaker per NEC 705.12(B)(3)&nbsp;[2023] or 705.12(D)(3)&nbsp;[pre-2020].</div>
           <div id="defaultBreakersSection" class="hidden">
             <div class="sub-title">Maximum Allowable Breaker Sizes</div>
