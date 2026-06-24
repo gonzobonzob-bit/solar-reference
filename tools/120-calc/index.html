@@ -11,94 +11,95 @@
 <div class="page">
 
   <!-- ── SOURCE BANNER (shown when arriving from pv-sizing) ──── -->
-  <div id="sourceBanner" class="hidden" style="
-    background: rgba(56,139,253,0.06);
-    border-left: 3px solid #388BFD;
-    border-radius: 0 5px 5px 0;
-    padding: 10px 16px;
-    margin-bottom: 20px;
-    font-size: 11px;
-    line-height: 1.65;
-    color: #7a8fa0;
-    font-family: 'IBM Plex Sans', sans-serif;
-  ">Values carried from PV Sizing Tool. Review and adjust as needed.</div>
+  <div id="sourceBanner" class="banner banner-info hidden">
+    <span class="banner-icon">&#8599;</span>
+    <span>Values carried from PV Sizing Tool. Review and adjust as needed.</span>
+    <button class="banner-dismiss" onclick="this.parentElement.classList.add('hidden')" aria-label="Dismiss">&times;</button>
+  </div>
 
   <!-- ── PAGE HEADER ──────────────────────────────────────────── -->
   <header class="page-header">
     <h1 class="page-title">120% Rule Calculator</h1>
-    <p class="page-sub">NEC 705.12 &middot; Utility Interconnection &amp; ESS</p>
+    <p class="page-sub">NEC 705.12 · Utility Interconnection &amp; ESS</p>
   </header>
 
-  <!-- ── ZONE 1: BASE CALCULATOR ──────────────────────────────── -->
-  <section>
+  <!-- ══════════════════════════════════════════════════════════════
+       RESULT CARD — always visible, pinned at top
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="result-card" id="resultCard">
+    <div class="result-card-idle" id="resultIdle">
+      <span class="result-idle-label">AWAITING INPUT</span>
+      <span class="result-idle-sub">Enter bus rating and main breaker to calculate</span>
+    </div>
+    <div class="result-card-live hidden" id="resultLive">
+      <div class="result-verdict" id="resultVerdict">
+        <span class="result-badge" id="resultBadge">PASS</span>
+        <span class="result-citation chip-citation" id="resultCitation"></span>
+      </div>
+      <div class="result-primary">
+        <span class="result-primary-label">Max Allowable Backfeed</span>
+        <span class="result-primary-val" id="resultMaxBackfeed">—</span>
+      </div>
+      <div class="result-metrics" id="resultMetrics">
+        <div class="metric">
+          <span class="metric-label">Max Backfeed</span>
+          <span class="metric-val" id="metricBackfeed">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Max Std Breaker</span>
+          <span class="metric-val" id="metricStdBreaker">—</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Bus Headroom</span>
+          <span class="metric-val" id="metricHeadroom">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- 1. QUICK CALC BLOCK — primary inputs always visible above fold -->
-    <div class="quick-calc-block">
+  <!-- ══════════════════════════════════════════════════════════════
+       CORE INPUTS
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="card" id="coreInputs">
+    <div class="card-header">
+      <h2 class="card-title">Panel Information</h2>
+    </div>
 
-      <div id="mainPanelInputs">
-        <div class="inputs-grid">
-          <div class="input-block">
-            <label for="busRating">Bus Rating (amps)</label>
-            <input type="number" class="num-input" id="busRating"
-              placeholder="Enter amps" min="1" step="any" autocomplete="off">
-            <div class="chips">
-              <button class="chip" onclick="setChip('busRating', 100)">100</button>
-              <button class="chip" onclick="setChip('busRating', 125)">125</button>
-              <button class="chip" onclick="setChip('busRating', 150)">150</button>
-              <button class="chip" onclick="setChip('busRating', 200)">200</button>
-              <button class="chip" onclick="setChip('busRating', 225)">225</button>
-              <button class="chip" onclick="setChip('busRating', 320)">320</button>
-              <button class="chip" onclick="setChip('busRating', 400)">400</button>
-            </div>
-          </div>
-          <div class="input-block">
-            <label for="mainBreaker">Main Breaker Size (amps)</label>
-            <input type="number" class="num-input" id="mainBreaker"
-              placeholder="Enter amps" min="1" step="any" autocomplete="off">
-            <div class="chips">
-              <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
-              <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
-              <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
-              <button class="chip" onclick="setChip('mainBreaker', 175)">175</button>
-              <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
-              <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
-            </div>
-            <div id="mainBreakerWarning" class="hidden"></div>
+    <div id="mainPanelInputs">
+      <div class="inputs-grid">
+        <div class="input-block">
+          <label for="busRating">Bus Rating (amps)</label>
+          <input type="number" class="num-input" id="busRating"
+            placeholder="Enter amps" min="1" step="any" autocomplete="off">
+          <div class="chips">
+            <button class="chip" onclick="setChip('busRating', 100)">100</button>
+            <button class="chip" onclick="setChip('busRating', 125)">125</button>
+            <button class="chip" onclick="setChip('busRating', 150)">150</button>
+            <button class="chip" onclick="setChip('busRating', 200)">200</button>
+            <button class="chip" onclick="setChip('busRating', 225)">225</button>
+            <button class="chip" onclick="setChip('busRating', 320)">320</button>
+            <button class="chip" onclick="setChip('busRating', 400)">400</button>
           </div>
         </div>
-      </div><!-- /mainPanelInputs -->
-
-      <!-- Quick output -->
-      <div id="quickCalcOutput" class="qc-output hidden">
-        <div class="qc-head">
-          <span class="status-badge" id="qcStatus"></span>
-          <span class="citation-val" id="qcCitation"></span>
-        </div>
-        <div class="qc-primary">
-          <span class="qc-label">Maximum Allowable Backfeed</span>
-          <span class="qc-val" id="qcMaxBackfeed">—</span>
-        </div>
-        <div class="qc-derived" id="qcDerived">
-          <div class="qc-item">
-            <span class="qc-item-lbl">Max PV Breaker</span>
-            <span class="qc-item-val" id="qcMaxPV">—</span>
+        <div class="input-block">
+          <label for="mainBreaker">Main Breaker Size (amps)</label>
+          <input type="number" class="num-input" id="mainBreaker"
+            placeholder="Enter amps" min="1" step="any" autocomplete="off">
+          <div class="chips">
+            <button class="chip" onclick="setChip('mainBreaker', 100)">100</button>
+            <button class="chip" onclick="setChip('mainBreaker', 125)">125</button>
+            <button class="chip" onclick="setChip('mainBreaker', 150)">150</button>
+            <button class="chip" onclick="setChip('mainBreaker', 175)">175</button>
+            <button class="chip" onclick="setChip('mainBreaker', 200)">200</button>
+            <button class="chip" onclick="setChip('mainBreaker', 225)">225</button>
           </div>
-          <div class="qc-item hidden" id="qcRowESS">
-            <span class="qc-item-lbl">Max ESS Breaker</span>
-            <span class="qc-item-val" id="qcMaxESS">—</span>
-          </div>
-          <div class="qc-item hidden" id="qcRowCombined">
-            <span class="qc-item-lbl">Max Combined</span>
-            <span class="qc-item-val" id="qcMaxCombined">—</span>
-          </div>
+          <div id="mainBreakerWarning" class="hidden"></div>
         </div>
-      </div><!-- /quickCalcOutput -->
+      </div>
+    </div>
 
-    </div><!-- /quick-calc-block -->
-
-    <!-- 2. SETTINGS ROW -->
+    <!-- Settings toggles -->
     <div class="settings-row">
-      <div class="sr-label">Settings &amp; Options</div>
       <div class="sr-toggles">
         <div class="control-group">
           <span class="control-label">NEC Version</span>
@@ -112,123 +113,272 @@
         <div class="control-group">
           <span class="control-label">Connection Type</span>
           <div class="pill-group" id="connToggle">
-            <button data-conn="load"   onclick="setConnection('load')">LOAD-SIDE</button>
-            <button data-conn="supply" onclick="setConnection('supply')">SUPPLY-SIDE</button>
+            <button data-conn="load"   onclick="setConnection('load')">Load-Side</button>
+            <button data-conn="supply" onclick="setConnection('supply')">Supply-Side</button>
           </div>
         </div>
         <div class="control-group">
           <span class="control-label">Panel Type</span>
           <div class="pill-group" id="panelTypeToggle">
-            <button data-panel="main" onclick="setPanelType('main')">MAIN PANEL</button>
-            <button data-panel="sub"  onclick="setPanelType('sub')">SUB PANEL</button>
+            <button data-panel="main" onclick="setPanelType('main')">Main Panel</button>
+            <button data-panel="sub"  onclick="setPanelType('sub')">Sub Panel</button>
           </div>
         </div>
-        <div class="control-group">
-          <span class="control-label">Calculation Method</span>
-          <div class="pill-group" id="calcMethodToggle">
-            <button data-method="120pct"      onclick="setCalcMethod('120pct')">120% METHOD</button>
-            <button data-method="sumbreakers" onclick="setCalcMethod('sumbreakers')">SUM OF BREAKERS</button>
-          </div>
-        </div>
-      </div><!-- /sr-toggles -->
+      </div>
       <div class="version-banner" id="versionBanner"></div>
-    </div><!-- /settings-row -->
+    </div>
+  </section>
 
-    <!-- Supply-side note -->
-    <div class="supply-note hidden" id="supplySideNote">
-      <strong>Supply-Side Connection</strong>
-      <p>Supply-side connection bypasses NEC 705.12. No busbar percentage limit applies. Governed by NEC 705.12(A) and 230.82(6).</p>
-      <p style="margin-top: 8px;">Supply-side connections are still subject to the following hard limits:</p>
-      <div class="supply-section">
-        <div class="supply-section-title">Conductors</div>
-        <p>Tap conductors must be sized to carry full inverter output current without exceeding ampacity per NEC 310.12. Conductor ampacity must meet or exceed inverter maximum output current &times; 125% continuous load factor per NEC 705.12(A). Conductor length and conduit fill still apply per NEC 310 and Chapter 9.</p>
+  <!-- ══════════════════════════════════════════════════════════════
+       MATH BREAKDOWN — transparent dark card
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="math-card hidden" id="mathCard">
+    <div class="math-formula">
+      <span class="math-step">1.20</span>
+      <span class="math-op">&times;</span>
+      <span class="math-step" id="mathBus">—</span>
+      <span class="math-op">&minus;</span>
+      <span class="math-step" id="mathMain">—</span>
+      <span class="math-op">=</span>
+      <span class="math-step math-result" id="mathResult">—</span>
+    </div>
+    <div class="math-labels">
+      <span></span><span></span>
+      <span>bus</span><span></span>
+      <span>main</span><span></span>
+      <span>max backfeed</span>
+    </div>
+    <span class="chip-citation math-cite" id="mathCitation"></span>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SUPPLY-SIDE NOTE (conditional)
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="supply-note hidden" id="supplySideNote">
+    <strong>Supply-Side Connection</strong>
+    <p>Supply-side connection bypasses NEC 705.12. No busbar percentage limit applies. Governed by NEC 705.12(A) and 230.82(6).</p>
+    <p style="margin-top: 8px;">Supply-side connections are still subject to the following hard limits:</p>
+    <div class="supply-section">
+      <div class="supply-section-title">Conductors</div>
+      <p>Tap conductors must be sized to carry full inverter output current without exceeding ampacity per NEC 310.12. Conductor ampacity must meet or exceed inverter maximum output current &times; 125% continuous load factor per NEC 705.12(A). Conductor length and conduit fill still apply per NEC 310 and Chapter 9.</p>
+    </div>
+    <div class="supply-section">
+      <div class="supply-section-title">Disconnect &amp; Overcurrent Protection</div>
+      <p>A supply-side disconnect is required per NEC 230.82(6). OCPD must be sized to protect the conductors — not just the inverter output. Service equipment ratings cannot be exceeded. The supply-side connection point must be rated for the combined current.</p>
+    </div>
+    <div class="supply-section">
+      <div class="supply-section-title">Service Entrance Equipment</div>
+      <p>Meter base, service entrance conductors, and all equipment between the utility connection and tap point must be rated for the combined load. Many utilities require written approval and may specify their own sizing requirements independent of NEC. Some utilities prohibit supply-side connections entirely — confirm with AHJ and utility interconnection agreement before designing.</p>
+    </div>
+    <div class="field-note">
+      <strong>From the Field</strong> — Supply-side connections are often chosen when a panel fails the 120% calc. They are not a free pass — they shift sizing constraints from the busbar to the service entrance equipment and conductors. Confirm all component ratings before finalizing design.
+    </div>
+    <div class="supply-refs"><span class="chip-citation">NEC 705.12(A)</span> <span class="chip-citation">230.82(6)</span> <span class="chip-citation">310.12</span> <span class="chip-citation">Chapter 9</span></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       LOAD-SIDE CONTENT
+       ══════════════════════════════════════════════════════════════ -->
+  <div id="loadSideContent">
+
+    <!-- ── SUB PANEL INPUTS (conditional) ────────────────────── -->
+    <div id="subPanelInputs" class="card hidden">
+      <div class="card-header">
+        <h2 class="card-title">Sub Panel Configuration</h2>
       </div>
-      <div class="supply-section">
-        <div class="supply-section-title">Disconnect &amp; Overcurrent Protection</div>
-        <p>A supply-side disconnect is required per NEC 230.82(6). OCPD must be sized to protect the conductors — not just the inverter output. Service equipment ratings cannot be exceeded. The supply-side connection point must be rated for the combined current.</p>
+      <div class="banner banner-info" style="margin-bottom:16px;">
+        Sub panel interconnection uses the same 120% formula. Configuration determines the reference OCPD.
+        Main panel interconnection must be evaluated independently.
       </div>
-      <div class="supply-section">
-        <div class="supply-section-title">Service Entrance Equipment</div>
-        <p>Meter base, service entrance conductors, and all equipment between the utility connection and tap point must be rated for the combined load. Many utilities require written approval and may specify their own sizing requirements independent of NEC. Some utilities prohibit supply-side connections entirely — confirm with AHJ and utility interconnection agreement before designing.</p>
+      <div class="inputs-grid">
+        <div class="input-block">
+          <label for="subBusRating">Sub Panel Bus Rating (amps)</label>
+          <input type="number" class="num-input" id="subBusRating"
+            placeholder="Enter amps" min="1" step="any" autocomplete="off">
+          <div class="chips">
+            <button class="chip" onclick="setChip('subBusRating', 100)">100</button>
+            <button class="chip" onclick="setChip('subBusRating', 125)">125</button>
+            <button class="chip" onclick="setChip('subBusRating', 150)">150</button>
+            <button class="chip" onclick="setChip('subBusRating', 200)">200</button>
+          </div>
+        </div>
+        <div class="input-block">
+          <label>Configuration</label>
+          <select class="select-input" id="subConfigSelect">
+            <option value="main_breaker">With Main Breaker</option>
+            <option value="through_lug">Through-Lug</option>
+          </select>
+          <div class="select-sub">
+            <span>With Main Breaker</span> — uses sub panel main breaker as reference OCPD<br>
+            <span>Through-Lug</span> — uses feeder OCPD; NEC 408.36 Exception
+          </div>
+        </div>
       </div>
-      <div class="supply-field-note">
-        From the Field — Supply-side connections are often chosen when a panel fails the 120% calc. They are not a free pass — they shift sizing constraints from the busbar to the service entrance equipment and conductors. Confirm all component ratings before finalizing design.
+      <div class="inputs-grid" style="margin-top: 16px;">
+        <div class="input-block">
+          <label for="subOCPD" id="subOCPDLabel">Sub Panel Main Breaker (amps)</label>
+          <input type="number" class="num-input" id="subOCPD"
+            placeholder="Enter amps" min="1" step="any" autocomplete="off">
+          <div class="chips">
+            <button class="chip" onclick="setChip('subOCPD', 60)">60</button>
+            <button class="chip" onclick="setChip('subOCPD', 100)">100</button>
+            <button class="chip" onclick="setChip('subOCPD', 125)">125</button>
+            <button class="chip" onclick="setChip('subOCPD', 150)">150</button>
+            <button class="chip" onclick="setChip('subOCPD', 200)">200</button>
+          </div>
+        </div>
       </div>
-      <div class="supply-refs">NEC References: 705.12(A), 230.82(6), 310.12, Chapter 9</div>
     </div>
 
-    <!-- 4. LOAD-SIDE CONTENT -->
-    <div id="loadSideContent">
 
-      <!-- ── SUB PANEL INPUTS ──────────────────────────────────── -->
-      <div id="subPanelInputs" class="hidden">
-        <div class="sub-panel-config-note">
-          Sub panel interconnection uses the same 120% formula. Configuration determines the reference OCPD.
-          Main panel interconnection must be evaluated independently.
+    <!-- ── 120% RESULTS CARD ───────────────────────────────────── -->
+    <div class="results-card hidden" id="resultsCard">
+      <div class="results-head" id="resultsHead">
+        <span class="status-badge" id="statusBadge"></span>
+        <span class="panel-type-badge hidden" id="panelTypeBadge">SUB PANEL</span>
+      </div>
+      <div class="results-body">
+        <div class="alert alert-fail hidden" id="failAlert">
+          This panel does not qualify for a load-side connection at any backfeed size.
+          Consider supply-side connection or panel upgrade.
         </div>
-        <div class="inputs-grid">
-          <div class="input-block">
-            <label for="subBusRating">Sub Panel Bus Rating (amps)</label>
-            <input type="number" class="num-input" id="subBusRating"
-              placeholder="Enter amps" min="1" step="any" autocomplete="off">
-            <div class="chips">
-              <button class="chip" onclick="setChip('subBusRating', 100)">100</button>
-              <button class="chip" onclick="setChip('subBusRating', 125)">125</button>
-              <button class="chip" onclick="setChip('subBusRating', 150)">150</button>
-              <button class="chip" onclick="setChip('subBusRating', 200)">200</button>
+        <div id="failGuidancePanel" class="fail-guidance hidden">
+          <button class="fail-guidance-toggle" onclick="toggleFailGuidance()">When The Panel Fails — Options &amp; Considerations &#9652;</button>
+          <div id="failGuidanceBody">
+            <div class="fg-option">
+              <div class="fg-opt-title">Option 1 — Verify Backfeed Breaker Position</div>
+              <p>Before assuming a full fail, confirm breaker placement. Back-fed breaker must be at the opposite end of the busbar from the main breaker per <span class="chip-citation">NEC 705.12(B)(3) [2023]</span> / <span class="chip-citation">705.12(D)(3) [pre-2020]</span>. If placement is the only issue, this is an install correction — not a panel failure.</p>
+            </div>
+            <div class="fg-option">
+              <div class="fg-opt-title">Option 2 — Reduce System Size</div>
+              <p>If available backfeed is positive but insufficient for the proposed inverter output, reducing system size may resolve without panel work. Recalculate with a smaller inverter output current.</p>
+            </div>
+            <div class="fg-option">
+              <div class="fg-opt-title">Option 3 — Supply-Side Connection</div>
+              <p>Bypasses NEC 705.12 busbar calculation entirely. Governed by <span class="chip-citation">NEC 705.12(A)</span> and <span class="chip-citation">230.82(6)</span>. Requires utility written approval — not permitted by all utilities. Shifts sizing requirements to service entrance equipment and conductors. Switch to Supply-Side mode above for full requirements.</p>
+            </div>
+            <div class="fg-option">
+              <div class="fg-opt-title">Option 4 — Main Breaker Reduction</div>
+              <p>If the main breaker is oversized relative to actual service capacity, reducing main breaker size increases available backfeed headroom.<br>
+              Example: 200A bus / 200A main = 0A available.<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200A bus / 175A main = 65A available.<br>
+              Requires utility approval. Do not downsize without written utility authorization.</p>
+            </div>
+            <div class="fg-option">
+              <div class="fg-opt-title">Option 5 — Main Panel Upgrade (MPU)</div>
+              <p>Full panel replacement with higher rated busbar. Most common solution when service is undersized for both home load and solar addition.</p>
+            </div>
+            <div class="fg-mpu">
+              <div class="fg-mpu-title">MPU Triggers Bring-to-Code Requirements</div>
+              <p>Most jurisdictions require electrical work associated with an MPU to bring affected circuits to current code. Common requirements triggered by MPU permit:</p>
+              <ul class="list-dash">
+                <li><strong>NEC 210.12 [2023]</strong> — AFCI protection on bedroom, living room, kitchen, hallway, and dining room circuits.</li>
+                <li><strong>NEC 210.8 [2023]</strong> — GFCI updates in all required locations — kitchen, bath, garage, outdoor, basement, crawl space, boathouse, accessory dwelling.</li>
+                <li><strong>NEC 250.50 [2023]</strong> — Grounding electrode system — all electrodes present at structure must be bonded.</li>
+                <li><strong>NEC 250.53 [2023]</strong> — Two ground rods required unless single rod meets 25 ohm resistance.</li>
+                <li>Service entrance conductor sizing per NEC 230.31.</li>
+                <li>Meter base upgrade if existing is not rated for new service size.</li>
+                <li>Smoke and CO detector requirements may be triggered by local amendment — confirm with AHJ.</li>
+              </ul>
+            </div>
+            <div class="field-note">
+              <strong>From the Field</strong> — AHJ interpretation varies significantly. Some inspectors treat any panel upgrade as a full service upgrade triggering all of the above. Others scope requirements to affected circuits only. Confirm scope with AHJ before quoting the customer — an MPU can range from a straightforward panel swap to a significant whole-home electrical update depending on jurisdiction.
+            </div>
+            <div class="field-note">
+              <strong>From the Field</strong> — NEC 230.79(C) requires 100A minimum service for single family dwellings. Services below 100A predate the 1978 NEC minimum. Any MPU must bring service to 100A minimum. Many AHJs and utilities require 200A minimum for new construction and solar installations.
+            </div>
+            <div class="alert alert-fail" style="margin-top:8px;">
+              60A Service Flag — 60A services are common in pre-1978 construction. Solar addition to a 60A service almost always requires an MPU. A 60A bus with 60A main: 60 &times; 1.2 = 72A, minus 60A main = only 12A available backfeed. Insufficient for virtually any modern inverter output.
             </div>
           </div>
-          <div class="input-block">
-            <label>Configuration</label>
-            <select class="select-input" id="subConfigSelect">
-              <option value="main_breaker">With Main Breaker</option>
-              <option value="through_lug">Through-Lug</option>
-            </select>
-            <div class="select-sub">
-              <span>With Main Breaker</span> — uses sub panel main breaker as reference OCPD<br>
-              <span>Through-Lug</span> — uses feeder OCPD; NEC 408.36 Exception
-            </div>
+        </div>
+        <div class="sub-panel-note hidden" id="subPanelNote"></div>
+        <div class="calc-row"><span class="lbl">120% of Bus Rating</span><span class="val" id="val120Pct"></span></div>
+        <div class="calc-row hidden" id="rowBackfeed"><span class="lbl">Maximum Allowable Backfeed</span><span class="val" id="valBackfeed"></span></div>
+        <div class="code-note hidden" id="backfeedGuidanceNote"></div>
+        <div class="rule-note">Backfeed breaker must be installed at the opposite end of the busbar from the main breaker per <span class="chip-citation">NEC 705.12(B)(3) [2023]</span> or <span class="chip-citation">705.12(D)(3) [pre-2020]</span>.</div>
+        <div id="defaultBreakersSection" class="hidden">
+          <div class="sub-title">Maximum Allowable Breaker Sizes</div>
+          <div class="calc-row"><span class="lbl">Max Allowable PV Backfeed Breaker</span><span class="val-sm" id="valMaxPVBreaker"></span></div>
+          <div class="calc-row hidden" id="rowMaxESSBreaker"><span class="lbl">Max Allowable ESS Backfeed Breaker</span><span class="val-sm" id="valMaxESSBreaker"></span></div>
+          <div class="calc-row hidden" id="rowMaxCombinedDisplay"><span class="lbl">Maximum Combined PV + ESS Backfeed</span><span class="val-sm" id="valMaxCombinedDisplay"></span></div>
+          <div class="size-note">Largest standard breaker size that fits within the allowable backfeed — rounded down. Actual breaker = inverter output current &times; 1.25, rounded up to next standard size. These are the maximums permitted, not a sizing recommendation.</div>
+        </div>
+        <div id="inverterSection" class="hidden">
+          <div class="sub-title">Inverter Output Breaker — Verify Equipment</div>
+          <div class="calc-row"><span class="lbl">Maximum Inverter Continuous Output Current</span><span class="val-sm" id="valMaxInverterOutput"></span></div>
+          <div class="code-note">Inverter AC output breaker = 125% of inverter continuous output current per <span class="chip-citation">NEC 705.12(B)(2) [2023]</span> / <span class="chip-citation">705.12(D)(2) [pre-2020]</span>.</div>
+          <div class="opt-row">
+            <label for="knownInverterCurrent">Known PV Inverter Output Current (A) — optional</label>
+            <input type="number" class="inline-input" id="knownInverterCurrent" placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
+          </div>
+          <div id="inverterCalcBlock" class="hidden">
+            <div class="calc-row"><span class="lbl">Required Minimum Breaker (&times; 1.25)</span><span class="val-sm" id="valInverterMinBreaker"></span></div>
+            <div class="calc-row"><span class="lbl">Next Standard Breaker Size</span><span class="val-sm" id="valInverterStdBreaker"></span></div>
+            <div id="inverterAlert" class="hidden"></div>
           </div>
         </div>
-        <div class="inputs-grid" style="margin-top: 16px;">
-          <div class="input-block">
-            <label for="subOCPD" id="subOCPDLabel">Sub Panel Main Breaker (amps)</label>
-            <input type="number" class="num-input" id="subOCPD"
-              placeholder="Enter amps" min="1" step="any" autocomplete="off">
-            <div class="chips">
-              <button class="chip" onclick="setChip('subOCPD', 60)">60</button>
-              <button class="chip" onclick="setChip('subOCPD', 100)">100</button>
-              <button class="chip" onclick="setChip('subOCPD', 125)">125</button>
-              <button class="chip" onclick="setChip('subOCPD', 150)">150</button>
-              <button class="chip" onclick="setChip('subOCPD', 200)">200</button>
-            </div>
+        <div id="essSection" class="hidden">
+          <div class="sub-title">ESS Breaker — Verify Equipment</div>
+          <div class="opt-row">
+            <label for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
+            <input type="number" class="inline-input" id="essOutputCurrent" placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
           </div>
+          <div id="essCalcBlock" class="hidden">
+            <div class="calc-row"><span class="lbl">ESS Breaker Size (&times; 1.25, rounded up)</span><span class="val-sm" id="valEssBreaker"></span></div>
+            <div id="essAlert" class="hidden"></div>
+          </div>
+          <div class="code-note">Bidirectional inverter/charger breaker sizing per <span class="chip-citation">NEC 705.12(B) [2020/2023]</span>. Both charge and discharge current must be considered. Confirm with AHJ — interpretation varies.</div>
         </div>
-      </div><!-- /subPanelInputs -->
+        <div id="combinedConfigSection" class="hidden">
+          <div class="sub-title">PV + ESS Configuration Check</div>
+          <div class="calc-row"><span class="lbl">PV Backfeed Breaker</span><span class="val-sm" id="valCombinedPV"></span></div>
+          <div class="calc-row"><span class="lbl">+ ESS Backfeed Breaker</span><span class="val-sm" id="valCombinedESS"></span></div>
+          <div class="calc-row"><span class="lbl">Combined Total</span><span class="val-sm" id="valCombinedTotal"></span></div>
+          <div id="combinedConfigAlert" class="hidden"></div>
+        </div>
+        <div class="citation-bar">
+          <span class="citation-lbl">Active citation</span>
+          <span class="chip-citation" id="activeCitation"></span>
+        </div>
+      </div>
+    </div>
 
-      <!-- ── SUM OF BREAKERS CONTENT ───────────────────────────── -->
-      <div id="sumBreakersContent" class="hidden">
-        <div class="sob-banner">
-          <div class="sob-banner-title">Sum of All Breakers Method</div>
-          <p>
-            NEC 705.12(B)(2)(3)(b) — An alternative to the 120% rule. The total of all OCPD ratings
-            on the busbar, including the proposed backfeed breaker, must not exceed the busbar rating.
-            No 120% multiplier applies.
-          </p>
-          <button class="sob-when-toggle" onclick="toggleSobWhen()">When to use ▾</button>
-          <div class="sob-when-block hidden" id="sobWhenBlock">
-            <ul>
-              <li>Panel fails the 120% rule but total load OCPD is low — the sum method may pass without a panel upgrade.</li>
-              <li>AHJ prefers total load enumeration over the percentage-based method.</li>
-              <li>Multiple interactive sources (PV + ESS + generator) where aggregate OCPD is easier to document.</li>
-              <li>Confirming a passing 120% result via an alternate method for stronger permit documentation.</li>
-            </ul>
-            <div class="code-note" style="margin-top: 8px;">
-              Interpretation varies by AHJ. Confirm acceptance before designing to this method.
-              Some utilities apply more restrictive rules than the NEC minimum.
-            </div>
-          </div>
+  </div><!-- /loadSideContent -->
+
+  <!-- ══════════════════════════════════════════════════════════════
+       REFERENCE & EDGE CASES — accordions, closed by default
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="ref-section-header">Reference &amp; Edge Cases</div>
+
+  <!-- Sum of Breakers — independent calc -->
+  <div class="accordion" id="accordionSumBreakers">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionSumBreakers')">
+      <span class="accordion-title">Sum of All Breakers Check</span>
+      <span class="chip-citation" style="margin-left:auto;margin-right:8px;">NEC 705.12(B)(2)(3)(b)</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <p class="body-text">
+        An alternative to the 120% rule. The total of all OCPD ratings
+        on the busbar, including the proposed backfeed breaker, must not exceed the busbar rating.
+        No 120% multiplier applies.
+      </p>
+      <button class="sob-when-toggle" onclick="toggleSobWhen()">When to use &#9662;</button>
+      <div class="sob-when-block hidden" id="sobWhenBlock">
+        <ul class="list-dash">
+          <li>Panel fails the 120% rule but total load OCPD is low — the sum method may pass without a panel upgrade.</li>
+          <li>AHJ prefers total load enumeration over the percentage-based method.</li>
+          <li>Multiple interactive sources (PV + ESS + generator) where aggregate OCPD is easier to document.</li>
+          <li>Confirming a passing 120% result via an alternate method for stronger permit documentation.</li>
+        </ul>
+        <div class="field-note" style="margin-top:8px;">
+          <strong>From the Field</strong> — Interpretation varies by AHJ. Confirm acceptance before designing to this method.
+          Some utilities apply more restrictive rules than the NEC minimum.
         </div>
+      </div>
+
+      <div style="margin-top:16px;">
         <div class="inputs-grid">
           <div class="input-block">
             <label for="sobBusRating">Bus Rating (amps)</label>
@@ -260,637 +410,482 @@
             </div>
           </div>
         </div>
-        <!-- SOB Results card -->
-        <div class="results-card hidden" id="sobResultsCard">
-          <div class="results-head" id="sobResultsHead">
-            <span class="status-badge" id="sobStatusBadge"></span>
-            <span class="sob-method-label">Sum of Breakers</span>
-          </div>
-          <div class="results-body">
-            <div class="alert alert-fail hidden" id="sobFailAlert">
-              Total OCPD exceeds bus rating. Panel cannot accommodate this backfeed at current bus loading.
-              Reduce existing OCPD, upgrade the bus, or reduce proposed backfeed size.
-            </div>
-            <div class="calc-row"><span class="lbl">Bus Rating</span><span class="val" id="sobValBusRating"></span></div>
-            <div class="calc-row"><span class="lbl">Total Existing OCPD on Bus</span><span class="val-sm" id="sobValTotalOCPD"></span></div>
-            <div class="calc-row"><span class="lbl">+ Proposed Backfeed Breaker</span><span class="val-sm" id="sobValProposedBF"></span></div>
-            <div class="calc-row"><span class="lbl">Total OCPD on Bus</span><span class="val" id="sobValTotal"></span></div>
-            <div class="calc-row"><span class="lbl">Remaining Headroom</span><span class="val-sm" id="sobValHeadroom"></span></div>
-            <div class="rule-note">Pass condition: Total OCPD &le; Bus Rating. Main breaker must be included in total existing OCPD. Citation: NEC 705.12(B)(2)(3)(b)&nbsp;[2023] / 705.12(D)(2)(3)(b)&nbsp;[pre-2020].</div>
-            <div id="sobCmpBlock" class="hidden">
-              <div class="sub-title">Comparison: 120% Method</div>
-              <div class="calc-row"><span class="lbl">Max Allowable Backfeed (120% method)</span><span class="val-sm" id="sobCmpMaxBF"></span></div>
-              <div class="calc-row"><span class="lbl">Max Standard Breaker (120% method)</span><span class="val-sm" id="sobCmpMaxBrk"></span></div>
-              <div class="calc-row"><span class="lbl">120% Method Result</span><span class="val-sm sob-cmp-pass"></span></div>
-            </div>
-            <div class="code-note">Comparison requires Main Panel Bus Rating and Main Breaker entered above.</div>
-          </div>
-        </div><!-- /sobResultsCard -->
-      </div><!-- /sumBreakersContent -->
+      </div>
 
-      <!-- ── 120% RESULTS CARD ──────────────────────────────────── -->
-      <div class="results-card hidden" id="resultsCard">
-        <div class="results-head" id="resultsHead">
-          <span class="status-badge" id="statusBadge"></span>
-          <span class="panel-type-badge hidden" id="panelTypeBadge">SUB PANEL</span>
+      <!-- SOB Results -->
+      <div class="results-card hidden" id="sobResultsCard">
+        <div class="results-head" id="sobResultsHead">
+          <span class="status-badge" id="sobStatusBadge"></span>
+          <span class="results-method">Sum of Breakers</span>
         </div>
         <div class="results-body">
-          <div class="alert alert-fail hidden" id="failAlert">
-            This panel does not qualify for a load-side connection at any backfeed size.
-            Consider supply-side connection or panel upgrade.
+          <div class="alert alert-fail hidden" id="sobFailAlert">
+            Total OCPD exceeds bus rating. Panel cannot accommodate this backfeed at current bus loading.
+            Reduce existing OCPD, upgrade the bus, or reduce proposed backfeed size.
           </div>
-          <div id="failGuidancePanel" class="fail-guidance hidden">
-            <button class="fail-guidance-toggle" onclick="toggleFailGuidance()">When The Panel Fails — Options &amp; Considerations ▴</button>
-            <div id="failGuidanceBody">
-              <div class="fg-option">
-                <div class="fg-opt-title">Option 1 — Verify Backfeed Breaker Position</div>
-                <p>Before assuming a full fail, confirm breaker placement. Back-fed breaker must be at the opposite end of the busbar from the main breaker per NEC 705.12(B)(3) [2023] / 705.12(D)(3) [pre-2020]. If placement is the only issue, this is an install correction — not a panel failure.</p>
-              </div>
-              <div class="fg-option">
-                <div class="fg-opt-title">Option 2 — Reduce System Size</div>
-                <p>If available backfeed is positive but insufficient for the proposed inverter output, reducing system size may resolve without panel work. Recalculate with a smaller inverter output current.</p>
-              </div>
-              <div class="fg-option">
-                <div class="fg-opt-title">Option 3 — Supply-Side Connection</div>
-                <p>Bypasses NEC 705.12 busbar calculation entirely. Governed by NEC 705.12(A) and 230.82(6). Requires utility written approval — not permitted by all utilities. Shifts sizing requirements to service entrance equipment and conductors. Switch to Supply-Side mode above for full requirements.</p>
-              </div>
-              <div class="fg-option">
-                <div class="fg-opt-title">Option 4 — Main Breaker Reduction</div>
-                <p>If the main breaker is oversized relative to actual service capacity, reducing main breaker size increases available backfeed headroom.<br>
-                Example: 200A bus / 200A main = 0A available.<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200A bus / 175A main = 65A available.<br>
-                Requires utility approval. Do not downsize without written utility authorization.</p>
-              </div>
-              <div class="fg-option">
-                <div class="fg-opt-title">Option 5 — Main Panel Upgrade (MPU)</div>
-                <p>Full panel replacement with higher rated busbar. Most common solution when service is undersized for both home load and solar addition.</p>
-              </div>
-              <div class="fg-mpu">
-                <div class="fg-mpu-title">MPU Triggers Bring-to-Code Requirements</div>
-                <p>Most jurisdictions require electrical work associated with an MPU to bring affected circuits to current code. Common requirements triggered by MPU permit:</p>
-                <ul>
-                  <li><strong>NEC 210.12 [2023]</strong> — AFCI protection on bedroom, living room, kitchen, hallway, and dining room circuits.</li>
-                  <li><strong>NEC 210.8 [2023]</strong> — GFCI updates in all required locations — kitchen, bath, garage, outdoor, basement, crawl space, boathouse, accessory dwelling.</li>
-                  <li><strong>NEC 250.50 [2023]</strong> — Grounding electrode system — all electrodes present at structure must be bonded.</li>
-                  <li><strong>NEC 250.53 [2023]</strong> — Two ground rods required unless single rod meets 25 ohm resistance.</li>
-                  <li>Service entrance conductor sizing per NEC 230.31.</li>
-                  <li>Meter base upgrade if existing is not rated for new service size.</li>
-                  <li>Smoke and CO detector requirements may be triggered by local amendment — confirm with AHJ.</li>
-                </ul>
-              </div>
-              <div class="fg-field-note">
-                From the Field — AHJ interpretation varies significantly. Some inspectors treat any panel upgrade as a full service upgrade triggering all of the above. Others scope requirements to affected circuits only. Confirm scope with AHJ before quoting the customer — an MPU can range from a straightforward panel swap to a significant whole-home electrical update depending on jurisdiction.
-              </div>
-              <div class="fg-field-note">
-                NEC 230.79(C) requires 100A minimum service for single family dwellings. Services below 100A predate the 1978 NEC minimum. Any MPU must bring service to 100A minimum. Many AHJs and utilities require 200A minimum for new construction and solar installations.
-              </div>
-              <div class="fg-flag">
-                60A Service Flag — 60A services are common in pre-1978 construction. Solar addition to a 60A service almost always requires an MPU. A 60A bus with 60A main: 60 &times; 1.2 = 72A, minus 60A main = only 12A available backfeed. Insufficient for virtually any modern inverter output.
-              </div>
-            </div>
+          <div class="calc-row"><span class="lbl">Bus Rating</span><span class="val" id="sobValBusRating"></span></div>
+          <div class="calc-row"><span class="lbl">Total Existing OCPD on Bus</span><span class="val-sm" id="sobValTotalOCPD"></span></div>
+          <div class="calc-row"><span class="lbl">+ Proposed Backfeed Breaker</span><span class="val-sm" id="sobValProposedBF"></span></div>
+          <div class="calc-row"><span class="lbl">Total OCPD on Bus</span><span class="val" id="sobValTotal"></span></div>
+          <div class="calc-row"><span class="lbl">Remaining Headroom</span><span class="val-sm" id="sobValHeadroom"></span></div>
+          <div class="rule-note">Pass condition: Total OCPD &le; Bus Rating. Main breaker must be included in total existing OCPD. Citation: <span class="chip-citation">NEC 705.12(B)(2)(3)(b) [2023]</span> / <span class="chip-citation">705.12(D)(2)(3)(b) [pre-2020]</span>.</div>
+          <div id="sobCmpBlock" class="hidden">
+            <div class="sub-title">Comparison: 120% Method</div>
+            <div class="calc-row"><span class="lbl">Max Allowable Backfeed (120% method)</span><span class="val-sm" id="sobCmpMaxBF"></span></div>
+            <div class="calc-row"><span class="lbl">Max Standard Breaker (120% method)</span><span class="val-sm" id="sobCmpMaxBrk"></span></div>
+            <div class="calc-row"><span class="lbl">120% Method Result</span><span class="val-sm sob-cmp-pass"></span></div>
           </div>
-          <div class="sub-panel-note hidden" id="subPanelNote"></div>
-          <div class="calc-row"><span class="lbl">120% of Bus Rating</span><span class="val" id="val120Pct"></span></div>
-          <div class="calc-row hidden" id="rowBackfeed"><span class="lbl">Maximum Allowable Backfeed</span><span class="val" id="valBackfeed"></span></div>
-          <div class="code-note hidden" id="backfeedGuidanceNote"></div>
-          <div class="rule-note">Backfeed breaker must be installed at the opposite end of the busbar from the main breaker per NEC 705.12(B)(3)&nbsp;[2023] or 705.12(D)(3)&nbsp;[pre-2020].</div>
-          <div id="defaultBreakersSection" class="hidden">
-            <div class="sub-title">Maximum Allowable Breaker Sizes</div>
-            <div class="calc-row"><span class="lbl">Max Allowable PV Backfeed Breaker</span><span class="val-sm" id="valMaxPVBreaker"></span></div>
-            <div class="calc-row hidden" id="rowMaxESSBreaker"><span class="lbl">Max Allowable ESS Backfeed Breaker</span><span class="val-sm" id="valMaxESSBreaker"></span></div>
-            <div class="calc-row hidden" id="rowMaxCombinedDisplay"><span class="lbl">Maximum Combined PV + ESS Backfeed</span><span class="val-sm" id="valMaxCombinedDisplay"></span></div>
-            <div class="size-note">Largest standard breaker size that fits within the allowable backfeed — rounded down. Actual breaker = inverter output current &times; 1.25, rounded up to next standard size. These are the maximums permitted, not a sizing recommendation.</div>
-          </div>
-          <div id="inverterSection" class="hidden">
-            <div class="sub-title">Inverter Output Breaker — Verify Equipment</div>
-            <div class="calc-row"><span class="lbl">Maximum Inverter Continuous Output Current</span><span class="val-sm" id="valMaxInverterOutput"></span></div>
-            <div class="code-note">Inverter AC output breaker = 125% of inverter continuous output current per NEC 705.12(B)(2)&nbsp;[2023] / 705.12(D)(2)&nbsp;[pre-2020].</div>
-            <div class="opt-row">
-              <label for="knownInverterCurrent">Known PV Inverter Output Current (A) — optional</label>
-              <input type="number" class="inline-input" id="knownInverterCurrent" placeholder="e.g. 40.0" min="0" step="any" autocomplete="off">
-            </div>
-            <div id="inverterCalcBlock" class="hidden">
-              <div class="calc-row"><span class="lbl">Required Minimum Breaker (&times; 1.25)</span><span class="val-sm" id="valInverterMinBreaker"></span></div>
-              <div class="calc-row"><span class="lbl">Next Standard Breaker Size</span><span class="val-sm" id="valInverterStdBreaker"></span></div>
-              <div id="inverterAlert" class="hidden"></div>
-            </div>
-          </div>
-          <div id="essSection" class="hidden">
-            <div class="sub-title">ESS Breaker — Verify Equipment</div>
-            <div class="opt-row">
-              <label for="essOutputCurrent">ESS Continuous Charge/Discharge Current (A) — optional</label>
-              <input type="number" class="inline-input" id="essOutputCurrent" placeholder="e.g. 16.7" min="0" step="any" autocomplete="off">
-            </div>
-            <div id="essCalcBlock" class="hidden">
-              <div class="calc-row"><span class="lbl">ESS Breaker Size (&times; 1.25, rounded up)</span><span class="val-sm" id="valEssBreaker"></span></div>
-              <div id="essAlert" class="hidden"></div>
-            </div>
-            <div class="code-note">Bidirectional inverter/charger breaker sizing per NEC 705.12(B)&nbsp;[2020/2023]. Both charge and discharge current must be considered. Confirm with AHJ — interpretation varies.</div>
-          </div>
-          <div id="combinedConfigSection" class="hidden">
-            <div class="sub-title">PV + ESS Configuration Check</div>
-            <div class="calc-row"><span class="lbl">PV Backfeed Breaker</span><span class="val-sm" id="valCombinedPV"></span></div>
-            <div class="calc-row"><span class="lbl">+ ESS Backfeed Breaker</span><span class="val-sm" id="valCombinedESS"></span></div>
-            <div class="calc-row"><span class="lbl">Combined Total</span><span class="val-sm" id="valCombinedTotal"></span></div>
-            <div id="combinedConfigAlert" class="hidden"></div>
-          </div>
-          <div class="backfeed-callout hidden" id="backfeedLabelingCallout">
-            <div class="backfeed-callout-title">Back-Fed Breaker &amp; Labeling Requirements</div>
-            <div class="backfeed-reqs">
-              <div class="backfeed-req">
-                <span class="req-ref">NEC 705.12(B)(3)</span>
-                <span class="req-text">Backfeed breaker must be secured in position with a listed handle lock or breaker lock. Identified as an interactive system supply connection.</span>
-              </div>
-              <div class="backfeed-req">
-                <span class="req-ref">NEC 690.54</span>
-                <span class="req-text">Point of interconnection must be labeled with the maximum permitted backfeed current and system voltage. Label must be permanent, weatherproof if outdoors.</span>
-              </div>
-              <div class="backfeed-req">
-                <span class="req-ref">NEC 690.31(G)(3)</span>
-                <span class="req-text">All PV system wiring — junction boxes, conduit, raceways, combiners — must be labeled: <em>WARNING: PHOTOVOLTAIC POWER SOURCE</em> at accessible points.</span>
-              </div>
-            </div>
-            <div class="backfeed-field-note">
-              From the Field — Labeling is the most common reason solar inspections fail on the electrical side.
-              Breaker lock, label size, placement, and exact wording are each individually checked.
-              If multiple inverters are installed, each point of connection requires its own independent label set.
-              Confirm local AHJ label format and size requirements before scheduling final inspection.
-            </div>
-          </div>
-          <div class="citation-bar">
-            <span class="citation-lbl">Active citation</span>
-            <span class="citation-val" id="activeCitation"></span>
-          </div>
-        </div><!-- /results-body -->
-      </div><!-- /resultsCard -->
-
-    </div><!-- /loadSideContent -->
-
-  </section>
-
-  <!-- ── UTILITY vs NEC CONFLICT BANNER ───────────────────────── -->
-  <div class="utility-conflict-banner">
-    <div class="ucb-title">Utility Interconnection Agreement May Override NEC</div>
-    <p class="ucb-body">NEC 705.12 sets the minimum code standard for load-side interconnection. Utility Interconnection Agreements (IA) and tariff schedules are contractual and often impose stricter limits — they take precedence in practice regardless of NEC compliance.</p>
-    <div class="ucb-list-label">Common utility restrictions that override NEC minimums:</div>
-    <ul class="ucb-list">
-      <li>Export capacity cap lower than NEC maximum (e.g., utility limits export to 15A regardless of panel capacity)</li>
-      <li>Anti-islanding delay requirements beyond IEEE 1547 minimums</li>
-      <li>Prohibition on specific inverter types, firmware versions, or rapid shutdown configurations</li>
-      <li>Metering requirements that restrict installation location or service entrance disconnect position</li>
-      <li>NEM/NEM3 queue restrictions that affect when a system can be energized</li>
-      <li>Minimum interconnection study thresholds that trigger additional engineering review</li>
-    </ul>
-    <div class="ucb-note">Always obtain and review the utility IA before submitting permit documents. AHJ approval does not substitute for utility approval — both are required.</div>
+          <div class="code-note">Comparison requires Main Panel Bus Rating and Main Breaker entered above.</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- ── ZONE 2: EXPANSION PANELS ─────────────────────────────── -->
-  <hr class="zone-divider">
-  <p class="zone-lbl">Expansion Modules &mdash; NEC 690 / 705</p>
-
-  <section id="zone2">
-
-    <!-- ── PANEL 1: EQUIPMENT SELECTION ─────────────────────────── -->
-    <div class="panel locked" id="panelEquipment">
-      <div class="panel-head" onclick="togglePanel('panelEquipment')">
-        <div class="panel-left">
-          <span class="panel-icon">+</span>
-          <span class="panel-name">Equipment Selection</span>
-          <span class="panel-sub">AC &amp; DC</span>
+  <!-- Labeling requirements -->
+  <div class="accordion" id="accordionLabeling">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionLabeling')">
+      <span class="accordion-title">Back-Fed Breaker &amp; Labeling Requirements</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <div class="backfeed-reqs">
+        <div class="backfeed-req">
+          <span class="chip-citation">NEC 705.12(B)(3)</span>
+          <span class="req-text">Backfeed breaker must be secured in position with a listed handle lock or breaker lock. Identified as an interactive system supply connection.</span>
         </div>
-        <span class="panel-ref">NEC 690 / 705</span>
+        <div class="backfeed-req">
+          <span class="chip-citation">NEC 690.54</span>
+          <span class="req-text">Point of interconnection must be labeled with the maximum permitted backfeed current and system voltage. Label must be permanent, weatherproof if outdoors.</span>
+        </div>
+        <div class="backfeed-req">
+          <span class="chip-citation">NEC 690.31(G)(3)</span>
+          <span class="req-text">All PV system wiring — junction boxes, conduit, raceways, combiners — must be labeled: <em>WARNING: PHOTOVOLTAIC POWER SOURCE</em> at accessible points.</span>
+        </div>
       </div>
-      <div class="panel-body">
-        <div class="p2-section">
-          <div class="p2-title">Select Equipment</div>
+      <div class="field-note">
+        <strong>From the Field</strong> — Labeling is the most common reason solar inspections fail on the electrical side.
+        Breaker lock, label size, placement, and exact wording are each individually checked.
+        If multiple inverters are installed, each point of connection requires its own independent label set.
+        Confirm local AHJ label format and size requirements before scheduling final inspection.
+      </div>
+    </div>
+  </div>
 
-          <div class="p2-row-two">
+  <!-- AHJ override -->
+  <div class="accordion" id="accordionAHJ">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionAHJ')">
+      <span class="accordion-title">AHJ May Override NEC — Utility Interconnection</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <p class="body-text">NEC 705.12 sets the minimum code standard for load-side interconnection. Utility Interconnection Agreements (IA) and tariff schedules are contractual and often impose stricter limits — they take precedence in practice regardless of NEC compliance.</p>
+      <div class="body-text" style="margin-top:10px;"><strong>Common utility restrictions that override NEC minimums:</strong></div>
+      <ul class="list-dash">
+        <li>Export capacity cap lower than NEC maximum (e.g., utility limits export to 15A regardless of panel capacity)</li>
+        <li>Anti-islanding delay requirements beyond IEEE 1547 minimums</li>
+        <li>Prohibition on specific inverter types, firmware versions, or rapid shutdown configurations</li>
+        <li>Metering requirements that restrict installation location or service entrance disconnect position</li>
+        <li>NEM/NEM3 queue restrictions that affect when a system can be energized</li>
+        <li>Minimum interconnection study thresholds that trigger additional engineering review</li>
+      </ul>
+      <div class="field-note">
+        <strong>From the Field</strong> — Always obtain and review the utility IA before submitting permit documents. AHJ approval does not substitute for utility approval — both are required.
+      </div>
+    </div>
+  </div>
+
+  <!-- DC String Sizing -->
+  <div class="accordion" id="accordionDcString">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionDcString')">
+      <span class="accordion-title">DC String Sizing</span>
+      <span class="chip-citation" style="margin-left:auto;margin-right:8px;">NEC 690</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <div class="p2-section">
+        <div class="p2-title">Voc Temperature Correction — NEC 690.7</div>
+
+        <div class="p2-toggle-row">
+          <div class="control-group">
+            <span class="control-label">Correction Method</span>
+            <div class="pill-group" id="dcMethodToggle">
+              <button data-method="table"       onclick="setDcMethod('table')">NEC Table</button>
+              <button data-method="coefficient" onclick="setDcMethod('coefficient')">Coefficient</button>
+            </div>
+          </div>
+          <div class="control-group">
+            <span class="control-label">Temperature Source</span>
+            <div class="pill-group" id="dcTempModeToggle">
+              <button data-mode="zone"   onclick="setDcTempMode('zone')">Climate Zone</button>
+              <button data-mode="manual" onclick="setDcTempMode('manual')">Manual</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="dcZoneRow" class="p2-input-row">
+          <div class="input-block" style="max-width: 380px;">
+            <label for="dcClimateZoneSelect">Design Location (ASHRAE 99.6% heating temp)</label>
+            <select class="select-input" id="dcClimateZoneSelect" onchange="setDcZone(this.value)"></select>
+          </div>
+        </div>
+
+        <div id="dcManualRow" class="p2-input-row hidden">
+          <div class="inputs-grid" style="max-width: 480px;">
             <div class="input-block">
-              <label>Manufacturer</label>
-              <select class="select-input" id="eqMfgSelect" onchange="setEqMfg(this.value)">
-                <option value="tesla">Tesla</option>
-                <option value="enphase">Enphase</option>
-                <option value="qcells">Q CELLS</option>
-              </select>
+              <label for="dcManualTempF">Design Temp (°F)</label>
+              <input type="number" class="num-input" id="dcManualTempF" placeholder="e.g. 14" step="any" autocomplete="off">
             </div>
             <div class="input-block">
-              <label>Model</label>
-              <select class="select-input" id="eqModelSelect" onchange="setEqModel(this.value)"></select>
+              <label for="dcManualTempC">Design Temp (°C)</label>
+              <input type="number" class="num-input" id="dcManualTempC" placeholder="e.g. -10" step="any" autocomplete="off">
             </div>
           </div>
+          <div class="code-note">Fields sync automatically. Enter either °F or °C.</div>
+        </div>
 
-          <div class="eq-specs">
-            <div class="eq-spec-row">
-              <span class="eq-spec-lbl">Capacity</span>
-              <span class="eq-spec-val" id="eqValCapacity">—</span>
+        <div class="sub-title">Module Specifications</div>
+        <div class="inputs-grid">
+          <div class="input-block">
+            <label for="dcVocStc">Voc at STC (V)</label>
+            <input type="number" class="num-input" id="dcVocStc" placeholder="e.g. 47.8" min="0" step="any" autocomplete="off">
+          </div>
+          <div class="input-block">
+            <label for="dcVmpStc">Vmp at STC (V) — optional</label>
+            <input type="number" class="num-input" id="dcVmpStc" placeholder="e.g. 40.1" min="0" step="any" autocomplete="off">
+          </div>
+          <div class="input-block">
+            <label for="dcIscStc">Isc at STC (A) — optional</label>
+            <input type="number" class="num-input" id="dcIscStc" placeholder="e.g. 10.7" min="0" step="any" autocomplete="off">
+          </div>
+          <div class="input-block hidden" id="dcCoeffBlock">
+            <label for="dcVocCoeff">Voc Temp Coefficient</label>
+            <input type="number" class="num-input" id="dcVocCoeff" placeholder="e.g. -0.28" step="any" autocomplete="off">
+            <div class="chips" style="margin-top: 8px;">
+              <span class="chip-label">Unit:</span>
+              <button class="chip" onclick="setDcCoeffUnit('pct')">%/°C</button>
+              <button class="chip" onclick="setDcCoeffUnit('v')">V/°C</button>
             </div>
-            <div class="eq-spec-row">
-              <span class="eq-spec-lbl">AC Output</span>
-              <span class="eq-spec-val" id="eqValOutput">—</span>
+            <div class="code-note">Negative value (Voc decreases with heat). From module datasheet.</div>
+          </div>
+        </div>
+
+        <div class="sub-title">Inverter DC Specs — optional</div>
+        <div class="inputs-grid">
+          <div class="input-block">
+            <label for="dcInverterMaxV">Max DC Input Voltage (V)</label>
+            <input type="number" class="num-input" id="dcInverterMaxV" placeholder="e.g. 600" min="0" step="any" autocomplete="off">
+            <div class="chips">
+              <button class="chip" onclick="setDcChip('dcInverterMaxV', 600)">600</button>
+              <button class="chip" onclick="setDcChip('dcInverterMaxV', 1000)">1000</button>
+              <button class="chip" onclick="setDcChip('dcInverterMaxV', 1500)">1500</button>
             </div>
-            <div class="eq-spec-row eq-spec-note-row">
-              <span class="eq-spec-val" id="eqValNote">—</span>
+          </div>
+          <div class="input-block">
+            <label for="dcMpptMin">MPPT Voltage Min (V)</label>
+            <input type="number" class="num-input" id="dcMpptMin" placeholder="e.g. 200" min="0" step="any" autocomplete="off">
+          </div>
+          <div class="input-block">
+            <label for="dcMpptMax">MPPT Voltage Max (V)</label>
+            <input type="number" class="num-input" id="dcMpptMax" placeholder="e.g. 500" min="0" step="any" autocomplete="off">
+          </div>
+          <div class="input-block">
+            <label for="dcStringCount">Modules per String</label>
+            <input type="number" class="num-input" id="dcStringCount" placeholder="e.g. 10" min="1" step="1" autocomplete="off">
+          </div>
+        </div>
+
+        <div class="results-card hidden" id="dcResultsCard">
+          <div class="results-head" id="dcResultsHead">
+            <span class="status-badge" id="dcStatusBadge"></span>
+            <span class="results-method">NEC 690.7 — Voc Temperature Correction</span>
+          </div>
+          <div class="results-body">
+            <div class="calc-row"><span class="lbl">Design Temperature</span><span class="val-sm" id="dcValTemp"></span></div>
+            <div class="calc-row"><span class="lbl">Correction Factor</span><span class="val-sm" id="dcValFactor"></span></div>
+            <div class="calc-row"><span class="lbl">Corrected Voc (per module)</span><span class="val" id="dcValVocCorr"></span></div>
+
+            <div id="dcStringBlock" class="hidden">
+              <div class="sub-title">String Voltage Check</div>
+              <div class="calc-row"><span class="lbl">String Voc at Design Temp</span><span class="val" id="dcValStringVoc"></span></div>
+              <div class="calc-row hidden" id="dcRowVocPass">
+                <span class="lbl">vs. Inverter Max DC Voltage</span>
+                <span class="val-sm" id="dcValVocPass"></span>
+              </div>
+              <div class="calc-row hidden" id="dcRowVmpHot">
+                <span class="lbl">String Vmp at 70°C (hot-day min)</span>
+                <span class="val-sm" id="dcValVmpHot"></span>
+              </div>
+              <div class="calc-row hidden" id="dcRowMpptMin">
+                <span class="lbl">MPPT Min Check (hot day)</span>
+                <span class="val-sm" id="dcValMpptMin"></span>
+              </div>
+            </div>
+
+            <div id="dcStringRecBlock" class="hidden">
+              <div class="sub-title">String Count Recommendation</div>
+              <div class="calc-row hidden" id="dcRowMaxStr">
+                <span class="lbl">Max Modules per String (cold Voc)</span>
+                <span class="val-sm" id="dcValMaxStr"></span>
+              </div>
+              <div class="calc-row hidden" id="dcRowMinStr">
+                <span class="lbl">Min Modules per String (hot Vmp)</span>
+                <span class="val-sm" id="dcValMinStr"></span>
+              </div>
+            </div>
+
+            <div id="dcWireBlock" class="hidden">
+              <div class="sub-title">DC Conductor Sizing — NEC 690.8</div>
+              <div class="calc-row"><span class="lbl">Module Isc at STC</span><span class="val-sm" id="dcValIsc"></span></div>
+              <div class="calc-row">
+                <span class="lbl">Min Conductor Ampacity (Isc &times; 1.25)</span>
+                <span class="val" id="dcValWireMin"></span>
+              </div>
+              <div class="code-note">NEC 690.8(A)(1) — DC source conductors rated 125% of module Isc. Apply additional derating per NEC 310 Table for conduit fill, ambient temperature, and conduit type.</div>
+            </div>
+
+            <div class="citation-bar">
+              <span class="citation-lbl">Citation</span>
+              <span class="chip-citation">NEC 690.7 / 690.8</span>
             </div>
           </div>
+        </div>
 
-          <div class="eq-send-row">
-            <button class="p2-btn" id="eqSendBtn">Send to Zone 1 (ESS current)</button>
-          </div>
-
-          <div class="p2-field-note">
-            From the Field — Specifications shown are nominal ratings from manufacturer datasheets at time of writing.
-            Always verify against the current installation manual and nameplate before using for permit calculations.
-            Ratings may differ between product generations and firmware versions.
-          </div>
-
-          <div class="p2-code-note">
-            ESS output current values sent to Zone 1 feed the ESS breaker sizing calc per NEC 705.12(B) [2020/2023].
-            Requires NEC version set to 2020 or 2023. Supply-side connection mode bypasses this calc.
-          </div>
+        <div class="code-note" style="margin-top: 14px;">
+          NEC Table 690.7(A) applies to crystalline silicon modules only. Thin-film (CdTe, CIGS, a-Si) must use
+          manufacturer temperature coefficient — select Coefficient method. NEC 690.7(A)(1) vs. 690.7(A)(2).
+          Design temp source: ASHRAE 99.6% heating dry-bulb. Verify with local weather data for AHJ submission.
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ── PANEL 2: DC STRING SIZING ─────────────────────────────── -->
-    <div class="panel locked" id="panelDcString">
-      <div class="panel-head" onclick="togglePanel('panelDcString')">
-        <div class="panel-left">
-          <span class="panel-icon">+</span>
-          <span class="panel-name">DC String Sizing</span>
+  <!-- Equipment Selection -->
+  <div class="accordion" id="accordionEquipment">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionEquipment')">
+      <span class="accordion-title">Equipment Selection</span>
+      <span class="chip-citation" style="margin-left:auto;margin-right:8px;">NEC 690 / 705</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <div class="p2-section">
+        <div class="p2-title">Select Equipment</div>
+
+        <div class="p2-row-two">
+          <div class="input-block">
+            <label>Manufacturer</label>
+            <select class="select-input" id="eqMfgSelect" onchange="setEqMfg(this.value)">
+              <option value="tesla">Tesla</option>
+              <option value="enphase">Enphase</option>
+              <option value="qcells">Q CELLS</option>
+            </select>
+          </div>
+          <div class="input-block">
+            <label>Model</label>
+            <select class="select-input" id="eqModelSelect" onchange="setEqModel(this.value)"></select>
+          </div>
         </div>
-        <span class="panel-ref">NEC 690</span>
-      </div>
-      <div class="panel-body">
-        <div class="p2-section">
-          <div class="p2-title">Voc Temperature Correction — NEC 690.7</div>
 
-          <div class="p2-toggle-row">
-            <div class="control-group">
-              <span class="control-label">Correction Method</span>
-              <div class="pill-group" id="dcMethodToggle">
-                <button data-method="table"       onclick="setDcMethod('table')">NEC Table</button>
-                <button data-method="coefficient" onclick="setDcMethod('coefficient')">Coefficient</button>
-              </div>
-            </div>
-            <div class="control-group">
-              <span class="control-label">Temperature Source</span>
-              <div class="pill-group" id="dcTempModeToggle">
-                <button data-mode="zone"   onclick="setDcTempMode('zone')">Climate Zone</button>
-                <button data-mode="manual" onclick="setDcTempMode('manual')">Manual</button>
-              </div>
-            </div>
+        <div class="eq-specs">
+          <div class="eq-spec-row">
+            <span class="eq-spec-lbl">Capacity</span>
+            <span class="eq-spec-val" id="eqValCapacity">—</span>
           </div>
-
-          <!-- Climate zone selector -->
-          <div id="dcZoneRow" class="p2-input-row">
-            <div class="input-block" style="max-width: 380px;">
-              <label for="dcClimateZoneSelect">Design Location (ASHRAE 99.6% heating temp)</label>
-              <select class="select-input" id="dcClimateZoneSelect" onchange="setDcZone(this.value)"></select>
-            </div>
+          <div class="eq-spec-row">
+            <span class="eq-spec-lbl">AC Output</span>
+            <span class="eq-spec-val" id="eqValOutput">—</span>
           </div>
-
-          <!-- Manual temp inputs -->
-          <div id="dcManualRow" class="p2-input-row hidden">
-            <div class="inputs-grid" style="max-width: 480px;">
-              <div class="input-block">
-                <label for="dcManualTempF">Design Temp (°F)</label>
-                <input type="number" class="num-input" id="dcManualTempF" placeholder="e.g. 14" step="any" autocomplete="off">
-              </div>
-              <div class="input-block">
-                <label for="dcManualTempC">Design Temp (°C)</label>
-                <input type="number" class="num-input" id="dcManualTempC" placeholder="e.g. -10" step="any" autocomplete="off">
-              </div>
-            </div>
-            <div class="p2-code-note">Fields sync automatically. Enter either °F or °C.</div>
+          <div class="eq-spec-row eq-spec-note-row">
+            <span class="eq-spec-val" id="eqValNote">—</span>
           </div>
+        </div>
 
-          <!-- Module specs -->
-          <div class="sub-title">Module Specifications</div>
-          <div class="inputs-grid">
-            <div class="input-block">
-              <label for="dcVocStc">Voc at STC (V)</label>
-              <input type="number" class="num-input" id="dcVocStc" placeholder="e.g. 47.8" min="0" step="any" autocomplete="off">
-            </div>
-            <div class="input-block">
-              <label for="dcVmpStc">Vmp at STC (V) — optional</label>
-              <input type="number" class="num-input" id="dcVmpStc" placeholder="e.g. 40.1" min="0" step="any" autocomplete="off">
-            </div>
-            <div class="input-block">
-              <label for="dcIscStc">Isc at STC (A) — optional</label>
-              <input type="number" class="num-input" id="dcIscStc" placeholder="e.g. 10.7" min="0" step="any" autocomplete="off">
-            </div>
-            <div class="input-block hidden" id="dcCoeffBlock">
-              <label for="dcVocCoeff">Voc Temp Coefficient</label>
-              <input type="number" class="num-input" id="dcVocCoeff" placeholder="e.g. -0.28" step="any" autocomplete="off">
-              <div class="chips" style="margin-top: 8px;">
-                <span class="chip-label">Unit:</span>
-                <button class="chip" onclick="setDcCoeffUnit('pct')">%/°C</button>
-                <button class="chip" onclick="setDcCoeffUnit('v')">V/°C</button>
-              </div>
-              <div class="p2-code-note">Negative value (Voc decreases with heat). From module datasheet.</div>
-            </div>
-          </div>
+        <div class="eq-send-row">
+          <button class="btn-primary" id="eqSendBtn">Send to Zone 1 (ESS current)</button>
+        </div>
 
-          <!-- Inverter DC specs -->
-          <div class="sub-title">Inverter DC Specs — optional</div>
-          <div class="inputs-grid">
-            <div class="input-block">
-              <label for="dcInverterMaxV">Max DC Input Voltage (V)</label>
-              <input type="number" class="num-input" id="dcInverterMaxV" placeholder="e.g. 600" min="0" step="any" autocomplete="off">
-              <div class="chips">
-                <button class="chip" onclick="setDcChip('dcInverterMaxV', 600)">600</button>
-                <button class="chip" onclick="setDcChip('dcInverterMaxV', 1000)">1000</button>
-                <button class="chip" onclick="setDcChip('dcInverterMaxV', 1500)">1500</button>
-              </div>
-            </div>
-            <div class="input-block">
-              <label for="dcMpptMin">MPPT Voltage Min (V)</label>
-              <input type="number" class="num-input" id="dcMpptMin" placeholder="e.g. 200" min="0" step="any" autocomplete="off">
-            </div>
-            <div class="input-block">
-              <label for="dcMpptMax">MPPT Voltage Max (V)</label>
-              <input type="number" class="num-input" id="dcMpptMax" placeholder="e.g. 500" min="0" step="any" autocomplete="off">
-            </div>
-            <div class="input-block">
-              <label for="dcStringCount">Modules per String</label>
-              <input type="number" class="num-input" id="dcStringCount" placeholder="e.g. 10" min="1" step="1" autocomplete="off">
-            </div>
-          </div>
+        <div class="field-note">
+          <strong>From the Field</strong> — Specifications shown are nominal ratings from manufacturer datasheets at time of writing.
+          Always verify against the current installation manual and nameplate before using for permit calculations.
+          Ratings may differ between product generations and firmware versions.
+        </div>
 
-          <!-- DC Results -->
-          <div class="results-card hidden" id="dcResultsCard">
-            <div class="results-head" id="dcResultsHead">
-              <span class="status-badge" id="dcStatusBadge"></span>
-              <span class="p2-method-lbl">NEC 690.7 — Voc Temperature Correction</span>
-            </div>
-            <div class="results-body">
-              <div class="calc-row"><span class="lbl">Design Temperature</span><span class="val-sm" id="dcValTemp"></span></div>
-              <div class="calc-row"><span class="lbl">Correction Factor</span><span class="val-sm" id="dcValFactor"></span></div>
-              <div class="calc-row"><span class="lbl">Corrected Voc (per module)</span><span class="val" id="dcValVocCorr"></span></div>
-
-              <div id="dcStringBlock" class="hidden">
-                <div class="sub-title">String Voltage Check</div>
-                <div class="calc-row"><span class="lbl">String Voc at Design Temp</span><span class="val" id="dcValStringVoc"></span></div>
-                <div class="calc-row hidden" id="dcRowVocPass">
-                  <span class="lbl">vs. Inverter Max DC Voltage</span>
-                  <span class="val-sm" id="dcValVocPass"></span>
-                </div>
-                <div class="calc-row hidden" id="dcRowVmpHot">
-                  <span class="lbl">String Vmp at 70°C (hot-day min)</span>
-                  <span class="val-sm" id="dcValVmpHot"></span>
-                </div>
-                <div class="calc-row hidden" id="dcRowMpptMin">
-                  <span class="lbl">MPPT Min Check (hot day)</span>
-                  <span class="val-sm" id="dcValMpptMin"></span>
-                </div>
-              </div>
-
-              <div id="dcStringRecBlock" class="hidden">
-                <div class="sub-title">String Count Recommendation</div>
-                <div class="calc-row hidden" id="dcRowMaxStr">
-                  <span class="lbl">Max Modules per String (cold Voc)</span>
-                  <span class="val-sm" id="dcValMaxStr"></span>
-                </div>
-                <div class="calc-row hidden" id="dcRowMinStr">
-                  <span class="lbl">Min Modules per String (hot Vmp)</span>
-                  <span class="val-sm" id="dcValMinStr"></span>
-                </div>
-              </div>
-
-              <div id="dcWireBlock" class="hidden">
-                <div class="sub-title">DC Conductor Sizing — NEC 690.8</div>
-                <div class="calc-row"><span class="lbl">Module Isc at STC</span><span class="val-sm" id="dcValIsc"></span></div>
-                <div class="calc-row">
-                  <span class="lbl">Min Conductor Ampacity (Isc &times; 1.25)</span>
-                  <span class="val" id="dcValWireMin"></span>
-                </div>
-                <div class="code-note">NEC 690.8(A)(1) — DC source conductors rated 125% of module Isc. Apply additional derating per NEC 310 Table for conduit fill, ambient temperature, and conduit type.</div>
-              </div>
-
-              <div class="citation-bar">
-                <span class="citation-lbl">Citation</span>
-                <span class="citation-val">NEC 690.7 / 690.8</span>
-              </div>
-            </div>
-          </div><!-- /dcResultsCard -->
-
-          <div class="p2-code-note" style="margin-top: 14px;">
-            NEC Table 690.7(A) applies to crystalline silicon modules only. Thin-film (CdTe, CIGS, a-Si) must use
-            manufacturer temperature coefficient — select Coefficient method. NEC 690.7(A)(1) vs. 690.7(A)(2).
-            Design temp source: ASHRAE 99.6% heating dry-bulb. Verify with local weather data for AHJ submission.
-          </div>
+        <div class="code-note">
+          ESS output current values sent to Zone 1 feed the ESS breaker sizing calc per <span class="chip-citation">NEC 705.12(B) [2020/2023]</span>.
+          Requires NEC version set to 2020 or 2023. Supply-side connection mode bypasses this calc.
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ── PANEL 3: AC BREAKER SIZING ────────────────────────────── -->
-    <div class="panel locked" id="panelAcBreaker">
-      <div class="panel-head" onclick="togglePanel('panelAcBreaker')">
-        <div class="panel-left">
-          <span class="panel-icon">+</span>
-          <span class="panel-name">AC Breaker Sizing</span>
-        </div>
-        <span class="panel-ref">NEC 705 / 690 Part VIII</span>
-      </div>
-      <div class="panel-body">
-        <div class="p2-section">
-
-          <!-- String inverter reference -->
-          <div class="p2-title">String Inverter — Output Breaker</div>
-          <div class="p2-ref-block">
-            <p class="p2-body">
-              String inverter AC output breaker sizing is calculated in Zone 1 (Inverter Output Breaker section).
-              Enter the inverter continuous output current in amps to compute the required breaker size per NEC 705.12(B)(2)(a)&nbsp;[2023].
-            </p>
-            <div class="p2-code-note">Formula: Breaker = inverter output current &times; 1.25, rounded up to next standard size. Breaker must also fit within the max allowable backfeed computed above.</div>
-          </div>
-
-          <!-- Enphase branch circuit calc -->
-          <div class="p2-title" style="margin-top: 22px;">Enphase Microinverter — Branch Circuit Calculator</div>
-
-          <div class="p2-toggle-row">
-            <div class="control-group">
-              <span class="control-label">Model</span>
-              <select class="select-input p2-select" id="acEnphaseModelSelect" onchange="setAcModel(this.value)">
-                <option value="iq7">IQ7 (1.21A)</option>
-                <option value="iq7p">IQ7+ (1.21A)</option>
-                <option value="iq7a">IQ7A (1.21A)</option>
-                <option value="iq7x">IQ7X (1.21A)</option>
-                <option value="iq8">IQ8 (1.21A)</option>
-                <option value="iq8p">IQ8+ (1.21A)</option>
-                <option value="iq8a">IQ8A (1.58A)</option>
-                <option value="iq8h">IQ8H (2.01A)</option>
-                <option value="iq8hc">IQ8HC (2.01A)</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <span class="control-label">Branch Circuit Breaker</span>
-              <div class="pill-group" id="acBranchBreakerToggle">
-                <button data-brk="15" onclick="setAcBranchBreaker('15')">15A</button>
-                <button data-brk="20" onclick="setAcBranchBreaker('20')">20A</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="p2-input-row">
-            <div class="input-block" style="max-width: 260px;">
-              <label for="acEnphaseCount">Microinverters on this branch</label>
-              <input type="number" class="num-input" id="acEnphaseCount" placeholder="e.g. 10" min="1" step="1" autocomplete="off">
-            </div>
-          </div>
-
-          <div class="results-card" id="acEnphaseResultsCard" style="margin-top: 16px;">
-            <div class="results-head" id="acResultsHead">
-              <span class="status-badge" id="acStatusBadge"></span>
-              <span class="p2-method-lbl">Branch Circuit Check</span>
-            </div>
-            <div class="results-body">
-              <div class="calc-row">
-                <span class="lbl">Maximum per branch</span>
-                <span class="val-sm" id="acValMaxPer">—</span>
-              </div>
-              <div class="calc-row">
-                <span class="lbl">Total branch output current</span>
-                <span class="val-sm" id="acValTotalI">—</span>
-              </div>
-              <div class="calc-row">
-                <span class="lbl">Required branch OCPD (&times; 1.25)</span>
-                <span class="val-sm" id="acValRequiredBrk">—</span>
-              </div>
-              <div id="acCountAlert" class="hidden"></div>
-              <div class="rule-note">
-                NEC 690.8(B)(1) — Branch circuit OCPD rated 125% of max rated output. Max per branch = &lfloor;breaker &divide; (Iout &times; 1.25)&rfloor;.
-                Output current values are per manufacturer datasheet at 240V. Verify with current installation manual.
-              </div>
-            </div>
-          </div>
-
-          <!-- Rapid Shutdown reference -->
-          <div class="p2-title" style="margin-top: 28px;">Rapid Shutdown — NEC 690.12</div>
-          <div class="p2-ref-block">
-            <p class="p2-body">
-              Rapid shutdown requirements vary significantly by NEC version. No calculation required — this is a system design and equipment selection requirement.
-            </p>
-            <div class="p2-rsd-row">
-              <div class="p2-rsd-block">
-                <div class="p2-rsd-ver">2014 / 2017</div>
-                <p class="p2-body">Conductors outside the array boundary must de-energize within 10 seconds of rapid shutdown initiation. Array conductors within 10 feet of a penetration point must also de-energize.</p>
-              </div>
-              <div class="p2-rsd-block">
-                <div class="p2-rsd-ver">2020 / 2023</div>
-                <p class="p2-body">Controlled conductors within the array boundary must de-energize to &le;30V and &le;240VA within 30 seconds. Requires module-level electronics (MLPEs) or listed array energy shutdown equipment within the array boundary.</p>
-              </div>
-            </div>
-            <div class="p2-code-note">
-              NEC 690.12(B)(2) [2023] — Controlled conductors: &le;30V / &le;240VA within 30 seconds of initiation.
-              Most microinverter systems (Enphase IQ series) satisfy 2023 requirements by design.
-              String inverter systems require a rapid shutdown device at each module or string.
-              Confirm compliance method in equipment listing and AHJ accepted compliance path.
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PANEL 4: PCS EXCEPTION ─────────────────────────────────── -->
-    <div class="panel locked" id="panelPcs">
-      <div class="panel-head" onclick="togglePanel('panelPcs')">
-        <div class="panel-left">
-          <span class="panel-icon">+</span>
-          <span class="panel-name">PCS Exception</span>
-          <span class="panel-badge" id="pcsBadge">Available in 2023 NEC only</span>
-        </div>
-        <span class="panel-ref">NEC 705.13</span>
-      </div>
-      <div class="panel-body">
-        <div class="p2-section">
-          <div class="p2-title">NEC 705.13 — Power Control System Exception</div>
-          <p class="p2-body">
-            Introduced in NEC 2023. A Power Control System (PCS) manages energy sources in real time to ensure the total current fed into the busbar never exceeds the panel's rated capacity. When a listed PCS is installed and programmed to enforce this limit, the 120% busbar calculation under NEC 705.12 is not required.
+  <!-- AC Breaker Sizing -->
+  <div class="accordion" id="accordionAcBreaker">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionAcBreaker')">
+      <span class="accordion-title">AC Breaker Sizing</span>
+      <span class="chip-citation" style="margin-left:auto;margin-right:8px;">NEC 705 / 690</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <div class="p2-section">
+        <div class="p2-title">String Inverter — Output Breaker</div>
+        <div class="card" style="margin-bottom:16px;">
+          <p class="body-text">
+            String inverter AC output breaker sizing is calculated in the 120% results section above.
+            Enter the inverter continuous output current in amps to compute the required breaker size per <span class="chip-citation">NEC 705.12(B)(2)(a) [2023]</span>.
           </p>
+          <div class="code-note">Formula: Breaker = inverter output current &times; 1.25, rounded up to next standard size. Breaker must also fit within the max allowable backfeed computed above.</div>
+        </div>
 
-          <div class="p2-ref-block">
-            <div class="p2-ref-title">NEC 705.13 Requirements</div>
-            <ul class="p2-list">
-              <li>PCS must be a listed system specifically identified for the purpose.</li>
-              <li>PCS must actively limit combined backfeed to prevent busbar overcurrent — not just monitor or alarm.</li>
-              <li>Documentation of PCS programming and setpoints must be available for AHJ inspection.</li>
-              <li>If the PCS fails or loses control, the system must default to a safe state (typically de-energize or limit to zero export).</li>
-              <li>Supply-side interconnection rules still apply if the system has a supply-side connection.</li>
-            </ul>
+        <div class="p2-title">Enphase Microinverter — Branch Circuit Calculator</div>
+
+        <div class="p2-toggle-row">
+          <div class="control-group">
+            <span class="control-label">Model</span>
+            <select class="select-input p2-select" id="acEnphaseModelSelect" onchange="setAcModel(this.value)">
+              <option value="iq7">IQ7 (1.21A)</option>
+              <option value="iq7p">IQ7+ (1.21A)</option>
+              <option value="iq7a">IQ7A (1.21A)</option>
+              <option value="iq7x">IQ7X (1.21A)</option>
+              <option value="iq8">IQ8 (1.21A)</option>
+              <option value="iq8p">IQ8+ (1.21A)</option>
+              <option value="iq8a">IQ8A (1.58A)</option>
+              <option value="iq8h">IQ8H (2.01A)</option>
+              <option value="iq8hc">IQ8HC (2.01A)</option>
+            </select>
           </div>
-
-          <div class="p2-ref-block">
-            <div class="p2-ref-title">Common PCS-Capable Systems</div>
-            <div class="p2-pcs-grid">
-              <div class="p2-pcs-card">
-                <div class="p2-pcs-name">Tesla Gateway 3</div>
-                <p class="p2-body">Included with Powerwall 3. Controls solar inverter and battery output. Can be configured to enforce export limits. Listed for NEC 705.13 compliance in applicable configurations.</p>
-              </div>
-              <div class="p2-pcs-card">
-                <div class="p2-pcs-name">Enphase IQ System Controller 3</div>
-                <p class="p2-body">Manages Enphase microinverter and IQ Battery systems. Export limiting via Envoy communication. Confirm current listing status and AHJ acceptance for 705.13 pathway.</p>
-              </div>
+          <div class="control-group">
+            <span class="control-label">Branch Circuit Breaker</span>
+            <div class="pill-group" id="acBranchBreakerToggle">
+              <button data-brk="15" onclick="setAcBranchBreaker('15')">15A</button>
+              <button data-brk="20" onclick="setAcBranchBreaker('20')">20A</button>
             </div>
           </div>
+        </div>
 
-          <div class="p2-field-note">
-            From the Field — The PCS pathway is relatively new and AHJ acceptance varies widely. Many inspectors are not yet familiar with 705.13 and may default to requiring the 120% calc regardless. Confirm with AHJ before designing to this pathway. Get AHJ acknowledgment in writing before submitting permit documents that rely on the PCS exception.
+        <div class="p2-input-row">
+          <div class="input-block" style="max-width: 260px;">
+            <label for="acEnphaseCount">Microinverters on this branch</label>
+            <input type="number" class="num-input" id="acEnphaseCount" placeholder="e.g. 10" min="1" step="1" autocomplete="off">
           </div>
+        </div>
 
-          <div class="p2-code-note">
-            NEC 705.13 is available in NEC 2023 only. Jurisdictions still adopting 2020 or earlier cannot use this pathway.
-            The NEC Version toggle above controls which rules apply. Set to 2023 to unlock the PCS Exception panel.
+        <div class="results-card" id="acEnphaseResultsCard" style="margin-top: 16px;">
+          <div class="results-head" id="acResultsHead">
+            <span class="status-badge" id="acStatusBadge"></span>
+            <span class="results-method">Branch Circuit Check</span>
+          </div>
+          <div class="results-body">
+            <div class="calc-row">
+              <span class="lbl">Maximum per branch</span>
+              <span class="val-sm" id="acValMaxPer">—</span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Total branch output current</span>
+              <span class="val-sm" id="acValTotalI">—</span>
+            </div>
+            <div class="calc-row">
+              <span class="lbl">Required branch OCPD (&times; 1.25)</span>
+              <span class="val-sm" id="acValRequiredBrk">—</span>
+            </div>
+            <div id="acCountAlert" class="hidden"></div>
+            <div class="rule-note">
+              NEC 690.8(B)(1) — Branch circuit OCPD rated 125% of max rated output. Max per branch = &lfloor;breaker &divide; (Iout &times; 1.25)&rfloor;.
+              Output current values are per manufacturer datasheet at 240V. Verify with current installation manual.
+            </div>
+          </div>
+        </div>
+
+        <div class="p2-title" style="margin-top: 28px;">Rapid Shutdown — NEC 690.12</div>
+        <div class="card">
+          <p class="body-text">
+            Rapid shutdown requirements vary significantly by NEC version. No calculation required — this is a system design and equipment selection requirement.
+          </p>
+          <div class="p2-rsd-row">
+            <div class="p2-rsd-block">
+              <div class="p2-rsd-ver">2014 / 2017</div>
+              <p class="body-text">Conductors outside the array boundary must de-energize within 10 seconds of rapid shutdown initiation. Array conductors within 10 feet of a penetration point must also de-energize.</p>
+            </div>
+            <div class="p2-rsd-block">
+              <div class="p2-rsd-ver">2020 / 2023</div>
+              <p class="body-text">Controlled conductors within the array boundary must de-energize to &le;30V and &le;240VA within 30 seconds. Requires module-level electronics (MLPEs) or listed array energy shutdown equipment within the array boundary.</p>
+            </div>
+          </div>
+          <div class="code-note">
+            NEC 690.12(B)(2) [2023] — Controlled conductors: &le;30V / &le;240VA within 30 seconds of initiation.
+            Most microinverter systems (Enphase IQ series) satisfy 2023 requirements by design.
+            String inverter systems require a rapid shutdown device at each module or string.
+            Confirm compliance method in equipment listing and AHJ accepted compliance path.
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- ── PANEL 5: SUMMARY OUTPUT ────────────────────────────────── -->
-    <div class="panel locked" id="panelSummary">
-      <div class="panel-head" onclick="togglePanel('panelSummary')">
-        <div class="panel-left">
-          <span class="panel-icon">+</span>
-          <span class="panel-name">Summary Output</span>
+  <!-- PCS Exception -->
+  <div class="accordion" id="accordionPcs">
+    <button class="accordion-trigger" onclick="toggleAccordion('accordionPcs')">
+      <span class="accordion-title">PCS Exception</span>
+      <span class="chip-citation" style="margin-left:auto;margin-right:8px;">NEC 705.13</span>
+      <span id="pcsBadge" class="pcs-badge">2023 NEC only</span>
+      <span class="accordion-icon">+</span>
+    </button>
+    <div class="accordion-body">
+      <div class="p2-section">
+        <div class="p2-title">NEC 705.13 — Power Control System Exception</div>
+        <p class="body-text">
+          Introduced in NEC 2023. A Power Control System (PCS) manages energy sources in real time to ensure the total current fed into the busbar never exceeds the panel's rated capacity. When a listed PCS is installed and programmed to enforce this limit, the 120% busbar calculation under NEC 705.12 is not required.
+        </p>
+
+        <div class="card" style="margin:14px 0;">
+          <div class="p2-title" style="color:var(--info);">NEC 705.13 Requirements</div>
+          <ul class="list-dash">
+            <li>PCS must be a listed system specifically identified for the purpose.</li>
+            <li>PCS must actively limit combined backfeed to prevent busbar overcurrent — not just monitor or alarm.</li>
+            <li>Documentation of PCS programming and setpoints must be available for AHJ inspection.</li>
+            <li>If the PCS fails or loses control, the system must default to a safe state (typically de-energize or limit to zero export).</li>
+            <li>Supply-side interconnection rules still apply if the system has a supply-side connection.</li>
+          </ul>
         </div>
-        <span class="panel-ref">All Articles</span>
-      </div>
-      <div class="panel-body">
-        <div class="p2-section">
-          <div class="p2-title">Calculation Summary</div>
 
-          <div class="sum-inputs">
-            <div class="sum-row"><span class="sum-lbl">Bus Rating</span><span class="sum-val" id="sumBusRating">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Main Breaker</span><span class="sum-val" id="sumMainBreaker">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">NEC Version</span><span class="sum-val" id="sumVersion">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Connection</span><span class="sum-val" id="sumConnType">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Panel Type</span><span class="sum-val" id="sumPanelType">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Calc Method</span><span class="sum-val" id="sumCalcMethod">—</span></div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="p2-title" style="color:var(--info);">Common PCS-Capable Systems</div>
+          <div class="p2-pcs-grid">
+            <div class="p2-pcs-card">
+              <div class="p2-pcs-name">Tesla Gateway 3</div>
+              <p class="body-text">Included with Powerwall 3. Controls solar inverter and battery output. Can be configured to enforce export limits. Listed for NEC 705.13 compliance in applicable configurations.</p>
+            </div>
+            <div class="p2-pcs-card">
+              <div class="p2-pcs-name">Enphase IQ System Controller 3</div>
+              <p class="body-text">Manages Enphase microinverter and IQ Battery systems. Export limiting via Envoy communication. Confirm current listing status and AHJ acceptance for 705.13 pathway.</p>
+            </div>
           </div>
+        </div>
 
-          <div class="sub-title" style="margin-top: 20px;">Results</div>
-          <div class="sum-inputs">
-            <div class="sum-row"><span class="sum-lbl">Result</span><span class="sum-val" id="sumResult">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Max Backfeed</span><span class="sum-val" id="sumMaxBackfeed">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Max PV Breaker</span><span class="sum-val" id="sumMaxPV">—</span></div>
-            <div class="sum-row hidden" id="sumRowESS"><span class="sum-lbl">Max ESS Breaker</span><span class="sum-val" id="sumMaxESS">—</span></div>
-            <div class="sum-row"><span class="sum-lbl">Citation</span><span class="sum-val citation-val" id="sumCitation">—</span></div>
-          </div>
+        <div class="field-note">
+          <strong>From the Field</strong> — The PCS pathway is relatively new and AHJ acceptance varies widely. Many inspectors are not yet familiar with 705.13 and may default to requiring the 120% calc regardless. Confirm with AHJ before designing to this pathway. Get AHJ acknowledgment in writing before submitting permit documents that rely on the PCS exception.
+        </div>
 
-          <div class="sum-actions">
-            <button class="p2-btn" onclick="printSummary()">Print / Save PDF</button>
-            <button class="p2-btn p2-btn-ghost" id="sumCopyBtn" onclick="copySummary()">Copy to Clipboard</button>
-          </div>
-
-          <div class="p2-code-note">
-            Summary reflects current Zone 1 inputs and settings. Update Zone 1 inputs and re-open this panel to refresh.
-          </div>
+        <div class="code-note">
+          NEC 705.13 is available in NEC 2023 only. Jurisdictions still adopting 2020 or earlier cannot use this pathway.
+          The NEC Version toggle above controls which rules apply. Set to 2023 to unlock the PCS Exception panel.
         </div>
       </div>
     </div>
+  </div>
 
-  </section>
+  <!-- ══════════════════════════════════════════════════════════════
+       PERSISTENT ACTION BAR
+       ══════════════════════════════════════════════════════════════ -->
+  <div class="action-bar">
+    <button class="btn-primary" onclick="printSummary()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align:-2px;margin-right:6px;">
+        <path d="M4 1v3H2a1 1 0 00-1 1v5a1 1 0 001 1h2v4h8v-4h2a1 1 0 001-1V5a1 1 0 00-1-1h-2V1H4zm1 1h6v2H5V2zm-1 7h8v5H4V9z" fill="currentColor"/>
+      </svg>Print / Save PDF</button>
+    <button class="btn-ghost" id="sumCopyBtn" onclick="copySummary()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align:-2px;margin-right:6px;">
+        <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M11 5V3.5A1.5 1.5 0 009.5 2h-6A1.5 1.5 0 002 3.5v6A1.5 1.5 0 003.5 11H5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+      </svg>Copy Summary</button>
+  </div>
 
   <!-- ── FOOTER ────────────────────────────────────────────────── -->
   <footer class="page-footer">

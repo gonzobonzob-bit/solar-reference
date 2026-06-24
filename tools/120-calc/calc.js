@@ -342,10 +342,9 @@ function computeEnphase(s) {
 
 function render() {
   const v      = NEC[state.version];
-  const c      = compute(state);
+  const c      = compute120(state);
   const isLoad = state.connection === 'load';
   const isSub  = state.panelType  === 'sub';
-  const isSob  = state.calcMethod === 'sumbreakers';
 
   document.querySelectorAll('#versionToggle button').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.version === state.version));
@@ -353,29 +352,30 @@ function render() {
     btn.classList.toggle('active', btn.dataset.conn === state.connection));
   document.querySelectorAll('#panelTypeToggle button').forEach(btn =>
     btn.classList.toggle('active', btn.dataset.panel === state.panelType));
-  document.querySelectorAll('#calcMethodToggle button').forEach(btn =>
-    btn.classList.toggle('active', btn.dataset.method === state.calcMethod));
-
   el('versionBanner').textContent = v.banner;
 
-  // PCS panel version availability (run always regardless of connection)
-  el('panelPcs').classList.toggle('ver-off', !v.pcs);
-  if (!v.pcs && el('panelPcs').classList.contains('open')) el('panelPcs').classList.remove('open');
+  // PCS accordion version availability
+  const pcsAccordion = el('accordionPcs');
+  if (pcsAccordion) {
+    pcsAccordion.style.opacity = v.pcs ? '1' : '0.4';
+    pcsAccordion.style.pointerEvents = v.pcs ? 'auto' : 'none';
+    if (!v.pcs && pcsAccordion.classList.contains('open')) pcsAccordion.classList.remove('open');
+  }
   set('pcsBadge', v.pcs);
 
   renderMainBreakerValidation();
 
   const qc = isLoad ? computeQuickCalc(state) : { valid: false };
-  renderQuickOutput(qc, v);
+  renderResultCard(qc, v);
+  renderMathCard(qc, v);
 
   set('supplySideNote',  isLoad);
   set('loadSideContent', !isLoad);
 
-  if (!isLoad) { setPanels(false); return; }
+  if (!isLoad) { return; }
 
-  // Input section visibility — mainPanelInputs always visible above fold
-  set('subPanelInputs',    !isSub || isSob);
-  set('sumBreakersContent', !isSob);
+  // Input section visibility
+  set('subPanelInputs', !isSub);
 
   if (isSub) {
     el('subOCPDLabel').textContent = state.subConfig === 'through_lug'
@@ -383,16 +383,59 @@ function render() {
       : 'Sub Panel Main Breaker (amps)';
   }
 
-  // SOB results
-  set('sobResultsCard', !isSob || !c.valid);
-  if (isSob && c.valid) renderSobResults(c);
+  // 120% results — always the primary calc
+  set('resultsCard', !c.valid);
+  if (c.valid) render120Results(c, v);
 
-  // 120% results
-  set('resultsCard', isSob || !c.valid);
-  if (!isSob && c.valid) render120Results(c, v);
+  // SOB renders independently
+  renderSobIndependent();
+}
 
-  setPanels(!isSob && c.valid);
-  renderSummary();
+/* ─── RENDER: RESULT CARD (pinned at top) ──────────────────────── */
+
+function renderResultCard(qc, v) {
+  const card = el('resultCard');
+  card.classList.remove('state-pass', 'state-fail');
+
+  if (!qc.valid) {
+    set('resultIdle', false);
+    set('resultLive', true);
+    return;
+  }
+
+  set('resultIdle', true);
+  set('resultLive', false);
+
+  const badge = el('resultBadge');
+  badge.textContent = qc.pass ? 'PASS' : 'FAIL';
+  badge.className   = qc.pass ? 'result-badge pass' : 'result-badge fail';
+  card.classList.add(qc.pass ? 'state-pass' : 'state-fail');
+
+  txt('resultCitation', v.citation);
+
+  if (qc.pass) {
+    txt('resultMaxBackfeed', qc.maxBackfeed.toFixed(2) + 'A');
+    txt('metricBackfeed', qc.maxBackfeed.toFixed(2) + 'A');
+    txt('metricStdBreaker', qc.maxPVBreaker !== null ? qc.maxPVBreaker + 'A' : '>200A');
+    const headroom = (qc.maxBus - state.busRating).toFixed(0);
+    txt('metricHeadroom', headroom + 'A');
+    set('resultMetrics', false);
+  } else {
+    txt('resultMaxBackfeed', qc.maxBackfeed.toFixed(2) + 'A');
+    set('resultMetrics', true);
+  }
+}
+
+/* ─── RENDER: MATH CARD ────────────────────────────────────────── */
+
+function renderMathCard(qc, v) {
+  set('mathCard', !qc.valid);
+  if (!qc.valid) return;
+
+  txt('mathBus', state.busRating + '');
+  txt('mathMain', state.mainBreaker + '');
+  txt('mathResult', qc.maxBackfeed.toFixed(2) + 'A');
+  txt('mathCitation', v.section + ' [' + state.version + ']');
 }
 
 /* ─── RENDER: 120% RESULTS ──────────────────────────────────────── */
@@ -441,8 +484,6 @@ function render120Results(c, v) {
   const showCombined = c.pass && !!c.combined;
   set('combinedConfigSection', !showCombined);
   if (showCombined) renderCombinedConfigCheck(c);
-
-  set('backfeedLabelingCallout', !c.pass);
 
   txt('activeCitation', v.citation);
 }
@@ -518,31 +559,15 @@ function renderEssCalc(c) {
   }
 }
 
-function renderQuickOutput(qc, v) {
-  set('quickCalcOutput', !qc.valid);
-  if (!qc.valid) return;
+/* renderQuickOutput removed — replaced by renderResultCard */
 
-  const statusEl    = el('qcStatus');
-  statusEl.textContent = qc.pass ? 'PASS' : 'FAIL';
-  statusEl.className   = qc.pass ? 'status-badge pass' : 'status-badge fail';
+/* ─── RENDER: SUM OF BREAKERS (independent) ────────────────────── */
 
-  txt('qcCitation', NEC[state.version].citation);
-
-  set('qcDerived', !qc.pass);
-
-  if (qc.pass) {
-    txt('qcMaxBackfeed', qc.maxBackfeed.toFixed(2) + 'A');
-    txt('qcMaxPV', qc.maxPVBreaker !== null ? qc.maxPVBreaker + 'A' : '>200A');
-    set('qcRowESS', !qc.hasESS);
-    if (qc.hasESS) txt('qcMaxESS', qc.maxESSBreaker !== null ? qc.maxESSBreaker + 'A' : '>200A');
-    set('qcRowCombined', !qc.hasESS);
-    if (qc.hasESS) txt('qcMaxCombined', qc.maxBackfeed.toFixed(2) + 'A total');
-  } else {
-    txt('qcMaxBackfeed', '—');
-  }
+function renderSobIndependent() {
+  const c = computeSumBreakers(state);
+  set('sobResultsCard', !c.valid);
+  if (c.valid) renderSobResults(c);
 }
-
-/* ─── RENDER: SUM OF BREAKERS RESULTS ──────────────────────────── */
 
 function renderSobResults(c) {
   const head  = el('sobResultsHead');
@@ -574,26 +599,15 @@ function renderSobResults(c) {
   }
 }
 
-/* ─── PANEL STATE ───────────────────────────────────────────────── */
+/* ─── ACCORDION STATE ──────────────────────────────────────────── */
 
-function setPanels(enabled) {
-  document.querySelectorAll('.panel').forEach(panel => {
-    if (panel.id === 'panelPcs') return;
-    if (enabled) {
-      panel.classList.remove('locked');
-    } else {
-      panel.classList.add('locked');
-      panel.classList.remove('open');
-    }
-  });
-
-  const pcs = el('panelPcs');
-  const vd  = NEC[state.version];
-  if (enabled && vd.pcs) {
-    pcs.classList.remove('locked');
-  } else if (!enabled) {
-    pcs.classList.add('locked');
-    pcs.classList.remove('open');
+function toggleAccordion(id) {
+  const acc = el(id);
+  if (!acc) return;
+  if (acc.style.pointerEvents === 'none') return;
+  acc.classList.toggle('open');
+  if (acc.classList.contains('open')) {
+    if (id === 'accordionEquipment') renderEquipment();
   }
 }
 
@@ -602,7 +616,7 @@ function setPanels(enabled) {
 function setVersion(v)        { state.version    = v;    render(); }
 function setConnection(conn)  { state.connection = conn; render(); }
 function setPanelType(type)   { state.panelType  = type; render(); }
-function setCalcMethod(m)     { state.calcMethod = m;    render(); }
+/* setCalcMethod removed — SOB is now independent, always in accordion */
 
 function onNumInput(id) {
   const raw = document.getElementById(id).value.trim();
@@ -617,15 +631,7 @@ function setChip(id, value) {
   render();
 }
 
-function togglePanel(id) {
-  const p = el(id);
-  if (p.classList.contains('locked') || p.classList.contains('ver-off')) return;
-  p.classList.toggle('open');
-  if (p.classList.contains('open')) {
-    if (id === 'panelSummary')   renderSummary();
-    if (id === 'panelEquipment') renderEquipment();
-  }
-}
+/* togglePanel removed — replaced by toggleAccordion */
 
 function renderCombinedConfigCheck(c) {
   txt('valCombinedPV',    c.combined.pvStd  + 'A');
@@ -837,44 +843,7 @@ function renderEquipment() {
   sendBtn.onclick     = () => sendEssToZone1(m.amps);
 }
 
-function renderSummary() {
-  if (!el('panelSummary').classList.contains('open')) return;
-  const c = compute(state);
-  const v = NEC[state.version];
-
-  txt('sumBusRating',   state.busRating   !== null ? state.busRating   + 'A' : '—');
-  txt('sumMainBreaker', state.mainBreaker !== null ? state.mainBreaker + 'A' : '—');
-  txt('sumVersion',     v.citation);
-  txt('sumConnType',    state.connection === 'load'        ? 'Load-Side'      : 'Supply-Side');
-  txt('sumPanelType',   state.panelType  === 'sub'         ? 'Sub Panel'      : 'Main Panel');
-  txt('sumCalcMethod',  state.calcMethod === 'sumbreakers' ? 'Sum of Breakers': '120% Method');
-
-  const resultEl = el('sumResult');
-  if (!c.valid) {
-    resultEl.textContent = '—'; resultEl.className = 'sum-val';
-    txt('sumMaxBackfeed', '—'); txt('sumMaxPV', '—'); set('sumRowESS', true); return;
-  }
-
-  resultEl.textContent = c.pass ? 'PASS' : 'FAIL';
-  resultEl.className   = 'sum-val ' + (c.pass ? 'txt-pass' : 'txt-fail');
-
-  if (c.method === '120pct') {
-    txt('sumCitation', v.citation);
-    if (c.pass) {
-      txt('sumMaxBackfeed', c.maxBackfeed.toFixed(2) + 'A');
-      txt('sumMaxPV', c.maxPVBreaker !== null ? c.maxPVBreaker + 'A' : '>200A');
-      set('sumRowESS', !v.ess);
-      if (v.ess) txt('sumMaxESS', c.maxESSBreaker !== null ? c.maxESSBreaker + 'A' : '>200A');
-    } else {
-      txt('sumMaxBackfeed', 'N/A'); txt('sumMaxPV', 'N/A'); set('sumRowESS', true);
-    }
-  } else {
-    txt('sumCitation', 'NEC 705.12(B)(2)(3)(b)');
-    txt('sumMaxBackfeed', c.headroom.toFixed(2) + 'A headroom');
-    txt('sumMaxPV', 'See Sum of Breakers results');
-    set('sumRowESS', true);
-  }
-}
+/* renderSummary removed — summary panel replaced by persistent action bar */
 
 function sendEssToZone1(amps) {
   state.essOutputCurrent = parseFloat(amps.toFixed(1));
@@ -902,7 +871,7 @@ function copySummary() {
   navigator.clipboard.writeText(t).then(() => {
     const btn = el('sumCopyBtn');
     btn.textContent = 'Copied ✓';
-    setTimeout(() => { btn.textContent = 'Copy to Clipboard'; }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy Summary'; }, 2000);
   }).catch(() => {});
 }
 
